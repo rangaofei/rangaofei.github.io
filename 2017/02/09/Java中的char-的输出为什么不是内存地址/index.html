@@ -1,0 +1,800 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="Java中共有八种基本数据类型：byte，int，short，long，float，double，char，boolean。计算机中的基础数据单位是bit， 1byte=8bit。    数据类型 存储大小 举例 注释 包装类     byte 1byte 3 字节 Byte   int 4byte 4 整数 Integer   short 2bytes 5 短整数 Short   long 8b">
+<meta name="keywords" content="Android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java中的char[]的输出为什么不是内存地址">
+<meta property="og:url" content="https://rangaofei.github.io/2017/02/09/Java中的char-的输出为什么不是内存地址/index.html">
+<meta property="og:site_name" content="SAKA&#39;S BLOG">
+<meta property="og:description" content="Java中共有八种基本数据类型：byte，int，short，long，float，double，char，boolean。计算机中的基础数据单位是bit， 1byte=8bit。    数据类型 存储大小 举例 注释 包装类     byte 1byte 3 字节 Byte   int 4byte 4 整数 Integer   short 2bytes 5 短整数 Short   long 8b">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-02-23T12:48:04.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java中的char[]的输出为什么不是内存地址">
+<meta name="twitter:description" content="Java中共有八种基本数据类型：byte，int，short，long，float，double，char，boolean。计算机中的基础数据单位是bit， 1byte=8bit。    数据类型 存储大小 举例 注释 包装类     byte 1byte 3 字节 Byte   int 4byte 4 整数 Integer   short 2bytes 5 短整数 Short   long 8b">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://rangaofei.github.io/2017/02/09/Java中的char-的输出为什么不是内存地址/"/>
+
+
+
+
+
+  <title> Java中的char[]的输出为什么不是内存地址 | SAKA'S BLOG </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s4.cnzz.com/z_stat.php?id=1261177704&web_id=1261177704" language="JavaScript"></script>
+  <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1261177704'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1261177704%26online%3D1%26show%3Dline' type='text/javascript'%3E%3C/script%3E"));</script>
+  </div>
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">SAKA'S BLOG</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://rangaofei.github.io/2017/02/09/Java中的char-的输出为什么不是内存地址/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="rangaofei">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="SAKA'S BLOG">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="SAKA'S BLOG" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Java中的char[]的输出为什么不是内存地址
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-02-09T12:08:13+08:00">
+                2017-02-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">              
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index">
+                    <span itemprop="name">Java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Java中共有八种基本数据类型：byte，int，short，long，float，double，char，boolean。<br>计算机中的基础数据单位是bit， 1byte=8bit。</p>
+<table>
+<thead>
+<tr>
+<th>数据类型</th>
+<th>存储大小</th>
+<th>举例</th>
+<th>注释</th>
+<th>包装类</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>byte</td>
+<td>1byte</td>
+<td>3</td>
+<td>字节</td>
+<td>Byte</td>
+</tr>
+<tr>
+<td>int</td>
+<td>4byte</td>
+<td>4</td>
+<td>整数</td>
+<td>Integer</td>
+</tr>
+<tr>
+<td>short</td>
+<td>2bytes</td>
+<td>5</td>
+<td>短整数</td>
+<td>Short</td>
+</tr>
+<tr>
+<td>long</td>
+<td>8bytes</td>
+<td>6</td>
+<td>长整数</td>
+<td>Long</td>
+</tr>
+<tr>
+<td>float</td>
+<td>4bytes</td>
+<td>1.3</td>
+<td>单精度浮点型</td>
+<td>Float</td>
+</tr>
+<tr>
+<td>double</td>
+<td>8bytes</td>
+<td>1.2</td>
+<td>双精度浮点型</td>
+<td>Double</td>
+</tr>
+<tr>
+<td>char</td>
+<td>2bytes</td>
+<td>‘a’</td>
+<td>字符</td>
+<td>Char</td>
+</tr>
+<tr>
+<td>boolean</td>
+<td>1bit</td>
+<td>true</td>
+<td>布尔值</td>
+<td>Boolean</td>
+</tr>
+</tbody>
+</table>
+<p>这8种基本数据类型很简单，在示例中应用来看一下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">public class Test &#123;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line">        System.out.println(&quot;8种基本数据类型&quot;);</span><br><span class="line">        int a=5;</span><br><span class="line">        System.out.println(a);</span><br><span class="line">        char b=&apos;z&apos;;</span><br><span class="line">        System.out.println(b);</span><br><span class="line">        boolean d=false;</span><br><span class="line">        System.out.println(d);</span><br><span class="line">        byte e=3;</span><br><span class="line">        System.out.println(e);</span><br><span class="line">        short f=4;</span><br><span class="line">        System.out.println(f);</span><br><span class="line">        long g=32000000;</span><br><span class="line">        System.out.println(g);</span><br><span class="line">        float h=5;</span><br><span class="line">        System.out.println(h);</span><br><span class="line">        double i=6;</span><br><span class="line">        System.out.println(i);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>一段简单的输出代码，看看打印结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">8种基本数据类型</span><br><span class="line">5</span><br><span class="line">z</span><br><span class="line">false</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">32000000</span><br><span class="line">5.0</span><br><span class="line">6.0</span><br></pre></td></tr></table></figure></p>
+<p>可以看到输出结果是没有问题的。</p>
+<h2 id="基本数据类型和对象引用"><a href="#基本数据类型和对象引用" class="headerlink" title="基本数据类型和对象引用"></a>基本数据类型和对象引用</h2><p>基本数据类型会一直在栈中创建，当声明基本类型时，不需要new。<br><code>int a=1;</code><br>栈的读取速度比堆快。基本类型一旦被声明，java将在栈上直接存储它，所以基本类型的变量表示的是数据本身。</p>
+<p>假如调用基本类型的包装类来创建对象，那么将会在堆中创建。<br><code>Employee a=new Emploee(1.4);</code></p>
+<ol>
+<li>等号右侧的new Employee()。这个new是在内存的堆中为对象开辟控件，保存对象的数据和方法。</li>
+<li>等号左侧 Emploee a。a指代的是Emploee的一个对象，称为对象引用，这个对象引用是在栈中创建的。实际上a不是对象本身，它用来指向一个地址。</li>
+<li>赋值=。这个就是把对象的地址赋给a。</li>
+</ol>
+<p>此时输出a就是一个内存地址。有兴趣的同学自己试一试。</p>
+<p>这个地方说明一个问题，假如你自定义的对象重写了.toString方法，此处就会显示你的自定义的重写方法的输出值。<br>在java的基本类型包装类中就重写了这个方法，所以调用print方法时会自动调用它的toString()方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">public class Wrapper &#123;</span><br><span class="line">    static class Employee&#123;</span><br><span class="line">        static int age;</span><br><span class="line">        Employee(int a)&#123;</span><br><span class="line">            age=a;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    static class Employer&#123;</span><br><span class="line">        static int year;</span><br><span class="line">        Employer (int y)&#123;</span><br><span class="line">            year=y;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">        public String toString() &#123;</span><br><span class="line">            return &quot;Employer&apos;s year=&quot;+year;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    public static void main(String[] args)&#123;</span><br><span class="line">        Employee e=new Employee(4);</span><br><span class="line">        System.out.println(&quot;e=&quot;+e);</span><br><span class="line">        Employer f=new Employer(5);</span><br><span class="line">        System.out.println(&quot;f=&quot;+f);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在上边的例子中Employee的toString()方法没有被重写，Employer的toString()方法被重写了。来看输出结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">e=Wrapper$Employee@1b6d3586</span><br><span class="line">f=Employer&apos;s year=5</span><br></pre></td></tr></table></figure></p>
+<p>前者仍然是内存地址，后者是我们重写的方法。</p>
+<p>print方法在调用事，假如类中的toString()方法没有被重写，则会电泳String.valueof()方法(后边有讲),假如重写了就会调用toString方法。<br>所有的包装类（Integer，Boolean等）都已经重写了toString方法，所以不会输出内存地址，而是输出正确的值。<br>下面的是Double类中的方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">private final double value;</span><br><span class="line">public String toString() &#123;</span><br><span class="line">        return toString(value);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="整形数据类型取值范围"><a href="#整形数据类型取值范围" class="headerlink" title="整形数据类型取值范围"></a>整形数据类型取值范围</h2><p>byte占据8位，则其取值范围应该是2的8次方，也就是-128~127，超过这个区间就会报错，例如：</p>
+<p><code>byte a=128;</code><br>在编译器中会报错，提示不能将int转换为byte，因为128已经超出byte的范围了。</p>
+<p>同样可以推得其他值的取值范围。</p>
+<h2 id="基本类型的数组输出值"><a href="#基本类型的数组输出值" class="headerlink" title="基本类型的数组输出值"></a>基本类型的数组输出值</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">public class TestOne &#123;</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		int a=127;</span><br><span class="line">		System.out.println(a);</span><br><span class="line">		int[] b=new int[]&#123;1,2,3&#125;;</span><br><span class="line">		System.out.println(b);</span><br><span class="line">		int[] c=new int[100];</span><br><span class="line">		System.out.println(c);</span><br><span class="line">		int[] d=&#123;1,2,3&#125;;</span><br><span class="line">		System.out.println(d);</span><br><span class="line">		boolean e=false;</span><br><span class="line">		System.out.println(e);</span><br><span class="line">		boolean[] f=&#123;false,false,true&#125;;</span><br><span class="line">		System.out.println(f);</span><br><span class="line">		char g=&apos;a&apos;;</span><br><span class="line">		System.out.println(g);</span><br><span class="line">		char[] h=&#123;&apos;a&apos;,&apos;b&apos;,&apos;c&apos;&#125;;</span><br><span class="line">		System.out.println(h);</span><br><span class="line">		char[] i=new char[]&#123;&apos;a&apos;,&apos;b&apos;,&apos;c&apos;&#125;;</span><br><span class="line">		System.out.println(i);</span><br><span class="line">		float j=1.2f;</span><br><span class="line">		System.out.println(j);</span><br><span class="line">		float[] k=&#123;1.2f,1.3f,1.4f&#125;;</span><br><span class="line">		System.out.println(k);</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>看一下打印的结果：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">127</span><br><span class="line">[I@15db9742</span><br><span class="line">[I@6d06d69c</span><br><span class="line">[I@7852e922</span><br><span class="line">false</span><br><span class="line">[Z@4e25154f</span><br><span class="line">a</span><br><span class="line">abc</span><br><span class="line">abc</span><br><span class="line">1.2</span><br><span class="line">[F@70dea4e</span><br></pre></td></tr></table></figure></p>
+<p>可以看到，在结果中，所有的基本类型都可以打印出来，数组类型只能打印出char数组，其他的都是内存地址。</p>
+<p>来看一下源码，在print函数中</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public void print(char c) &#123;</span><br><span class="line">       write(String.valueOf(c));</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>这个char被转换为了String类型，然后进行wirte方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">private void write(String s) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            synchronized (this) &#123;</span><br><span class="line">                ensureOpen();</span><br><span class="line">                textOut.write(s);</span><br><span class="line">                textOut.flushBuffer();</span><br><span class="line">                charOut.flushBuffer();</span><br><span class="line">                if (autoFlush &amp;&amp; (s.indexOf(&apos;\n&apos;) &gt;= 0))</span><br><span class="line">                    out.flush();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        catch (InterruptedIOException x) &#123;</span><br><span class="line">            Thread.currentThread().interrupt();</span><br><span class="line">        &#125;</span><br><span class="line">        catch (IOException x) &#123;</span><br><span class="line">            trouble = true;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>这里会立即发送缓冲流输出。<br>对于所有的基础类型都会打印出具体的值，这个没有问题，但是对于数组为什么只有char的数组类型打印出了正确的结果而没有输出内存地址？<br>带着这个问题我们来了解一下：<br>对于int型数组，java调用的是下面的方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public void println(Object x) &#123;</span><br><span class="line">        String s = String.valueOf(x);</span><br><span class="line">        synchronized (this) &#123;</span><br><span class="line">            print(s);</span><br><span class="line">            newLine();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>此处数组被认为是Object类型，调用的是<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public static String valueOf(Object obj) &#123;</span><br><span class="line">        return (obj == null) ? &quot;null&quot; : obj.toString();</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>此处的三目表达式用来判空，然后看一下obj.toString()方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public String toString() &#123;</span><br><span class="line">        return getClass().getName() + &quot;@&quot; + Integer.toHexString(hashCode());</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>相信看到此处应该可以看出来为什么输出会是[I@1b6d3586了，I代表的类的名称。</p>
+<p>那么对于char数组类型的调用呢，次数室友玄机的：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public void println(char x[]) &#123;</span><br><span class="line">        synchronized (this) &#123;</span><br><span class="line">            print(x);</span><br><span class="line">            newLine();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>此处调用的是println(char x[])这个函数，那么这个char x[]是个什么鬼呢？<br>其实就是java中的数组初始化，相当于char[] x。</p>
+<p>然后看看print(x)函数：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public void print(char s[]) &#123;</span><br><span class="line">        write(s);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>最后是write()函数:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">private void write(char buf[]) &#123;</span><br><span class="line">        try &#123;</span><br><span class="line">            synchronized (this) &#123;</span><br><span class="line">                ensureOpen();</span><br><span class="line">                textOut.write(buf);</span><br><span class="line">                textOut.flushBuffer();</span><br><span class="line">                charOut.flushBuffer();</span><br><span class="line">                if (autoFlush) &#123;</span><br><span class="line">                    for (int i = 0; i &lt; buf.length; i++)</span><br><span class="line">                        if (buf[i] == &apos;\n&apos;)</span><br><span class="line">                            out.flush();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        catch (InterruptedIOException x) &#123;</span><br><span class="line">            Thread.currentThread().interrupt();</span><br><span class="line">        &#125;</span><br><span class="line">        catch (IOException x) &#123;</span><br><span class="line">            trouble = true;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>到了这大家知道为什么会有区别了么，因为其他类型的数组都被认为是Object类型了，所以会输出内存地址。而char[]调用的方法是输出char这个数组中的每一个值，所以不是内存地址了。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/02/07/Retrofit使用详解（六）/" rel="next" title="Retrofit使用详解（六）">
+                <i class="fa fa-chevron-left"></i> Retrofit使用详解（六）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/03/25/SocketIO官方文档-总览/" rel="prev" title="SocketIO官方文档-总览">
+                SocketIO官方文档-总览 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg"
+               alt="rangaofei" />
+          <p class="site-author-name" itemprop="name">rangaofei</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#基本数据类型和对象引用"><span class="nav-number">1.</span> <span class="nav-text">基本数据类型和对象引用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#整形数据类型取值范围"><span class="nav-number">2.</span> <span class="nav-text">整形数据类型取值范围</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#基本类型的数组输出值"><span class="nav-number">3.</span> <span class="nav-text">基本类型的数组输出值</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">rangaofei</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

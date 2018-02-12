@@ -1,0 +1,732 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="上一节讲了asynctask的官方文档，这一节深入讲解如何深入使用AsyncTask。 asynctask本质上也是线程启动，只是它封装了一些内容，可以运行在后台，同时可以和UI线程交互。asynctask最少要启动2个线程，最多四个。 AsyncTask的状态AsyncTask的状态共有三种，PENDING，RUNNING和FINISHED。这三种状态在AsyncTask的生命周期中之出现一次。">
+<meta name="keywords" content="Android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AsyncTask深入讲解">
+<meta property="og:url" content="https://rangaofei.github.io/2017/04/07/AsyncTask深入讲解/index.html">
+<meta property="og:site_name" content="SAKA&#39;S BLOG">
+<meta property="og:description" content="上一节讲了asynctask的官方文档，这一节深入讲解如何深入使用AsyncTask。 asynctask本质上也是线程启动，只是它封装了一些内容，可以运行在后台，同时可以和UI线程交互。asynctask最少要启动2个线程，最多四个。 AsyncTask的状态AsyncTask的状态共有三种，PENDING，RUNNING和FINISHED。这三种状态在AsyncTask的生命周期中之出现一次。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-04-07T05:25:32.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AsyncTask深入讲解">
+<meta name="twitter:description" content="上一节讲了asynctask的官方文档，这一节深入讲解如何深入使用AsyncTask。 asynctask本质上也是线程启动，只是它封装了一些内容，可以运行在后台，同时可以和UI线程交互。asynctask最少要启动2个线程，最多四个。 AsyncTask的状态AsyncTask的状态共有三种，PENDING，RUNNING和FINISHED。这三种状态在AsyncTask的生命周期中之出现一次。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://rangaofei.github.io/2017/04/07/AsyncTask深入讲解/"/>
+
+
+
+
+
+  <title> AsyncTask深入讲解 | SAKA'S BLOG </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s4.cnzz.com/z_stat.php?id=1261177704&web_id=1261177704" language="JavaScript"></script>
+  <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1261177704'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1261177704%26online%3D1%26show%3Dline' type='text/javascript'%3E%3C/script%3E"));</script>
+  </div>
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">SAKA'S BLOG</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://rangaofei.github.io/2017/04/07/AsyncTask深入讲解/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="rangaofei">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="SAKA'S BLOG">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="SAKA'S BLOG" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                AsyncTask深入讲解
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-04-07T13:25:08+08:00">
+                2017-04-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>上一节讲了asynctask的官方文档，这一节深入讲解如何深入使用AsyncTask。</p>
+<p>asynctask本质上也是线程启动，只是它封装了一些内容，可以运行在后台，同时可以和UI线程交互。<br>asynctask最少要启动2个线程，最多四个。</p>
+<h2 id="AsyncTask的状态"><a href="#AsyncTask的状态" class="headerlink" title="AsyncTask的状态"></a>AsyncTask的状态</h2><p>AsyncTask的状态共有三种，PENDING，RUNNING和FINISHED。这三种状态在AsyncTask的生命周期中之出现一次。</p>
+<ol>
+<li>PENDING，表示异步任务还没有开始运行。</li>
+<li>RUNNING，表示异步任务正在运行。</li>
+<li>FINISHED，表示onPostExecute已经执行完成。</li>
+</ol>
+<p>安卓官方文档推荐我们编写一个子类继承自AsyncTask并且必须实现doinbackground方法。<br>我们编写一个简单的程序测试这三个状态的具体情况。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">private ProgressTask task = new ProgressTask();//自定义的一个内部类，继承自AsyncTask</span><br><span class="line">protected void onCreate(Bundle savedInstanceState) &#123;</span><br><span class="line">        super.onCreate(savedInstanceState);</span><br><span class="line">        setContentView(R.layout.activity_splash);</span><br><span class="line">        ...</span><br><span class="line">        Log.d(&quot;task&quot;, &quot;before execute task&apos;s status is &quot; + task.getStatus());</span><br><span class="line">        task.execute();</span><br><span class="line">        Log.d(&quot;task&quot;, &quot;after execute task&apos;s status is &quot; + task.getStatus());</span><br></pre></td></tr></table></figure></p>
+<p>在AsyncTask中我们实现以下几个方法<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">protected void onPreExecute() &#123;</span><br><span class="line">    super.onPreExecute();</span><br><span class="line">    Log.d(&quot;task&quot;, &quot;onPreExecute task&apos;s status is &quot; + task.getStatus());</span><br><span class="line">&#125;</span><br><span class="line">@Override</span><br><span class="line">protected void onPostExecute(Void aVoid) &#123;</span><br><span class="line">    super.onPostExecute(aVoid);</span><br><span class="line">    Log.d(&quot;task&quot;, &quot;onPostExecute task&apos;s status is &quot; + task.getStatus());</span><br><span class="line">    handler.sendEmptyMessage(1);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在handler中我们接收一个信息，用来打印此时task的状态<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">switch (msg.what) &#123;</span><br><span class="line">    case 1:</span><br><span class="line">        Log.d(&quot;task&quot;, &quot;finally task&apos;s status &quot; + task.getStatus());</span><br><span class="line">        break;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>这样，我们的程序运行起来看一下日志<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">04-02 18:10:43.747 10433-10433/com.example.saka.materialdesignapplication D/task: before execute task&apos;s status is PENDING</span><br><span class="line">04-02 18:10:43.748 10433-10433/com.example.saka.materialdesignapplication D/task: onPreExecute task&apos;s status is RUNNING</span><br><span class="line">04-02 18:10:43.748 10433-10433/com.example.saka.materialdesignapplication D/task: after execute task&apos;s status is RUNNING</span><br><span class="line">04-02 18:11:17.724 10433-10433/com.example.saka.materialdesignapplication D/task: onPostExecute task&apos;s status is RUNNING</span><br><span class="line">04-02 18:11:17.724 10433-10433/com.example.saka.materialdesignapplication D/task: finally task&apos;s status FINISHED</span><br></pre></td></tr></table></figure></p>
+<p>可以看到，在整个任务周期中，task在execute之前是一直处于pennding状态，<br>在execute之后onPostExecute中的所有方法执行完成之前一直处于RUNNING状态，<br>跳出onPostExecute方法之后所有的task任务相当于已经完成，<br>这时候task的状态时FINISHED。<br>通过观察源码我们可以看一下：<br>当你新建一个AsyncTask对象以后，系统就会自动生成一个变量：<br><code>private volatile Status mStatus = Status.PENDING;</code><br>这也就是说明当你new一个AsyncTask后，它的状态就被设置为了PENDING状态。<br>直到execute或者executeOnExecutor方法执行之后。<br>调用task.execute()之后，系统会调用executeOnExecutor()方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@MainThread</span><br><span class="line">public final AsyncTask&lt;Params, Progress, Result&gt; execute(Params... params) &#123;</span><br><span class="line">    return executeOnExecutor(sDefaultExecutor, params);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>传入的参数表明会启动默认的线程执行器，而现在系统默认的串行执行，也就是分先后次序执行。<br>executeOnExecutor（）方法返回的同样是一个AsyncTask实例：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">@MainThread</span><br><span class="line">public final AsyncTask&lt;Params, Progress, Result&gt; executeOnExecutor(Executor exec,</span><br><span class="line">        Params... params) &#123;</span><br><span class="line">    if (mStatus != Status.PENDING) &#123;</span><br><span class="line">        switch (mStatus) &#123;</span><br><span class="line">            case RUNNING:</span><br><span class="line">                throw new IllegalStateException(&quot;Cannot execute task:&quot;</span><br><span class="line">                        + &quot; the task is already running.&quot;);</span><br><span class="line">            case FINISHED:</span><br><span class="line">                throw new IllegalStateException(&quot;Cannot execute task:&quot;</span><br><span class="line">                        + &quot; the task has already been executed &quot;</span><br><span class="line">                        + &quot;(a task can be executed only once)&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    mStatus = Status.RUNNING;</span><br><span class="line"></span><br><span class="line">    onPreExecute();</span><br><span class="line"></span><br><span class="line">    mWorker.mParams = params;</span><br><span class="line">    exec.execute(mFuture);</span><br><span class="line"></span><br><span class="line">    return this;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在这个方法中，首先判断异步任务的状态，<br>假如这个任务没有在等待状态，而是正在运行或者已经结束，会抛出异常。<br>然后会将异步任务的状态设置为RUNNING，调用onPreExecute方法，<br>并将参数传递给AsyncTask中的参数接收器，<br>然后才开始执行exec.execute(mFuture)方法。所以在onPreExecute之前，状态已经设置为了RUNNING。<br>再来研究以下何时会停止。<br>调用exec.execute(mFuture)中传入的参数是一个接口类型的Runable：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">mWorker = new WorkerRunnable&lt;Params, Result&gt;() &#123;</span><br><span class="line">    public Result call() throws Exception &#123;</span><br><span class="line">        mTaskInvoked.set(true);</span><br><span class="line">        Result result = null;</span><br><span class="line">        try &#123;</span><br><span class="line">            Process.setThreadPriority(Process.THREAD_PRIORITY_BACKGROUND);</span><br><span class="line">            //noinspection unchecked</span><br><span class="line">            result = doInBackground(mParams);</span><br><span class="line">            Binder.flushPendingCommands();</span><br><span class="line">        &#125; catch (Throwable tr) &#123;</span><br><span class="line">            mCancelled.set(true);</span><br><span class="line">            throw tr;</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            postResult(result);</span><br><span class="line">        &#125;</span><br><span class="line">        return result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p><code>mFuture = new FutureTask&lt;Result&gt;(mWorker)</code><br>上面两步都是在new一个AsyncTask实例的时候执行的，try块中时执行doInbackGround方法，<br>在finally中执行的是结束动作。在postResult（）方法中，定义了一个message，<br>调用该方法的时候会使用AsyncTask中的handler发送消息，handler接收到消息后执行如下代码：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">case MESSAGE_POST_RESULT:</span><br><span class="line">           // There is only one result</span><br><span class="line">           result.mTask.finish(result.mData[0]);</span><br><span class="line">           break;</span><br><span class="line">...</span><br><span class="line">private void finish(Result result) &#123;</span><br><span class="line">        if (isCancelled()) &#123;</span><br><span class="line">            onCancelled(result);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            onPostExecute(result);</span><br><span class="line">        &#125;</span><br><span class="line">        mStatus = Status.FINISHED;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在finish方法中设置了status为FINISHED，<br>注意此处时在执行完onCancelled或者onPostExecute之后才改变状态，<br>这也就解释了为什么在onPostExecute方法中获取的状态仍然是RUNNING。</p>
+<blockquote>
+<p>Note:根据文档中的介绍，并没有讲当task被cancel后是否会执行FINISHED，实际是执行的。</p>
+</blockquote>
+<h2 id="取消任务"><a href="#取消任务" class="headerlink" title="取消任务"></a>取消任务</h2><p>关于cancel方法官方的介绍比较简单，参看上篇文章。<br>首先看一下官方文档对这个API的解释：<br><code>boolean cancel (boolean mayInterruptIfRunning)</code></p>
+<blockquote>
+<p>尝试取消执行此任务。 如果任务已经完成，已经被取消或由于某种其他原因而无法取消，则此尝试将失败。<br> 如果成功，并且在取消被调用时此任务尚未开始，则此任务不应该运行。<br> 如果任务已经启动，那么mayInterruptIfRunning参数可以确定执行该任务的线程是否应该被中断，以试图停止该任务。<br> 调用此方法将导致在doInBackground（Object []）返回后在UI线程上调用onCancelled（Object）。<br> 调用此方法可以保证onPostExecute（Object）从不被调用。<br> 调用此方法后，应该从doInBackground（Object []）定期检查isCancelled（）返回的值，以尽早完成任务。</p>
+</blockquote>
+<p>这是什么意思呢？<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public final boolean cancel(boolean mayInterruptIfRunning) &#123;</span><br><span class="line">        mCancelled.set(true);</span><br><span class="line">        return mFuture.cancel(mayInterruptIfRunning);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
+<p>调用asynctask的cancel方法其实就是调用futuretask的cancel方法，这个是java线程中的方法，<br>假如传入的参数为true的时候（并不推荐这种方式），会立即停止当前任务;<br>当传入的参数为false的时候，会等到本次任务执行完成后，<br>无论在哪种情况下，我们都应该清楚的认识到，<br>此时获取当前任务的isCanceled都会返回为true。</p>
+<p>调用cancel方法影响到的会有doInBackground、onPostExecute和onCancelled方法，<br>当传入参数为ture的时候，doInBackGround方法会立即中断，进入onCancelled方法，而不执行onPostExecute方法;<br>当传入的参数为false的时候，doInBackground方法会执行完毕后进入onCancelled方法，也不执行onPostExecute方法;<br>始终不影响onPreExecute方法，它始终会执行。<br>但是偶尔会出现doInbackground方法不执行而直接进入onCancelled方法。</p>
+<ol>
+<li>task启动直接cancel：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">private void setCancelNow() &#123;</span><br><span class="line">        task.cancel(false);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>此时日志是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">04-02 21:44:24.692 8082-8082/com.example.saka.materialdesignapplication D/task: before execute task&apos;s status is PENDING</span><br><span class="line">04-02 21:44:24.692 8082-8082/com.example.saka.materialdesignapplication D/task: onPreExecute task&apos;s status is RUNNING</span><br><span class="line">04-02 21:44:24.692 8082-8082/com.example.saka.materialdesignapplication D/task: after execute task&apos;s status is RUNNING</span><br><span class="line">04-02 21:44:24.747 8082-8082/com.example.saka.materialdesignapplication D/task: onCancelled task&apos;s status:RUNNING</span><br></pre></td></tr></table></figure></p>
+<p>可见方法执行了onPreExecute和onCancelled方法，然而并没有执行doInBackground方法。</p>
+<ol>
+<li>task启动后过一段时间在cancel：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">private void setCancelDelay() &#123;</span><br><span class="line">    try &#123;</span><br><span class="line">        Thread.sleep(1000);</span><br><span class="line">        task.cancel(false);</span><br><span class="line">        Log.d(&quot;task&quot;, &quot;task after cancel&quot;);</span><br><span class="line">    &#125; catch (InterruptedException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>此时的输出日志是：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">04-02 21:51:22.781 14525-14525/? D/task: before execute task&apos;s status is PENDING</span><br><span class="line">04-02 21:51:22.781 14525-14525/? D/task: onPreExecute task&apos;s status is RUNNING</span><br><span class="line">04-02 21:51:22.781 14525-14525/? D/task: after execute task&apos;s status is RUNNING</span><br><span class="line">04-02 21:51:22.782 14525-14540/? D/task: doInBackground</span><br><span class="line">04-02 21:51:23.113 14525-14540/? D/task: the progress value 0</span><br><span class="line">04-02 21:51:23.452 14525-14540/? D/task: the progress value 1</span><br><span class="line">04-02 21:51:23.782 14525-14525/com.example.saka.materialdesignapplication D/task: task after cancel</span><br><span class="line">...</span><br><span class="line">04-02 21:51:56.552 14525-14525/com.example.saka.materialdesignapplication D/task: onCancelled task&apos;s status:RUNNING</span><br><span class="line">04-02 21:51:56.552 14525-14525/com.example.saka.materialdesignapplication D/task: finally task&apos;s status FINISHED</span><br></pre></td></tr></table></figure></p>
+<p>可以看到此时执行了doInbackground方法，最后进入了onCancelled方法。</p>
+<p>因为preExecute方法是在异步任务启动后而真正的线程启动前调用的，<br>而cancel方法调用的时futuretask的cancel方法，<br>也就是真正启动线程之后才执行cancel的，<br>所以preExecute一定会执行。<br>doInBackground是在WorkerRunnable的call回调方法中执行的，<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">mWorker = new WorkerRunnable&lt;Params, Result&gt;() &#123;</span><br><span class="line">    public Result call() throws Exception &#123;</span><br><span class="line">        mTaskInvoked.set(true);</span><br><span class="line">        ...</span><br><span class="line">        try &#123;</span><br><span class="line">            ...</span><br><span class="line">            result = doInBackground(mParams);</span><br><span class="line">            Binder.flushPendingCommands();</span><br><span class="line">        &#125; catch (Throwable tr) &#123;</span><br><span class="line">            mCancelled.set(true);</span><br><span class="line">            throw tr;</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            postResult(result);</span><br><span class="line">        &#125;</span><br><span class="line">        return result;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></p>
+<p>假如WorkerRunnable不执行，也就不会调用onCancelled方法。<br>futuretask有一个回调方法是必须实现的，done（）方法，当任务结束后会调用此方法。<br>futuretask在done的回调方法中检测mTaskInvoked是否被调用，假如未被调用会执行<br><code>postResultIfNotInvoked(get())</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">private void postResultIfNotInvoked(Result result) &#123;</span><br><span class="line">    final boolean wasTaskInvoked = mTaskInvoked.get();</span><br><span class="line">    if (!wasTaskInvoked) &#123;</span><br><span class="line">        postResult(result);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>此时同样会调用postResult进而调用onCancelled方法。</p>
+<p>所以无论何时都会调用onCancelled方法。</p>
+<h2 id="任务的串行和并行"><a href="#任务的串行和并行" class="headerlink" title="任务的串行和并行"></a>任务的串行和并行</h2><p>首先看看execute方法：<br>AsyncTask<params, progress,="" result=""> execute (Params… params)</params,></p>
+<p>使用指定的参数执行任务。 该任务返回自身（this），以便调用者可以保留对它的引用。<br>注意：此函数根据平台版本为队列中的任务排定一个后台线程或线程池。<br>第一次被引入时，AsyncTasks在单个后台线程上串行执行。<br>从DONUT开始，被更改为允许多个任务并行操作的线程池。<br>HONEYCOMB开始，任务改为在单线程执行，以避免并行执行引起的常见应用程序错误。<br>如果需要并行执行，可以使用THREAD_POOL_EXECUTOR的此方法的executeOnExecutor（Executor，Params …）方法。</p>
+<p>这个是什么意思呢？</p>
+<p>现在的安卓系统，基本都是大于3.0的，也就是默认情况下会按顺序执行每一个asynctask，比如，我们new出两个异步任务：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">task = new ProgressTask();</span><br><span class="line">Log.d(&quot;task&quot;, &quot;before execute task&apos;s status is &quot; + task.getStatus());</span><br><span class="line">task.execute(10);</span><br><span class="line">ProgressTask task1=new ProgressTask();</span><br><span class="line">task1.execute(90);</span><br></pre></td></tr></table></figure></p>
+<p>然后打印日志输出的是task先执行完毕才执行task1，这就证明了只能运行一个异步任务，<br>而其他异步任务会在队列中等待第一个执行完毕才执行。</p>
+<p>根据官方文档我们可以使用executeOnExecutor来并行执行两个任务，看一下API文档：<br>AsyncTask<params, progress,="" result=""> executeOnExecutor (Executor exec,Params… params)<br>使用指定的参数执行任务。该任务返回自身（this），以便调用者可以保留对它的引用。<br>此方法通常与THREAD_POOL_EXECUTOR一起使用，<br>以允许多个任务在由AsyncTask管理的线程池上并行运行，但是也可以使用自己的Executor进行自定义行为。<br>警告：允许多个任务从线程池并行运行通常不是想要的，因为它们的操作顺序没有定义。<br>例如，如果这些任务用于修改任何共同的状态（例如由于按钮点击而编写文件），<br>则不能保证修改的顺序。没有仔细的工作，在很少的情况下，较新版本的数据可能会被较旧的数据覆盖，<br>从而导致数据丢失和稳定性问题。这些更改最好是连续执行;<br>为了保证这样的工作是序列化的，无论平台版本如何，都可以使用SERIAL_EXECUTOR这个功能。<br>必须在UI线程上调用此方法。</params,></p>
+<p>简单验证一下<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">task = new ProgressTask();</span><br><span class="line">Log.d(&quot;task&quot;, &quot;before execute task&apos;s status is &quot; + task.getStatus());</span><br><span class="line">task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,10);</span><br><span class="line">ProgressTask task1=new ProgressTask();</span><br><span class="line">task1.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,90);</span><br></pre></td></tr></table></figure></p>
+<p>这样执行后task和task2会并行执行，交替输出值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">static &#123;</span><br><span class="line">    ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(</span><br><span class="line">            CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE_SECONDS, TimeUnit.SECONDS,</span><br><span class="line">            sPoolWorkQueue, sThreadFactory);</span><br><span class="line">    threadPoolExecutor.allowCoreThreadTimeOut(true);</span><br><span class="line">    THREAD_POOL_EXECUTOR = threadPoolExecutor;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>THREAD_POOL_EXECUTOR维护的是一个LinkedBlockingQueue<runnable>线程队列。<br><code>private static final BlockingQueue&lt;Runnable&gt; sPoolWorkQueue =
+             new LinkedBlockingQueue&lt;Runnable&gt;(128);</code><br>这个阻塞队列的容量是128,则线程数超过128时要等旧的线程移除后才能加入队列，128是个大数目，我们就不验证了。<br>则此阻塞队列可以同时并发128个异步任务。</runnable></p>
+<p>而安卓系统默认的executor是SerialExecutor，就是个串行执行器。看一下实现方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">private static class SerialExecutor implements Executor &#123;</span><br><span class="line">    final ArrayDeque&lt;Runnable&gt; mTasks = new ArrayDeque&lt;Runnable&gt;();</span><br><span class="line">    Runnable mActive;</span><br><span class="line"></span><br><span class="line">    public synchronized void execute(final Runnable r) &#123;</span><br><span class="line">        mTasks.offer(new Runnable() &#123;</span><br><span class="line">            public void run() &#123;</span><br><span class="line">                try &#123;</span><br><span class="line">                    r.run();</span><br><span class="line">                &#125; finally &#123;</span><br><span class="line">                    scheduleNext();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line">        if (mActive == null) &#123;</span><br><span class="line">            scheduleNext();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    protected synchronized void scheduleNext() &#123;</span><br><span class="line">        if ((mActive = mTasks.poll()) != null) &#123;</span><br><span class="line">            THREAD_POOL_EXECUTOR.execute(mActive);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>SerialExecutor维护的是一个双向队列，当数组队列中有值不为空的时候，取出这个任务然后在线程池中执行。</p>
+<h2 id="发布进度"><a href="#发布进度" class="headerlink" title="发布进度"></a>发布进度</h2><p>关于发布进度这个比较简单，早doInBackgroud方法中执行publishProgress (Progress… values)方法，<br>此方法会直接调用运行在UI线程中的onProgressUpdate(Progress…)方法，这时候我们就可以更新进度了。</p>
+<p>以上就是关于asynctask的一些我的理解。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/04/07/ViewPager之自定义标签的使用/" rel="next" title="ViewPager之自定义标签的使用">
+                <i class="fa fa-chevron-left"></i> ViewPager之自定义标签的使用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/04/07/EditText的InputFilter/" rel="prev" title="EditText的InputFilter">
+                EditText的InputFilter <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg"
+               alt="rangaofei" />
+          <p class="site-author-name" itemprop="name">rangaofei</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#AsyncTask的状态"><span class="nav-number">1.</span> <span class="nav-text">AsyncTask的状态</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#取消任务"><span class="nav-number">2.</span> <span class="nav-text">取消任务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#任务的串行和并行"><span class="nav-number">3.</span> <span class="nav-text">任务的串行和并行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#发布进度"><span class="nav-number">4.</span> <span class="nav-text">发布进度</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">rangaofei</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

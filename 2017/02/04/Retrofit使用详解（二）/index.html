@@ -1,0 +1,821 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="同步请求和异步请求Retrofit支持同步请求和异步请求。 同步请求使用的同步请求通过定义返回类型来声明。 下面的示例期望执行getTasks方法时返回Task列表。 1234public interface TaskService &amp;#123;      @GET(&amp;quot;/tasks&amp;quot;)    Call&amp;lt;List&amp;lt;Task&amp;gt;&amp;gt; getTasks();&amp;#1">
+<meta name="keywords" content="Android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Retrofit使用详解（二）">
+<meta property="og:url" content="https://rangaofei.github.io/2017/02/04/Retrofit使用详解（二）/index.html">
+<meta property="og:site_name" content="SAKA&#39;S BLOG">
+<meta property="og:description" content="同步请求和异步请求Retrofit支持同步请求和异步请求。 同步请求使用的同步请求通过定义返回类型来声明。 下面的示例期望执行getTasks方法时返回Task列表。 1234public interface TaskService &amp;#123;      @GET(&amp;quot;/tasks&amp;quot;)    Call&amp;lt;List&amp;lt;Task&amp;gt;&amp;gt; getTasks();&amp;#1">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-02-04T07:06:58.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Retrofit使用详解（二）">
+<meta name="twitter:description" content="同步请求和异步请求Retrofit支持同步请求和异步请求。 同步请求使用的同步请求通过定义返回类型来声明。 下面的示例期望执行getTasks方法时返回Task列表。 1234public interface TaskService &amp;#123;      @GET(&amp;quot;/tasks&amp;quot;)    Call&amp;lt;List&amp;lt;Task&amp;gt;&amp;gt; getTasks();&amp;#1">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://rangaofei.github.io/2017/02/04/Retrofit使用详解（二）/"/>
+
+
+
+
+
+  <title> Retrofit使用详解（二） | SAKA'S BLOG </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s4.cnzz.com/z_stat.php?id=1261177704&web_id=1261177704" language="JavaScript"></script>
+  <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1261177704'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1261177704%26online%3D1%26show%3Dline' type='text/javascript'%3E%3C/script%3E"));</script>
+  </div>
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">SAKA'S BLOG</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://rangaofei.github.io/2017/02/04/Retrofit使用详解（二）/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="rangaofei">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="SAKA'S BLOG">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="SAKA'S BLOG" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Retrofit使用详解（二）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-02-04T15:06:18+08:00">
+                2017-02-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">              
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/Retrofit/" itemprop="url" rel="index">
+                    <span itemprop="name">Retrofit</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="同步请求和异步请求"><a href="#同步请求和异步请求" class="headerlink" title="同步请求和异步请求"></a>同步请求和异步请求</h1><p>Retrofit支持同步请求和异步请求。</p>
+<h2 id="同步请求"><a href="#同步请求" class="headerlink" title="同步请求"></a>同步请求</h2><p>使用的同步请求通过定义返回类型来声明。 下面的示例期望执行getTasks方法时返回Task列表。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public interface TaskService &#123;  </span><br><span class="line">    @GET(&quot;/tasks&quot;)</span><br><span class="line">    Call&lt;List&lt;Task&gt;&gt; getTasks();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在Retrofit 2中，每个请求都被包装到一个Call对象中。 实际的同步或异步请求将在稍后创建的调用对象上的所需方法执行。 但是，同步和异步请求的接口类在Retrofit 2中是相同的。</p>
+<p>同步方法在主线程上执行。 这意味阻塞UI，并且在此期间不可能进行交互。</p>
+<blockquote>
+<p>Note: 警告：同步请求会触发Android 4.0或更高版本上的应用崩溃。 你会遇到<code>NetworkOnMainThreadException</code>错误。</p>
+</blockquote>
+<p>同步方法能够直接返回值，因为操作在网络请求期间阻止其他任何操作。</p>
+<p>对于非阻塞UI，你必须在一个单独的线程中的请求执行。 这意味着，你仍然可以在等待响应时与应用程序本身进行交互。</p>
+<h2 id="Get-Results-from-Synchronous-Requests"><a href="#Get-Results-from-Synchronous-Requests" class="headerlink" title="Get Results from Synchronous Requests"></a>Get Results from Synchronous Requests</h2><p>以下代码片段说明了使用Retrofit执行的同步请求：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">TaskService taskService = ServiceGenerator.createService(TaskService.class);  </span><br><span class="line">Call&lt;List&lt;Task&gt;&gt; call = taskService.getTasks();  </span><br><span class="line">List&lt;Task&gt;&gt; tasks = call.execute().body();</span><br></pre></td></tr></table></figure></p>
+<p>在Call对象上使用.execute()方法,在Retrofit2中执行同步请求。反序列化响应主体可通过响应对象上的.body()方法获得。</p>
+<h2 id="Asynchronous-Requests"><a href="#Asynchronous-Requests" class="headerlink" title="Asynchronous Requests"></a>Asynchronous Requests</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public interface TaskService &#123;  </span><br><span class="line">    @GET(&quot;/tasks&quot;)</span><br><span class="line">    Call&lt;List&lt;Task&gt;&gt; getTasks();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Retrofit在单独的线程中执行。Callback类是通用的，并映射您定义的返回类型。 我们的示例返回一个任务列表，Callback在内部进行映射。</p>
+<p>如上所述：Retrofit 2中的接口定义对于同步和异步请求是相同的。 所需的返回类型被封装到一个Call对象中，实际的请求执行定义它的类型（同步/异步）。</p>
+<h2 id="Get-Results-from-Asynchronous-Requests"><a href="#Get-Results-from-Asynchronous-Requests" class="headerlink" title="Get Results from Asynchronous Requests"></a>Get Results from Asynchronous Requests</h2><p>使用异步请求必须实现两个回调方法：成功和失败。 当从服务类调用异步getTasks()方法时，必须实现回调，并定义一旦请求完成应该做什么:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">TaskService taskService = ServiceGenerator.createService(TaskService.class);  </span><br><span class="line">Call&lt;List&lt;Task&gt;&gt; call = taskService.getTasks();  </span><br><span class="line">call.enqueue(new Callback&lt;List&lt;Task&gt;&gt;() &#123;  </span><br><span class="line">    @Override</span><br><span class="line">    public void onResponse(Call&lt;List&lt;Task&gt;&gt; call, Response&lt;List&lt;Task&gt;&gt; response) &#123;</span><br><span class="line">        if (response.isSuccessful()) &#123;</span><br><span class="line">            // tasks available</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            // error response, no access to resource?</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void onFailure(Call&lt;List&lt;Task&gt;&gt; call, Throwable t) &#123;</span><br><span class="line">        // something went completely south (like no internet connection)</span><br><span class="line">        Log.d(&quot;Error&quot;, t.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="Get-Raw-HTTP-Response"><a href="#Get-Raw-HTTP-Response" class="headerlink" title="Get Raw HTTP Response"></a>Get Raw HTTP Response</h2><p>如果你需要原始的HTTP响应对象，只需要定义返回类型为Response.<br>你可以接收Retrofit 2中原始响应主体与定义请求类型（sync / async）的方式相同。 不需要将Response类定义为返回类型，但可以在onResponse（）回调方法中捕获它。 让我们看看下面的代码片段来说明如何获得原始响应：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">call.enqueue(new Callback&lt;List&lt;Task&gt;&gt;() &#123;  </span><br><span class="line">    @Override</span><br><span class="line">    public void onResponse(Call&lt;List&lt;Task&gt;&gt; call, Response&lt;List&lt;Task&gt;&gt; response) &#123;</span><br><span class="line">        // get raw response</span><br><span class="line">        Response raw = response.raw();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void onFailure(Call&lt;List&lt;Task&gt;&gt; call, Throwable t) &#123;&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="在请求体中发送对象"><a href="#在请求体中发送对象" class="headerlink" title="在请求体中发送对象"></a>在请求体中发送对象</h1><h2 id="Send-Objects-as-Request-Body"><a href="#Send-Objects-as-Request-Body" class="headerlink" title="Send Objects as Request Body"></a>Send Objects as Request Body</h2><p>Retrofit提供了在请求体内发送对象的能力。 通过使用@Body注释，可以指定对象用作HTTP请求主体。 </p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public interface TaskService &#123;  </span><br><span class="line">    @POST(&quot;/tasks&quot;)</span><br><span class="line">    Call&lt;Task&gt; createTask(@Body Task task);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>定义的RestAdapter的转换器（如Gson）会将对象映射到JSON，它将最终作为请求的主体发送到服务器。</p>
+<h2 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public class Task &#123;  </span><br><span class="line">    private long id;</span><br><span class="line">    private String text;</span><br><span class="line"></span><br><span class="line">    public Task(long id, String text) &#123;</span><br><span class="line">        this.id = id;</span><br><span class="line">        this.text = text;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>创建一个新的Task对象。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Task task = new Task(1, &quot;my task title&quot;);  </span><br><span class="line">Call&lt;Task&gt; call = taskService.createTask(task);  </span><br><span class="line">call.enqueue(new Callback&lt;Task&gt;() &#123;&#125;);</span><br></pre></td></tr></table></figure>
+<p>调用方法createTask会将Task转换为JSON。Task的JSON将如下所示：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;id&quot;: 1,</span><br><span class="line">    &quot;text&quot;: &quot;my task title&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h1 id="添加自定义头信息"><a href="#添加自定义头信息" class="headerlink" title="添加自定义头信息"></a>添加自定义头信息</h1><p>Retrofit提供了两个定义HTTP请求标头字段的选项：静态和动态。 静态请求头不能更改。请求头的的键和值是固定的，并与应用程序同时启动。</p>
+<p>相反，动态请求头必须每次都设置。</p>
+<h2 id="静态请求头"><a href="#静态请求头" class="headerlink" title="静态请求头"></a>静态请求头</h2><p>将API方法的头和相应的值定义为注解。 对于使用此方法的每个请求，头信息会自动通过Retrofit添加。 注解必须是键值对，可以有一个或者多个：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public interface UserService &#123;  </span><br><span class="line">    @Headers(&quot;Cache-Control: max-age=640000&quot;)</span><br><span class="line">    @GET(&quot;/tasks&quot;)</span><br><span class="line">    Call&lt;List&lt;Task&gt;&gt; getTasks();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上面的示例显示了静态头的键值定义。 此外，您可以将多个键值字符串作为封装在大括号{}中的列表传递到@Headers注释。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public interface UserService &#123;  </span><br><span class="line">    @Headers(&#123;</span><br><span class="line">        &quot;Accept: application/vnd.yourapi.v1.full+json&quot;,</span><br><span class="line">        &quot;User-Agent: Your-App-Name&quot;</span><br><span class="line">    &#125;)</span><br><span class="line">    @GET(&quot;/tasks/&#123;task_id&#125;&quot;)</span><br><span class="line">    Call&lt;Task&gt; getTask(@Path(&quot;task_id&quot;) long taskId);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>此外，您可以通过Retrofit的RequestInterceptor的拦截方法（在Retrofit 2中自定义实现Interceptor接口）来定义静态头。<br>在Retrofit中必须在OkHttp中添加拦截器。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">OkHttpClient.Builder httpClient = new OkHttpClient.Builder();  </span><br><span class="line">httpClient.addInterceptor(new Interceptor() &#123;  </span><br><span class="line">    @Override</span><br><span class="line">    public Response intercept(Interceptor.Chain chain) throws IOException &#123;</span><br><span class="line">        Request original = chain.request();</span><br><span class="line"></span><br><span class="line">        Request request = original.newBuilder()</span><br><span class="line">            .header(&quot;User-Agent&quot;, &quot;Your-App-Name&quot;)</span><br><span class="line">            .header(&quot;Accept&quot;, &quot;application/vnd.yourapi.v1.full+json&quot;)</span><br><span class="line">            .method(original.method(), original.body())</span><br><span class="line">            .build();</span><br><span class="line"></span><br><span class="line">        return chain.proceed(request);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">OkHttpClient client = httpClient.build();  </span><br><span class="line">Retrofit retrofit = new Retrofit.Builder()  </span><br><span class="line">    .baseUrl(API_BASE_URL)</span><br><span class="line">    .addConverterFactory(GsonConverterFactory.create())</span><br><span class="line">    .client(client)</span><br><span class="line">    .build();</span><br></pre></td></tr></table></figure>
+<p>上面的示例将User-Agent和Accept头字段设置为相应的值。 这些值与使用RestAdapter（Retrofit 2中的Retrofit）和集成的RequestInterceptor（Retrofit 2中的Interceptor）执行的请求一起传递。</p>
+<h2 id="Dynamic-Header"><a href="#Dynamic-Header" class="headerlink" title="Dynamic Header"></a>Dynamic Header</h2><p>动态header是作为参数传进方法中的。 在执行请求之前，通过Retrofit映射提供的参数值：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public interface UserService &#123;  </span><br><span class="line">    @GET(&quot;/tasks&quot;)</span><br><span class="line">    Call&lt;List&lt;Task&gt;&gt; getTasks(@Header(&quot;Content-Range&quot;) String contentRange);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>动态请求头允许你为每个请求设置不同的值。</p>
+<p>###复写Retrofit2中的已经存在的请求头</p>
+<ul>
+<li>.header（key，value）：如果已经存在由键标识的现有头，则用值覆盖相应的值</li>
+<li>.addHeader（key，value）：添加相应的标题键和值，即使存在具有相同键的现有标题字段</li>
+</ul>
+<h1 id="在拦截器中管理请求头"><a href="#在拦截器中管理请求头" class="headerlink" title="在拦截器中管理请求头"></a>在拦截器中管理请求头</h1><h2 id="添加请求头"><a href="#添加请求头" class="headerlink" title="添加请求头"></a>添加请求头</h2><p>一个常见的例子是使用授权头字段。如果几乎每个请求都需要包含授权的头字段，则可以使用拦截器来添加这条信息。 这样，就不需要为每个端点声明添加@Header注释。</p>
+<p>类似于前边介绍的，可以直接添加头信息，也可以覆盖原有的头信息。</p>
+<h2 id="How-to-Override-Headers"><a href="#How-to-Override-Headers" class="headerlink" title="How to Override Headers"></a>How to Override Headers</h2><p>使用OkHttp拦截器允许你修改实际请求。请求构建器具有一个.header（key，val）方法，它会将定义的头添加到请求中。 如果已经存在具有相同键标识符的现有头，则此方法将覆盖先前定义的值。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">OkHttpClient.Builder httpClient = new OkHttpClient.Builder();  </span><br><span class="line">httpClient.addInterceptor(new Interceptor() &#123;  </span><br><span class="line">    @Override</span><br><span class="line">    public Response intercept(Interceptor.Chain chain) throws IOException &#123;</span><br><span class="line">        Request original = chain.request();</span><br><span class="line"></span><br><span class="line">        // Request customization: add request headers</span><br><span class="line">        Request.Builder requestBuilder = original.newBuilder()</span><br><span class="line">                .header(&quot;Authorization&quot;, &quot;auth-value&quot;); // &lt;-- this is the important line</span><br><span class="line"></span><br><span class="line">        Request request = requestBuilder.build();</span><br><span class="line">        return chain.proceed(request);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">OkHttpClient client = httpClient.build();</span><br></pre></td></tr></table></figure>
+<p>Retrofit和OkHttp允许你添加多个具有相同key的头信息，这将会覆盖原有的头信息。</p>
+<h2 id="How-to-Not-Override-Headers"><a href="#How-to-Not-Override-Headers" class="headerlink" title="How to Not Override Headers"></a>How to Not Override Headers</h2><p>有时会使用具有相同名称的多个头。实际上，我们只知道一个具体的实例：Cache-Control头。 HTTP RFC2616指定允许具有相同名称的多个标头值，如果它们可以表示为逗号分隔列表。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Cache-Control: no-cache  </span><br><span class="line">Cache-Control: no-store</span><br></pre></td></tr></table></figure></p>
+<p>等同于<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Cache-Control: no-cache, no-store</span><br></pre></td></tr></table></figure></p>
+<p>此时可以调用.addHeader()方才来添加头，而不是覆盖。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">OkHttpClient.Builder httpClient = new OkHttpClient.Builder();  </span><br><span class="line">httpClient.addInterceptor(new Interceptor() &#123;  </span><br><span class="line">    @Override</span><br><span class="line">    public Response intercept(Interceptor.Chain chain) throws IOException &#123;</span><br><span class="line">        Request original = chain.request();</span><br><span class="line"></span><br><span class="line">        // Request customization: add request headers</span><br><span class="line">        Request.Builder requestBuilder = original.newBuilder()</span><br><span class="line">                    .addHeader(&quot;Cache-Control&quot;, &quot;no-cache&quot;)</span><br><span class="line">                    .addHeader(&quot;Cache-Control&quot;, &quot;no-store&quot;);</span><br><span class="line"></span><br><span class="line">        Request request = requestBuilder.build();</span><br><span class="line">        return chain.proceed(request);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br><span class="line">OkHttpClient client = httpClient.build();</span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>.header（key，value）：如果已经存在由键标识的现有头，则用值覆盖相应的值</li>
+<li>.addHeader（key，value）：添加相应的标题键和值，即使存在具有相同键的现有标题字段</li>
+</ul>
+<h1 id="使用-HeaderMap添加请求头"><a href="#使用-HeaderMap添加请求头" class="headerlink" title="使用@HeaderMap添加请求头"></a>使用@HeaderMap添加请求头</h1><h2 id="Dynamic-Request-Headers"><a href="#Dynamic-Request-Headers" class="headerlink" title="Dynamic Request Headers"></a>Dynamic Request Headers</h2><p>前边文章中显示的方法都是静态的。 虽然你可以更改请求头的值，但无法动态选择实际发送的请求头。 ，@HeaderMap可以让你在运行时决定哪些头被添加到你的请求。</p>
+<p>与@Header注释类似，需要将@HeaderMap声明为接口参数之一。 参数的类型需要实现Java Map接口：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public interface TaskService &#123;  </span><br><span class="line">    @GET(&quot;/tasks&quot;)</span><br><span class="line">    Call&lt;List&lt;Task&gt;&gt; getTasks(</span><br><span class="line">        @HeaderMap Map&lt;String, String&gt; headers</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>使用我们上面声明的接口非常简单。 您可以创建一个Map实例，并根据您的需要使用值填充它。 Retrofit将@HeaderMap的每个非空元素添加为请求标头。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">TaskService taskService = ServiceGenerator.createService(TaskService.class);</span><br><span class="line"></span><br><span class="line">Map&lt;String, String&gt; map = new HashMap&lt;&gt;();  </span><br><span class="line">map.put(&quot;Page&quot;, String.valueOf(page));</span><br><span class="line"></span><br><span class="line">if (BuildConfig.DEBUG) &#123;  </span><br><span class="line">    map.put(&quot;Accept&quot;, &quot;application/vnd.yourapi.v1.full+json&quot;);</span><br><span class="line">    map.put(&quot;User-Agent&quot;, &quot;Future Studio Debug&quot;);</span><br><span class="line">&#125;</span><br><span class="line">else &#123;  </span><br><span class="line">    map.put(&quot;Accept&quot;, &quot;application/json&quot;);</span><br><span class="line">    map.put(&quot;Accept-Charset&quot;, &quot;utf-8&quot;);</span><br><span class="line">    map.put(&quot;User-Agent&quot;, &quot;Future Studio Release&quot;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">Call&lt;List&lt;Task&gt;&gt; call = taskService.getTasks(map);  </span><br><span class="line">// Use it like any other Retrofit call</span><br></pre></td></tr></table></figure>
+<h1 id="多个具有相同名称的查询参数"><a href="#多个具有相同名称的查询参数" class="headerlink" title="多个具有相同名称的查询参数"></a>多个具有相同名称的查询参数</h1><h2 id="Query-Parameters"><a href="#Query-Parameters" class="headerlink" title="Query Parameters"></a>Query Parameters</h2><p>Query parameters 是从客户端传递数据到服务器的最常见的方式。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://api.example.com/tasks?id=123</span><br></pre></td></tr></table></figure>
+<p>上面的例子是通过路由”tasks”传递数据”id=123”到服务器。</p>
+<p>在Retrofit中可以如下写<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public interface TaskService &#123;  </span><br><span class="line">    @GET(&quot;/tasks&quot;)</span><br><span class="line">    Call&lt;Task&gt; getTask(@Query(&quot;id&quot;) long taskId);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在getTask方法中需要传入参数”taskId”，Retrofit会自动转换为”/task?id=<taskid>“形式。</taskid></p>
+<h2 id="Multiple-Query-Parameters"><a href="#Multiple-Query-Parameters" class="headerlink" title="Multiple Query Parameters"></a>Multiple Query Parameters</h2><p>一些情况下需要传递多个相同名字的参数到服务器，类似于下面的样子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://api.example.com/tasks?id=123&amp;id=124&amp;id=125</span><br></pre></td></tr></table></figure></p>
+<p>此时期望服务器的返回值应该是一个任务列表对应的id是ids=[123,124,125]。</p>
+<p>在Retrofit中可以很简单的做到，只需要传递一个List即可。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public interface TaskService &#123;  </span><br><span class="line">    @GET(&quot;/tasks&quot;)</span><br><span class="line">    Call&lt;List&lt;Task&gt;&gt; getTask(@Query(&quot;id&quot;) List&lt;Long&gt; taskIds);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="可选查询参数"><a href="#可选查询参数" class="headerlink" title="可选查询参数"></a>可选查询参数</h1><p>根据API的设计，有时候我们需要传递可选的参数到服务器。如果你不想传递参数，就传递null即可。<br><code>service.getTasks(null);</code><br>Retrofit在重新编译请求时会自动忽略null的参数。记住，你不能使用原始数据类型来传递null，例如：int,float,long等，你必须使用它们的包装类：Integer,Float,Long等，这样编译器不会报错：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public interface TaskService &#123;  </span><br><span class="line">    @GET(&quot;/tasks&quot;)</span><br><span class="line">    Call&lt;List&lt;Task&gt;&gt; getTasks(</span><br><span class="line">        @Query(&quot;sort&quot;) String order,</span><br><span class="line">        @Query(&quot;page&quot;) Integer page);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>现在你可以为getTasks方法传递null参数了。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service.getTasks(null, null);</span><br></pre></td></tr></table></figure></p>
+<h1 id="传递URL表单数据"><a href="#传递URL表单数据" class="headerlink" title="传递URL表单数据"></a>传递URL表单数据</h1><h2 id="表单请求"><a href="#表单请求" class="headerlink" title="表单请求"></a>表单请求</h2><p>在Retrofit添加表单请求只需要添加另外一个注解将会直接将你的请求类型转换为”application/x-www-form-urlencoded”.如下边的例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public interface TaskService &#123;  </span><br><span class="line">    @FormUrlEncoded</span><br><span class="line">    @POST(&quot;tasks&quot;)</span><br><span class="line">    Call&lt;Task&gt; createTask(@Field(&quot;title&quot;) String title);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>重要的部分是@FormUrlEncoded这个注解。你不能使用get方法时候添加这个注解，表单的目的是传递数据到服务器。<br>此外，必须使用@Field注释来与您的请求一起发送的参数。 将所需的键放在@Field（“key”）注释中以定义参数名称。 此外，将您的值的类型添加为方法参数。 如果不使用String，Retrofit将使用Java的String.valueOf（yourObject）方法创建一个字符串值。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">service.createTask(&quot;Research Retrofit form encoded requests&quot;);</span><br></pre></td></tr></table></figure></p>
+<p>生成的结果是<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">title=Research+Retrofit+form+encoded+requests</span><br></pre></td></tr></table></figure></p>
+<p>假如需要传递多个参数，你只需要继续添加@Field即可。</p>
+<h2 id="Form-Encoded-Requests-Using-an-Array-of-Values"><a href="#Form-Encoded-Requests-Using-an-Array-of-Values" class="headerlink" title="Form Encoded Requests Using an Array of Values"></a>Form Encoded Requests Using an Array of Values</h2><p>在上边的例子中使用@Field注解可以添加字符串数据。但是如果你想要使用对象而不是字符串类型，Retrofit将会把你的对象转换为字符串。你也可以使用同一个key传递一个字符串数组。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public interface TaskService &#123;  </span><br><span class="line">    @FormUrlEncoded</span><br><span class="line">    @POST(&quot;tasks&quot;)</span><br><span class="line">    Call&lt;List&lt;Task&gt;&gt; createTasks(@Field(&quot;title&quot;) List&lt;String&gt; titles);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>现在来看一下如何使用<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; titles = new ArrayList&lt;&gt;();  </span><br><span class="line">titles.add(&quot;Research Retrofit&quot;);  </span><br><span class="line">titles.add(&quot;Retrofit Form Encoded&quot;)</span><br><span class="line"></span><br><span class="line">service.createTasks(titles);</span><br></pre></td></tr></table></figure></p>
+<p>生成的结果如下：<br><code>title=Research+Retrofit&amp;title=Retrofit+Form+Encoded</code></p>
+<p>每个条目都被转换成了类似于map的键值对形式，键值对与键值对之间用&amp;连接，键值对内部用=连接。</p>
+<h2 id="Field-Options"><a href="#Field-Options" class="headerlink" title="Field Options"></a>Field Options</h2><p>@Filed注解有一个编码选项encoded，是布尔值。默认是false。</p>
+<p>这个encoded定义的内容是你是否已经为键值对编码为url：<br><code>@Field(value = &quot;title&quot;, encoded = true) String title</code></p>
+<h2 id="Form-Urlencoded-vs-Query-Parameter"><a href="#Form-Urlencoded-vs-Query-Parameter" class="headerlink" title="Form-Urlencoded vs. Query Parameter"></a>Form-Urlencoded vs. Query Parameter</h2><p>这两种传递数据的方式有什么不同：<br>    form-urlencoded: POST<br>    query parameter: GET<br>使用form-urlencoded方式传递数据的时候数据存放在请求体内，不会再url中显示，使用query parameter方式传递参数时会在url中显示，多用于筛选或指定区域数据查询。</p>
+<h1 id="使用FieldMap发送表单数据"><a href="#使用FieldMap发送表单数据" class="headerlink" title="使用FieldMap发送表单数据"></a>使用FieldMap发送表单数据</h1><h2 id="What-Is-Fieldmap-in-Retrofit"><a href="#What-Is-Fieldmap-in-Retrofit" class="headerlink" title="What Is @Fieldmap in Retrofit?"></a>What Is @Fieldmap in Retrofit?</h2><p>假如有多个注解，例如添加查询参数或者路径参数，使用给定对象请求数据，创建已经编码好的请求体。举一个简单的例子，你现在想更新程序中用户的数据，你需要请求一个接口要求是键值对形式上传的。接口接受一个JSON字段，你可以这样写：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">public interface UserService &#123;  </span><br><span class="line">    @FormUrlEncoded</span><br><span class="line">    @PUT(&quot;user&quot;)</span><br><span class="line">    Call&lt;User&gt; update(</span><br><span class="line">            @Field(&quot;username&quot;) String username,</span><br><span class="line">            @Field(&quot;name&quot;) String name,</span><br><span class="line">            @Field(&quot;email&quot;) String email,</span><br><span class="line">            @Field(&quot;homepage&quot;) String homepage,</span><br><span class="line">            @Field(&quot;location&quot;) String location</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>PUT方法需要多个参数，例如usernam,email,homepage等。</p>
+<blockquote>
+<p>缺点：每次我们使用新的数据发送更新的时候，我们必须要提供每一个参数的值，即使他们没有更改，这样做很繁琐。</p>
+</blockquote>
+<p>Retrofit提供了一个解决上述问题的方案：@FieldMap。</p>
+<h2 id="Form-Encoded-Requests-Using-FieldMap"><a href="#Form-Encoded-Requests-Using-FieldMap" class="headerlink" title="Form Encoded Requests Using FieldMap"></a>Form Encoded Requests Using FieldMap</h2><p>有时候你只需要为某个用户更新指定字段，你可以使用Retrofit的@FieldMao。你可以使用java标准的Map格式来添加你的键值对。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public interface UserService &#123;  </span><br><span class="line">    @FormUrlEncoded</span><br><span class="line">    @PUT(&quot;user&quot;)</span><br><span class="line">    Call&lt;User&gt; update(@FieldMap Map&lt;String, String&gt; fields);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Note：假如你只需要更新你的username字段，那就没有必要添加username以外的字段，你的请求只包含单个字段。</p>
+</blockquote>
+<p>@FiledMap在应用程序中使用的非常广泛，但是又一点不好的地方：你不知道哪些字段是允许添加的，你也不知道字段名称，这就需要额外的文档来说明。</p>
+<h2 id="FieldMap-Options"><a href="#FieldMap-Options" class="headerlink" title="FieldMap Options"></a>FieldMap Options</h2><p>同@Field一样，@FieldMap也包含一个布尔值encoded，默认是false。</p>
+<p>使用方法如下：<br><code>@FieldMap(encoded = true) Map&lt;String, String&gt; fields</code></p>
+<p>encode定义了每个键值对是否已经被编码。</p>
+<p>来看一个简单的例子。要更新username字段的值为marcus-poehls，默认情况下会变成username=marcus-poehls，使用编码后会变成username=marcus%2Dpoehls。</p>
+<h1 id="为每个请求添加Query-Parameters"><a href="#为每个请求添加Query-Parameters" class="headerlink" title="为每个请求添加Query Parameters"></a>为每个请求添加Query Parameters</h1><p>你可以通过向OkHttpClient添加一个新的请求拦截器来实现。 拦截实际请求并获取HttpUrl。 http url是添加查询参数所必需的，因为它将通过附加查询参数名称及其值来更改先前生成的请求网址。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">OkHttpClient.Builder httpClient =  </span><br><span class="line">    new OkHttpClient.Builder();</span><br><span class="line">httpClient.addInterceptor(new Interceptor() &#123;  </span><br><span class="line">    @Override</span><br><span class="line">    public Response intercept(Chain chain) throws IOException &#123;</span><br><span class="line">        Request original = chain.request();</span><br><span class="line">        HttpUrl originalHttpUrl = original.url();</span><br><span class="line"></span><br><span class="line">        HttpUrl url = originalHttpUrl.newBuilder()</span><br><span class="line">                .addQueryParameter(&quot;apikey&quot;, &quot;your-actual-api-key&quot;)</span><br><span class="line">                .build();</span><br><span class="line"></span><br><span class="line">        // Request customization: add request headers</span><br><span class="line">        Request.Builder requestBuilder = original.newBuilder()</span><br><span class="line">                .url(url);</span><br><span class="line"></span><br><span class="line">        Request request = requestBuilder.build();</span><br><span class="line">        return chain.proceed(request);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>一旦您拥有HttpUrl对象，就可以基于原始的http url对象创建一个新的构建器。 该构建器将允许您使用.addQueryParameter（key，val）方法添加其他查询参数。 添加查询参数后，使用.build（）方法创建新的HttpUrl对象，该对象通过使用Request.Builder添加到请求中。 上面的代码使用基于原始请求的附加参数构建新请求，并且只是将网址与新创建的网址进行交换。</p>
+<h1 id="使用-QueryMap添加多个查询参数"><a href="#使用-QueryMap添加多个查询参数" class="headerlink" title="使用@QueryMap添加多个查询参数"></a>使用@QueryMap添加多个查询参数</h1><p>Retrofit允许使用@Query注解来添加查询参数。假如有多个参数需要传递，类似于下面:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">public interface NewsService() &#123;  </span><br><span class="line">    @GET(&quot;/news&quot;)</span><br><span class="line">    Call&lt;List&lt;News&gt;&gt; getNews(</span><br><span class="line">            @Query(&quot;page&quot;) int page,</span><br><span class="line">            @Query(&quot;order&quot;) String order,</span><br><span class="line">            @Query(&quot;author&quot;) String author,</span><br><span class="line">            @Query(&quot;published_at&quot;) Date date,</span><br><span class="line">            …</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>你可以使用null来传给getNews方法。但是Retrofit提供了一个更好的方法。</p>
+<h2 id="How-to-Use-QueryMap"><a href="#How-to-Use-QueryMap" class="headerlink" title="How to Use QueryMap"></a>How to Use QueryMap</h2><p>@QueryMap注解使用Map<string,string>来作为参数，每个非空的key的value都会被添加进去。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">public interface NewsService() &#123;  </span><br><span class="line">    @GET(&quot;/news&quot;)</span><br><span class="line">    Call&lt;List&lt;News&gt;&gt; getNews(</span><br><span class="line">        @QueryMap Map&lt;String, String&gt; options</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></string,string></p>
+<p>如果你请求作者是Marcus第二页的新闻，你可以只添加page和author字段，而没必要再去添加其他字段。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">private void fetchNews() &#123;  </span><br><span class="line">    Map&lt;String, String&gt; data = new HashMap&lt;&gt;();</span><br><span class="line">    data.put(&quot;author&quot;, &quot;Marcus&quot;);</span><br><span class="line">    data.put(&quot;page&quot;, String.valueOf(2));</span><br><span class="line"></span><br><span class="line">    // simplified call to request the news with already initialized service</span><br><span class="line">    Call&lt;List&lt;News&gt;&gt; call = newsService.getNews(data);</span><br><span class="line">    call.enqueue(…);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>最后的结果是</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://your.api.url/news?page=2&amp;author=Marcus</span><br></pre></td></tr></table></figure>
+<h2 id="QueryMap-Options"><a href="#QueryMap-Options" class="headerlink" title="QueryMap Options"></a>QueryMap Options</h2><p>同前面的一样，它也拥有布尔值encoded，默认是false。此处不讲解详细用法了。</p>
+<h1 id="怎样在请求中使用动态URL"><a href="#怎样在请求中使用动态URL" class="headerlink" title="怎样在请求中使用动态URL"></a>怎样在请求中使用动态URL</h1><h2 id="Use-Case-Scenarios"><a href="#Use-Case-Scenarios" class="headerlink" title="Use-Case Scenarios"></a>Use-Case Scenarios</h2><p>说明一下这个动态URl是不使用BaseURL的网址。</p>
+<ol>
+<li>上传文件：假如你的APP允许用户上传自己的图片，你可能回把它们保存到自己的服务器上。</li>
+<li>下载文件：文件能在不同于BaseURL的网址保存</li>
+</ol>
+<h2 id="How-to-Use-Dynamic-Urls"><a href="#How-to-Use-Dynamic-Urls" class="headerlink" title="How to Use Dynamic Urls"></a>How to Use Dynamic Urls</h2><p>你可使用@Url注解为请求方法添加动态网址：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public interface UserService &#123;  </span><br><span class="line">    @GET</span><br><span class="line">    public Call&lt;ResponseBody&gt; profilePicture(@Url String url);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>上边的@GET注解后边并没有添加路由参数，它会自己添加@Url注解的参数作为请求地址。</p>
+<h2 id="How-Urls-Resolve-Against-Your-Base-Url"><a href="#How-Urls-Resolve-Against-Your-Base-Url" class="headerlink" title="How Urls Resolve Against Your Base Url"></a>How Urls Resolve Against Your Base Url</h2><p>Retrofit2使用OkHttp的httpurl解析站点。<br>来看第一个例子：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Retrofit retrofit = Retrofit.Builder()  </span><br><span class="line">    .baseUrl(&quot;https://your.api.url/&quot;);</span><br><span class="line">    .build();</span><br><span class="line"></span><br><span class="line">UserService service = retrofit.create(UserService.class);  </span><br><span class="line">service.profilePicture(&quot;https://s3.amazon.com/profile-picture/path&quot;);</span><br><span class="line"></span><br><span class="line">// request url results in:</span><br><span class="line">// https://s3.amazon.com/profile-picture/path</span><br></pre></td></tr></table></figure></p>
+<p>因为你使用了一个完全的地址(<a href="https://s3.amazon.com/profile-picture/path),Retrofit会替换掉BaseUrl然后使用你输入的地址。" target="_blank" rel="noopener">https://s3.amazon.com/profile-picture/path),Retrofit会替换掉BaseUrl然后使用你输入的地址。</a></p>
+<p>来看第二个例子<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Retrofit retrofit = Retrofit.Builder()  </span><br><span class="line">    .baseUrl(&quot;https://your.api.url/&quot;);</span><br><span class="line">    .build();</span><br><span class="line"></span><br><span class="line">UserService service = retrofit.create(UserService.class);  </span><br><span class="line">service.profilePicture(&quot;profile-picture/path&quot;);</span><br><span class="line"></span><br><span class="line">// request url results in:</span><br><span class="line">// https://your.api.url/profile-picture/path</span><br></pre></td></tr></table></figure></p>
+<p>这个例子中你添加的参数被拼接到BaseURL后边。</p>
+<p>来看第三个例子</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Retrofit retrofit = Retrofit.Builder()  </span><br><span class="line">    .baseUrl(&quot;https://your.api.url/v2/&quot;);</span><br><span class="line">    .build();</span><br><span class="line"></span><br><span class="line">UserService service = retrofit.create(UserService.class);  </span><br><span class="line">service.profilePicture(&quot;/profile-picture/path&quot;);</span><br><span class="line"></span><br><span class="line">// request url results in:</span><br><span class="line">// https://your.api.url/profile-picture/path</span><br></pre></td></tr></table></figure>
+<p>第二个和第三个例子之间的区别是：我们添加了v2 /到BaseURl，并使用/在路径前面。 实际上，这将导致相同的最终请求url，因为以开头的斜杠开头的端点url将仅附加到基本url的主机url。 当对端点网址使用前导斜杠时，将忽略主机网址后面的所有内容。 您可以通过从您的端点删除前导/来解决您的问题。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/02/04/Retrofit使用详解（一）/" rel="next" title="Retrofit使用详解（一）">
+                <i class="fa fa-chevron-left"></i> Retrofit使用详解（一）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/02/04/Retrofit使用详解（三）/" rel="prev" title="Retrofit使用详解（三）">
+                Retrofit使用详解（三） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg"
+               alt="rangaofei" />
+          <p class="site-author-name" itemprop="name">rangaofei</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#同步请求和异步请求"><span class="nav-number">1.</span> <span class="nav-text">同步请求和异步请求</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#同步请求"><span class="nav-number">1.1.</span> <span class="nav-text">同步请求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Get-Results-from-Synchronous-Requests"><span class="nav-number">1.2.</span> <span class="nav-text">Get Results from Synchronous Requests</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Asynchronous-Requests"><span class="nav-number">1.3.</span> <span class="nav-text">Asynchronous Requests</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Get-Results-from-Asynchronous-Requests"><span class="nav-number">1.4.</span> <span class="nav-text">Get Results from Asynchronous Requests</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Get-Raw-HTTP-Response"><span class="nav-number">1.5.</span> <span class="nav-text">Get Raw HTTP Response</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#在请求体中发送对象"><span class="nav-number">2.</span> <span class="nav-text">在请求体中发送对象</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Send-Objects-as-Request-Body"><span class="nav-number">2.1.</span> <span class="nav-text">Send Objects as Request Body</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Example"><span class="nav-number">2.2.</span> <span class="nav-text">Example</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#添加自定义头信息"><span class="nav-number">3.</span> <span class="nav-text">添加自定义头信息</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#静态请求头"><span class="nav-number">3.1.</span> <span class="nav-text">静态请求头</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Dynamic-Header"><span class="nav-number">3.2.</span> <span class="nav-text">Dynamic Header</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#在拦截器中管理请求头"><span class="nav-number">4.</span> <span class="nav-text">在拦截器中管理请求头</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#添加请求头"><span class="nav-number">4.1.</span> <span class="nav-text">添加请求头</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#How-to-Override-Headers"><span class="nav-number">4.2.</span> <span class="nav-text">How to Override Headers</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#How-to-Not-Override-Headers"><span class="nav-number">4.3.</span> <span class="nav-text">How to Not Override Headers</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用-HeaderMap添加请求头"><span class="nav-number">5.</span> <span class="nav-text">使用@HeaderMap添加请求头</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Dynamic-Request-Headers"><span class="nav-number">5.1.</span> <span class="nav-text">Dynamic Request Headers</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#多个具有相同名称的查询参数"><span class="nav-number">6.</span> <span class="nav-text">多个具有相同名称的查询参数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Query-Parameters"><span class="nav-number">6.1.</span> <span class="nav-text">Query Parameters</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Multiple-Query-Parameters"><span class="nav-number">6.2.</span> <span class="nav-text">Multiple Query Parameters</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#可选查询参数"><span class="nav-number">7.</span> <span class="nav-text">可选查询参数</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#传递URL表单数据"><span class="nav-number">8.</span> <span class="nav-text">传递URL表单数据</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#表单请求"><span class="nav-number">8.1.</span> <span class="nav-text">表单请求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Form-Encoded-Requests-Using-an-Array-of-Values"><span class="nav-number">8.2.</span> <span class="nav-text">Form Encoded Requests Using an Array of Values</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Field-Options"><span class="nav-number">8.3.</span> <span class="nav-text">Field Options</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Form-Urlencoded-vs-Query-Parameter"><span class="nav-number">8.4.</span> <span class="nav-text">Form-Urlencoded vs. Query Parameter</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用FieldMap发送表单数据"><span class="nav-number">9.</span> <span class="nav-text">使用FieldMap发送表单数据</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#What-Is-Fieldmap-in-Retrofit"><span class="nav-number">9.1.</span> <span class="nav-text">What Is @Fieldmap in Retrofit?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Form-Encoded-Requests-Using-FieldMap"><span class="nav-number">9.2.</span> <span class="nav-text">Form Encoded Requests Using FieldMap</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#FieldMap-Options"><span class="nav-number">9.3.</span> <span class="nav-text">FieldMap Options</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#为每个请求添加Query-Parameters"><span class="nav-number">10.</span> <span class="nav-text">为每个请求添加Query Parameters</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用-QueryMap添加多个查询参数"><span class="nav-number">11.</span> <span class="nav-text">使用@QueryMap添加多个查询参数</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#How-to-Use-QueryMap"><span class="nav-number">11.1.</span> <span class="nav-text">How to Use QueryMap</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#QueryMap-Options"><span class="nav-number">11.2.</span> <span class="nav-text">QueryMap Options</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#怎样在请求中使用动态URL"><span class="nav-number">12.</span> <span class="nav-text">怎样在请求中使用动态URL</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Use-Case-Scenarios"><span class="nav-number">12.1.</span> <span class="nav-text">Use-Case Scenarios</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#How-to-Use-Dynamic-Urls"><span class="nav-number">12.2.</span> <span class="nav-text">How to Use Dynamic Urls</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#How-Urls-Resolve-Against-Your-Base-Url"><span class="nav-number">12.3.</span> <span class="nav-text">How Urls Resolve Against Your Base Url</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">rangaofei</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

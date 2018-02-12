@@ -1,0 +1,744 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="拦截器(Interceptor)是一个强大的工具，他可以监视，重写，重试你的call，下面是一个简单的例子，自定义了一个拦截器实现了发出的请求和接收的响应的日志打印： 1234567891011121314151617class LoggingInterceptor implements Interceptor &amp;#123;  @Override public Response intercept">
+<meta name="keywords" content="Android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OkHttp（四）之拦截器">
+<meta property="og:url" content="https://rangaofei.github.io/2017/02/04/OkHttp（四）之拦截器/index.html">
+<meta property="og:site_name" content="SAKA&#39;S BLOG">
+<meta property="og:description" content="拦截器(Interceptor)是一个强大的工具，他可以监视，重写，重试你的call，下面是一个简单的例子，自定义了一个拦截器实现了发出的请求和接收的响应的日志打印： 1234567891011121314151617class LoggingInterceptor implements Interceptor &amp;#123;  @Override public Response intercept">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://raw.githubusercontent.com/wiki/square/okhttp/interceptors@2x.png">
+<meta property="og:updated_time" content="2017-02-04T07:03:54.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="OkHttp（四）之拦截器">
+<meta name="twitter:description" content="拦截器(Interceptor)是一个强大的工具，他可以监视，重写，重试你的call，下面是一个简单的例子，自定义了一个拦截器实现了发出的请求和接收的响应的日志打印： 1234567891011121314151617class LoggingInterceptor implements Interceptor &amp;#123;  @Override public Response intercept">
+<meta name="twitter:image" content="https://raw.githubusercontent.com/wiki/square/okhttp/interceptors@2x.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://rangaofei.github.io/2017/02/04/OkHttp（四）之拦截器/"/>
+
+
+
+
+
+  <title> OkHttp（四）之拦截器 | SAKA'S BLOG </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s4.cnzz.com/z_stat.php?id=1261177704&web_id=1261177704" language="JavaScript"></script>
+  <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1261177704'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1261177704%26online%3D1%26show%3Dline' type='text/javascript'%3E%3C/script%3E"));</script>
+  </div>
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">SAKA'S BLOG</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://rangaofei.github.io/2017/02/04/OkHttp（四）之拦截器/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="rangaofei">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="SAKA'S BLOG">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="SAKA'S BLOG" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                OkHttp（四）之拦截器
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-02-04T15:02:48+08:00">
+                2017-02-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">              
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/OkHttp/" itemprop="url" rel="index">
+                    <span itemprop="name">OkHttp</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>拦截器(Interceptor)是一个强大的工具，他可以监视，重写，重试你的call，下面是一个简单的例子，自定义了一个拦截器实现了发出的请求和接收的响应的日志打印：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">class LoggingInterceptor implements Interceptor &#123;</span><br><span class="line">  @Override public Response intercept(Interceptor.Chain chain) throws IOException &#123;</span><br><span class="line">    Request request = chain.request();</span><br><span class="line"></span><br><span class="line">    long t1 = System.nanoTime();</span><br><span class="line">    logger.info(String.format(&quot;Sending request %s on %s%n%s&quot;,</span><br><span class="line">        request.url(), chain.connection(), request.headers()));</span><br><span class="line"></span><br><span class="line">    Response response = chain.proceed(request);</span><br><span class="line"></span><br><span class="line">    long t2 = System.nanoTime();</span><br><span class="line">    logger.info(String.format(&quot;Received response for %s in %.1fms%n%s&quot;,</span><br><span class="line">        response.request().url(), (t2 - t1) / 1e6d, response.headers()));</span><br><span class="line"></span><br><span class="line">    return response;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>对chain.proceed(request)的调用是拦截器实现的关键部分。</p>
+<p>拦截器可以链接。假设你有一个压缩拦截器和一个检查结果拦截器，你需要决定拦截器调用的顺序。OkHttp使用列表方式来跟踪拦截器，拦截器会按你的编写顺序调用。</p>
+<p><img src="https://raw.githubusercontent.com/wiki/square/okhttp/interceptors@2x.png" alt=""></p>
+<h2 id="程序拦截器"><a href="#程序拦截器" class="headerlink" title="程序拦截器"></a>程序拦截器</h2><p>拦截器分为程序拦截器和网络拦截器。来看看上面定义的LoggingInterceptor来显示两者的差异。</p>
+<p>通过在OkHttpClient.Builder上调用addInterceptor（）来注册应用程序拦截器：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">OkHttpClient client = new OkHttpClient.Builder()</span><br><span class="line">    .addInterceptor(new LoggingInterceptor())</span><br><span class="line">    .build();</span><br><span class="line"></span><br><span class="line">Request request = new Request.Builder()</span><br><span class="line">    .url(&quot;http://www.publicobject.com/helloworld.txt&quot;)</span><br><span class="line">    .header(&quot;User-Agent&quot;, &quot;OkHttp Example&quot;)</span><br><span class="line">    .build();</span><br><span class="line"></span><br><span class="line">Response response = client.newCall(request).execute();</span><br><span class="line">response.body().close();</span><br></pre></td></tr></table></figure>
+<p>网址<a href="http://www.publicobject.com/helloworld.txt重定向到https://publicobject.com/helloworld.txt，OkHttp会自动跟踪此重定向。" target="_blank" rel="noopener">http://www.publicobject.com/helloworld.txt重定向到https://publicobject.com/helloworld.txt，OkHttp会自动跟踪此重定向。</a> 我们的应用程序拦截器被调用一次，并且从chain.proceed（）返回的响应具有重定向响应,以下是打印日志</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">INFO: Sending request http://www.publicobject.com/helloworld.txt on null</span><br><span class="line">User-Agent: OkHttp Example</span><br><span class="line"></span><br><span class="line">INFO: Received response for https://publicobject.com/helloworld.txt in 1179.7ms</span><br><span class="line">Server: nginx/1.4.6 (Ubuntu)</span><br><span class="line">Content-Type: text/plain</span><br><span class="line">Content-Length: 1759</span><br><span class="line">Connection: keep-alive</span><br></pre></td></tr></table></figure>
+<p>我们可以看到发出请求后被重定向，因为response.request().url不同于request.url。这两个日志语句记录了两个不同的URL。</p>
+<h2 id="网络拦截器"><a href="#网络拦截器" class="headerlink" title="网络拦截器"></a>网络拦截器</h2><p>注册网络拦截器和注册程勋拦截器非常相似。用addNetworkInterceptor()方法代替addInterceptor()方法即可：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">OkHttpClient client = new OkHttpClient.Builder()</span><br><span class="line">    .addNetworkInterceptor(new LoggingInterceptor())</span><br><span class="line">    .build();</span><br><span class="line"></span><br><span class="line">Request request = new Request.Builder()</span><br><span class="line">    .url(&quot;http://www.publicobject.com/helloworld.txt&quot;)</span><br><span class="line">    .header(&quot;User-Agent&quot;, &quot;OkHttp Example&quot;)</span><br><span class="line">    .build();</span><br><span class="line"></span><br><span class="line">Response response = client.newCall(request).execute();</span><br><span class="line">response.body().close();</span><br></pre></td></tr></table></figure></p>
+<p>当我们运行上述代码时，拦截器会执行两次。一次是在请求网址<a href="http://www.publicobject.com/helloworld.txt的时候，一次是在被重定向到https://publicobject.com/helloworld.txt的时候。日志如下" target="_blank" rel="noopener">http://www.publicobject.com/helloworld.txt的时候，一次是在被重定向到https://publicobject.com/helloworld.txt的时候。日志如下</a></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">INFO: Sending request http://www.publicobject.com/helloworld.txt on Connection&#123;www.publicobject.com:80, proxy=DIRECT hostAddress=54.187.32.157 cipherSuite=none protocol=http/1.1&#125;</span><br><span class="line">User-Agent: OkHttp Example</span><br><span class="line">Host: www.publicobject.com</span><br><span class="line">Connection: Keep-Alive</span><br><span class="line">Accept-Encoding: gzip</span><br><span class="line"></span><br><span class="line">INFO: Received response for http://www.publicobject.com/helloworld.txt in 115.6ms</span><br><span class="line">Server: nginx/1.4.6 (Ubuntu)</span><br><span class="line">Content-Type: text/html</span><br><span class="line">Content-Length: 193</span><br><span class="line">Connection: keep-alive</span><br><span class="line">Location: https://publicobject.com/helloworld.txt</span><br><span class="line"></span><br><span class="line">INFO: Sending request https://publicobject.com/helloworld.txt on Connection&#123;publicobject.com:443, proxy=DIRECT hostAddress=54.187.32.157 cipherSuite=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA protocol=http/1.1&#125;</span><br><span class="line">User-Agent: OkHttp Example</span><br><span class="line">Host: publicobject.com</span><br><span class="line">Connection: Keep-Alive</span><br><span class="line">Accept-Encoding: gzip</span><br><span class="line"></span><br><span class="line">INFO: Received response for https://publicobject.com/helloworld.txt in 80.9ms</span><br><span class="line">Server: nginx/1.4.6 (Ubuntu)</span><br><span class="line">Content-Type: text/plain</span><br><span class="line">Content-Length: 1759</span><br><span class="line">Connection: keep-alive</span><br></pre></td></tr></table></figure>
+<p>网络请求包含更多数据，例如OkHttp添加的Accept-Encoding：gzip头，以宣告对响应压缩的支持。 网络拦截器的Chain有一个非空连接，可用于查询用于连接到Web服务器的IP地址和TLS配置。</p>
+<h2 id="使用程序拦截器还是网络拦截器"><a href="#使用程序拦截器还是网络拦截器" class="headerlink" title="使用程序拦截器还是网络拦截器"></a>使用程序拦截器还是网络拦截器</h2><p>每个拦截器的优点是相对的：</p>
+<h3 id="程序拦截器-1"><a href="#程序拦截器-1" class="headerlink" title="程序拦截器"></a>程序拦截器</h3><ul>
+<li>不需要担心中间响应(如重定向和重试)</li>
+<li>只调用一次，即使HTTP响应是从缓存读取的</li>
+<li>遵守应用程序原始的意图，不关心OkHttp注入的头信息，例如If-None-Match</li>
+<li>允许短路，不调用Chain.proceed()</li>
+<li>允许重试并对多个Chain.proceed()调用</li>
+</ul>
+<h3 id="网路拦截器"><a href="#网路拦截器" class="headerlink" title="网路拦截器"></a>网路拦截器</h3><ul>
+<li>能够对中间响应（如重定向和重试）进行操作。</li>
+<li>不调用缓存响应使网络短路。</li>
+<li>观察数据，就像它将通过网络传输一样。</li>
+<li>能够访问携带请求的连接。</li>
+</ul>
+<h2 id="重写请求"><a href="#重写请求" class="headerlink" title="重写请求"></a>重写请求</h2><p>拦截器能够增加、移除或者替换请求的头信息，也可以转换请求体。例如，假如你正在请求一个支持压缩的网站，你可以使用程序拦截器来添加一个请求体压缩。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">/** This interceptor compresses the HTTP request body. Many webservers can&apos;t handle this! */</span><br><span class="line">final class GzipRequestInterceptor implements Interceptor &#123;</span><br><span class="line">  @Override public Response intercept(Interceptor.Chain chain) throws IOException &#123;</span><br><span class="line">    Request originalRequest = chain.request();</span><br><span class="line">    if (originalRequest.body() == null || originalRequest.header(&quot;Content-Encoding&quot;) != null) &#123;</span><br><span class="line">      return chain.proceed(originalRequest);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    Request compressedRequest = originalRequest.newBuilder()</span><br><span class="line">        .header(&quot;Content-Encoding&quot;, &quot;gzip&quot;)</span><br><span class="line">        .method(originalRequest.method(), gzip(originalRequest.body()))</span><br><span class="line">        .build();</span><br><span class="line">    return chain.proceed(compressedRequest);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  private RequestBody gzip(final RequestBody body) &#123;</span><br><span class="line">    return new RequestBody() &#123;</span><br><span class="line">      @Override public MediaType contentType() &#123;</span><br><span class="line">        return body.contentType();</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      @Override public long contentLength() &#123;</span><br><span class="line">        return -1; // We don&apos;t know the compressed length in advance!</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      @Override public void writeTo(BufferedSink sink) throws IOException &#123;</span><br><span class="line">        BufferedSink gzipSink = Okio.buffer(new GzipSink(sink));</span><br><span class="line">        body.writeTo(gzipSink);</span><br><span class="line">        gzipSink.close();</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="重写响应"><a href="#重写响应" class="headerlink" title="重写响应"></a>重写响应</h2><p>拦截器也可以重写响应头并重写响应体，但是这样通常比重写请求头更危险，因为它可能违反网络协议。</p>
+<p>如果你正处在一个棘手的情况，并准备处理可能发生的后果，重写响应头是解决问题的办法。例如，你可以秀谷服务器配置错的的缓存控制响应头译启用更好的响应缓存：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">/** Dangerous interceptor that rewrites the server&apos;s cache-control header. */</span><br><span class="line">private static final Interceptor REWRITE_CACHE_CONTROL_INTERCEPTOR = new Interceptor() &#123;</span><br><span class="line">  @Override public Response intercept(Interceptor.Chain chain) throws IOException &#123;</span><br><span class="line">    Response originalResponse = chain.proceed(chain.request());</span><br><span class="line">    return originalResponse.newBuilder()</span><br><span class="line">        .header(&quot;Cache-Control&quot;, &quot;max-age=60&quot;)</span><br><span class="line">        .build();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>通常，这种方法在补充Web服务器上的相应修复时效果最好！</p>
+<h2 id="可用性"><a href="#可用性" class="headerlink" title="可用性"></a>可用性</h2><p>OkHttp的拦截器需要OkHttp 2.2或更高版本。拦截器不能使用OkUrlFactory或构建它的库，包括Retrofit≤1.8和Picasso≤2.4。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/02/04/OkHttp（三）之使用方法/" rel="next" title="OkHttp（三）之使用方法">
+                <i class="fa fa-chevron-left"></i> OkHttp（三）之使用方法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/02/04/OkHttp（五）之HTTPS/" rel="prev" title="OkHttp（五）之HTTPS">
+                OkHttp（五）之HTTPS <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg"
+               alt="rangaofei" />
+          <p class="site-author-name" itemprop="name">rangaofei</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#程序拦截器"><span class="nav-number">1.</span> <span class="nav-text">程序拦截器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#网络拦截器"><span class="nav-number">2.</span> <span class="nav-text">网络拦截器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用程序拦截器还是网络拦截器"><span class="nav-number">3.</span> <span class="nav-text">使用程序拦截器还是网络拦截器</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#程序拦截器-1"><span class="nav-number">3.1.</span> <span class="nav-text">程序拦截器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#网路拦截器"><span class="nav-number">3.2.</span> <span class="nav-text">网路拦截器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重写请求"><span class="nav-number">4.</span> <span class="nav-text">重写请求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重写响应"><span class="nav-number">5.</span> <span class="nav-text">重写响应</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#可用性"><span class="nav-number">6.</span> <span class="nav-text">可用性</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">rangaofei</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

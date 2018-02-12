@@ -1,0 +1,822 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="上一篇讲解了我自己开发中gradle的配置。 谷歌自从更新6.0以后，更改了权限管理的方式，在6以上的版本中采用全新的动态权限管理，我作为一个迟钝的程序员，始终把版本设定在22，规避这个动态权限获取的问题。今天我就要好好搞一搞，弄期初这个是怎么回事。今天的翻译包含以下内容  声明权限 在运行时请求权限 权限最佳做法  声明权限每个安卓应用在访问受限的沙盒中运行，如果需要使用沙盒外的信息或者资源，则">
+<meta name="keywords" content="Android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="(译)安卓系统权限">
+<meta property="og:url" content="https://rangaofei.github.io/2017/01/23/译-安卓系统权限/index.html">
+<meta property="og:site_name" content="SAKA&#39;S BLOG">
+<meta property="og:description" content="上一篇讲解了我自己开发中gradle的配置。 谷歌自从更新6.0以后，更改了权限管理的方式，在6以上的版本中采用全新的动态权限管理，我作为一个迟钝的程序员，始终把版本设定在22，规避这个动态权限获取的问题。今天我就要好好搞一搞，弄期初这个是怎么回事。今天的翻译包含以下内容  声明权限 在运行时请求权限 权限最佳做法  声明权限每个安卓应用在访问受限的沙盒中运行，如果需要使用沙盒外的信息或者资源，则">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-02-01T04:15:40.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="(译)安卓系统权限">
+<meta name="twitter:description" content="上一篇讲解了我自己开发中gradle的配置。 谷歌自从更新6.0以后，更改了权限管理的方式，在6以上的版本中采用全新的动态权限管理，我作为一个迟钝的程序员，始终把版本设定在22，规避这个动态权限获取的问题。今天我就要好好搞一搞，弄期初这个是怎么回事。今天的翻译包含以下内容  声明权限 在运行时请求权限 权限最佳做法  声明权限每个安卓应用在访问受限的沙盒中运行，如果需要使用沙盒外的信息或者资源，则">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://rangaofei.github.io/2017/01/23/译-安卓系统权限/"/>
+
+
+
+
+
+  <title> (译)安卓系统权限 | SAKA'S BLOG </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s4.cnzz.com/z_stat.php?id=1261177704&web_id=1261177704" language="JavaScript"></script>
+  <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1261177704'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1261177704%26online%3D1%26show%3Dline' type='text/javascript'%3E%3C/script%3E"));</script>
+  </div>
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">SAKA'S BLOG</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://rangaofei.github.io/2017/01/23/译-安卓系统权限/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="rangaofei">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="SAKA'S BLOG">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="SAKA'S BLOG" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                (译)安卓系统权限
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-23T13:04:06+08:00">
+                2017-01-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><a href="http://www.jianshu.com/p/4b8b289af7e4" target="_blank" rel="noopener">上一篇</a>讲解了我自己开发中gradle的配置。</p>
+<p>谷歌自从更新6.0以后，更改了权限管理的方式，在6以上的版本中采用全新的动态权限管理，我作为一个迟钝的程序员，始终把版本设定在22，规避这个动态权限获取的问题。今天我就要好好搞一搞，弄期初这个是怎么回事。<br>今天的翻译包含以下内容</p>
+<ul>
+<li>声明权限</li>
+<li>在运行时请求权限</li>
+<li>权限最佳做法</li>
+</ul>
+<h3 id="声明权限"><a href="#声明权限" class="headerlink" title="声明权限"></a>声明权限</h3><p>每个安卓应用在访问受限的沙盒中运行，如果需要使用沙盒外的信息或者资源，则必须请求相应权限才可以。声明权限在manifest文件中声明。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"> &lt;manifest xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot;</span><br><span class="line">        package=&quot;com.example.snazzyapp&quot;&gt;</span><br><span class="line">    &lt;uses-permission android:name=&quot;android.permission.SEND_SMS&quot;/&gt;   </span><br><span class="line">    &lt;application ...&gt;</span><br><span class="line">    &lt;/application&gt;</span><br><span class="line">&lt;/manifest&gt;</span><br></pre></td></tr></table></figure></p>
+<p>这个非常简单，就是添加<use-permission ...="">（有一些时候可以不使用权限而使用intent来获取系统功能）</use-permission></p>
+<h5 id="权限又分为正常权限和危险权限"><a href="#权限又分为正常权限和危险权限" class="headerlink" title="权限又分为正常权限和危险权限"></a>权限又分为正常权限和危险权限</h5><p>官方文档是这样定义的</p>
+<blockquote>
+<ul>
+<li><p>正常权限：涵盖应用需要访问其沙盒以外的数据或者资源，但对用户隐私或其他应用操作风险很小的区域。应用声明其需要正常权限，系统会自动向应用授权该权限。</p>
+</li>
+<li><p>危险权限：涵盖应用需要设计用户隐私信息的数据或者资源，或可能对用户存储的数据或其他应用的操作产生影响的区域。如果应用声明其需要危险权限，则必须经过用户同意方可。</p>
+</li>
+</ul>
+</blockquote>
+<h5 id="权限组"><a href="#权限组" class="headerlink" title="权限组"></a>权限组</h5><p>所有危险权限都属于权限组。</p>
+<ul>
+<li>如果权限请求中有危险权限，而应用目前没有获得用户授予该权限，则系统会弹出提示框，描述请求权限所在的权限组，征求用户是否同意。</li>
+<li>如果应用请求其清单中列出的危险权限，而在同意权限组中以经过用户同意，则不需要在与用户交互，直接授予该权限。<blockquote>
+<p>用户申请的单个权限信息会获得整个权限组的权限，不需要重复申请。</p>
+</blockquote>
+</li>
+</ul>
+<p>下面的表中列出了危险权限和权限组</p>
+<table>
+<thead>
+<tr>
+<th>权限组</th>
+<th style="text-align:center">权限</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CALENDAR</td>
+<td style="text-align:center">READ_CALENDAR</td>
+</tr>
+<tr>
+<td>CALENDAR</td>
+<td style="text-align:center">WRITE_CALENDAR</td>
+</tr>
+<tr>
+<td>CAMERA</td>
+<td style="text-align:center">CAMERA</td>
+</tr>
+<tr>
+<td>CONTACTS</td>
+<td style="text-align:center">READ_CONTACTS</td>
+</tr>
+<tr>
+<td>CONTACTS</td>
+<td style="text-align:center">WRITECONTACTS</td>
+</tr>
+<tr>
+<td>CONTACTS</td>
+<td style="text-align:center">GET_ACCOUNTS</td>
+</tr>
+<tr>
+<td>LOCATION</td>
+<td style="text-align:center">ACCESS_FINE_LOCATION</td>
+</tr>
+<tr>
+<td>LOCATION</td>
+<td style="text-align:center">ACCESS_COARSE_LOCATION</td>
+</tr>
+<tr>
+<td>MICROPHONE</td>
+<td style="text-align:center">RECORD_AUDIO</td>
+</tr>
+<tr>
+<td>PHONE</td>
+<td style="text-align:center">READ_PHONE_STATE</td>
+</tr>
+<tr>
+<td>PHONE</td>
+<td style="text-align:center">CALL_PHONE</td>
+</tr>
+<tr>
+<td>PHONE</td>
+<td style="text-align:center">READ_CALL_LOG</td>
+</tr>
+<tr>
+<td>PHONE</td>
+<td style="text-align:center">WRITE_CALL_LOG</td>
+</tr>
+<tr>
+<td>PHONE</td>
+<td style="text-align:center">ADD_VOICEMAIL</td>
+</tr>
+<tr>
+<td>PHONE</td>
+<td style="text-align:center">USE_SIP</td>
+</tr>
+<tr>
+<td>PHONE</td>
+<td style="text-align:center">PROCESS_OUTGOING_CALLS</td>
+</tr>
+<tr>
+<td>SENSORS</td>
+<td style="text-align:center">BODY_SENSORS</td>
+</tr>
+<tr>
+<td>SMS</td>
+<td style="text-align:center">SEND_SMS</td>
+</tr>
+<tr>
+<td>SMS</td>
+<td style="text-align:center">RECEIVE_SMS</td>
+</tr>
+<tr>
+<td>SMS</td>
+<td style="text-align:center">READ_SMS</td>
+</tr>
+<tr>
+<td>SMS</td>
+<td style="text-align:center">RECEIVE_WAP_PUSH</td>
+</tr>
+<tr>
+<td>SMS</td>
+<td style="text-align:center">RECEIVE_MMS</td>
+</tr>
+<tr>
+<td>STORAGE</td>
+<td style="text-align:center">READ_EXTERNAL_STORAGE</td>
+</tr>
+<tr>
+<td>STORAGE</td>
+<td style="text-align:center">WRITE_EXTERNAL_STORAGE</td>
+</tr>
+</tbody>
+</table>
+<p>一些特殊权限我没有列出来，这里就不写了</p>
+<h4 id="检查权限"><a href="#检查权限" class="headerlink" title="检查权限"></a>检查权限</h4><p>若果你的应用需要危险权限，则每次之赐你个这一权限的操作时你都必须检查自己是否拥有该权限。因为用户可以自由更改权限，今天你获取了不代表明天还继续拥有。<br><code>ContextCompat.checkSelfPermission()</code><br>该方法是安卓V4支持库中提供的检测权限的方法<br>先不去管ContextCompat类，直接查看checkSelfPermission()方法<br><code>int checkSelfPermission (Context context,  String permission)</code><br>permission是你要检查权限的名称。<br>该方法返回一个int型，</p>
+<ul>
+<li>PERMISSION_GRANTED 表示你拥有该权限，可以继续执行操作</li>
+<li>PERMISSION_DENIED 表示你没有改权限，你这时候需要向用户申请权限<h4 id="解释为什么需要权限"><a href="#解释为什么需要权限" class="headerlink" title="解释为什么需要权限"></a>解释为什么需要权限</h4>为了帮助查找用户可能需要解释的情形，Android提供了一个实用程序。<br><code>shouldShowRequestPermissionRationale()</code><br>如果应用之前请求过此权限但被用户拒绝了，此方法返回true。<blockquote>
+<p>Tips: 如果用户在过去拒绝了权限请求，并选择了Don’t ask again 选项，此方法返回false。若果设备规范禁止应用具有该权限，此方法也将返回false。</p>
+</blockquote>
+</li>
+</ul>
+<p>下面看一下这个方法的api，<br><code>boolean shouldShowRequestPermissionRationale (Activity activity,  String permission)</code><br>你只能在你没有获取权限的情况下显示这个ui。</p>
+<h4 id="请求您需要的权限"><a href="#请求您需要的权限" class="headerlink" title="请求您需要的权限"></a>请求您需要的权限</h4><p>如果应用未获取权限，你需要调用一个方法来请求—- requestPermission()；<br>这个方法异步执型：它会立即返回，并且在用户相应对话框之后，系统会使用结果调用应用的回调方法，将应用传递的相同请求码传递到requestPermission().<br>举个例子，请求联系人<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">// 当前需要申请权限的activity</span><br><span class="line">//如果未获得该权限</span><br><span class="line">if (ContextCompat.checkSelfPermission(thisActivity,</span><br><span class="line">                Manifest.permission.READ_CONTACTS)</span><br><span class="line">        != PackageManager.PERMISSION_GRANTED) &#123;</span><br><span class="line"></span><br><span class="line">    //是否显示解释性对话框</span><br><span class="line">    if (ActivityCompat.shouldShowRequestPermissionRationale(thisActivity,</span><br><span class="line">            Manifest.permission.READ_CONTACTS)) &#123;</span><br><span class="line">        //异步显示一个解释性对话框，等待用户回应，不要锁死这个线程！</span><br><span class="line">        //当用户看待解释后，再次尝试获取权限。</span><br><span class="line">    &#125; else &#123;</span><br><span class="line"></span><br><span class="line">        //不需要显示解释性对话框，直接申请权限，这时候会弹出权限申请对话框</span><br><span class="line">        ActivityCompat.requestPermissions(thisActivity,</span><br><span class="line">                new String[]&#123;Manifest.permission.READ_CONTACTS&#125;,</span><br><span class="line">                MY_PERMISSIONS_REQUEST_READ_CONTACTS);</span><br><span class="line">    //此方法将会回调到onRequestPermissionsResult方法中</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>弹出的权限申请对话框是不能修改的。</p>
+</blockquote>
+<h4 id="处理权限请求相应"><a href="#处理权限请求相应" class="headerlink" title="处理权限请求相应"></a>处理权限请求相应</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">public void onRequestPermissionsResult(int requestCode,</span><br><span class="line">        String permissions[], int[] grantResults) &#123;</span><br><span class="line">    switch (requestCode) &#123;</span><br><span class="line">        case MY_PERMISSIONS_REQUEST_READ_CONTACTS: &#123;</span><br><span class="line">            // 返回一个数组，假如权限被拒绝，这个数组为空</span><br><span class="line">            if (grantResults.length &gt; 0</span><br><span class="line">                &amp;&amp; grantResults[0] == PackageManager.PERMISSION_GRANTED) &#123;</span><br><span class="line">                // 获得了权限，接下来继续</span><br><span class="line">           </span><br><span class="line">            &#125; else &#123;</span><br><span class="line">                // 权限被拒绝了      </span><br><span class="line">            &#125;</span><br><span class="line">            return;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>本期权限就这么多，下期讲一讲 深入的东西和我自己的权限封装</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/01/23/译-构建安卓工程/" rel="next" title="(译)构建安卓工程">
+                <i class="fa fa-chevron-left"></i> (译)构建安卓工程
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/01/24/TextInputLayout/" rel="prev" title="TextInputLayout讲解">
+                TextInputLayout讲解 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg"
+               alt="rangaofei" />
+          <p class="site-author-name" itemprop="name">rangaofei</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#声明权限"><span class="nav-number">1.</span> <span class="nav-text">声明权限</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#权限又分为正常权限和危险权限"><span class="nav-number">1.0.1.</span> <span class="nav-text">权限又分为正常权限和危险权限</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#权限组"><span class="nav-number">1.0.2.</span> <span class="nav-text">权限组</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#检查权限"><span class="nav-number">1.1.</span> <span class="nav-text">检查权限</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#解释为什么需要权限"><span class="nav-number">1.2.</span> <span class="nav-text">解释为什么需要权限</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#请求您需要的权限"><span class="nav-number">1.3.</span> <span class="nav-text">请求您需要的权限</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#处理权限请求相应"><span class="nav-number">1.4.</span> <span class="nav-text">处理权限请求相应</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">rangaofei</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

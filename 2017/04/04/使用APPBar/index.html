@@ -1,0 +1,753 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="APPBar是应用程序Activity中最重要的设计元素之一，因为它提供了用户熟悉的可视化结构和交互式元素。 使用APPBar，能保证你的应用程序与其他Android应用程序保持一致，允许用户快速了解如何操作你的应用程序。APPBar主要功能如下：  为您的应用提供ID并指示用户目前在应用中的位置的专用空间。 以可预测的方式访问重要的操作，例如搜索。 支持导航和视图切换（带选项卡或下拉列表）。">
+<meta name="keywords" content="Android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用APPBar">
+<meta property="og:url" content="https://rangaofei.github.io/2017/04/04/使用APPBar/index.html">
+<meta property="og:site_name" content="SAKA&#39;S BLOG">
+<meta property="og:description" content="APPBar是应用程序Activity中最重要的设计元素之一，因为它提供了用户熟悉的可视化结构和交互式元素。 使用APPBar，能保证你的应用程序与其他Android应用程序保持一致，允许用户快速了解如何操作你的应用程序。APPBar主要功能如下：  为您的应用提供ID并指示用户目前在应用中的位置的专用空间。 以可预测的方式访问重要的操作，例如搜索。 支持导航和视图切换（带选项卡或下拉列表）。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://developer.android.google.cn/images/training/appbar/appbar_sheets.png">
+<meta property="og:image" content="https://developer.android.google.cn/images/training/appbar/appbar_basic.png">
+<meta property="og:image" content="https://developer.android.google.cn/images/training/appbar/appbar_with_button.png">
+<meta property="og:image" content="https://developer.android.google.cn/images/training/appbar/action_view.png">
+<meta property="og:updated_time" content="2017-04-03T17:00:16.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="使用APPBar">
+<meta name="twitter:description" content="APPBar是应用程序Activity中最重要的设计元素之一，因为它提供了用户熟悉的可视化结构和交互式元素。 使用APPBar，能保证你的应用程序与其他Android应用程序保持一致，允许用户快速了解如何操作你的应用程序。APPBar主要功能如下：  为您的应用提供ID并指示用户目前在应用中的位置的专用空间。 以可预测的方式访问重要的操作，例如搜索。 支持导航和视图切换（带选项卡或下拉列表）。">
+<meta name="twitter:image" content="https://developer.android.google.cn/images/training/appbar/appbar_sheets.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://rangaofei.github.io/2017/04/04/使用APPBar/"/>
+
+
+
+
+
+  <title> 使用APPBar | SAKA'S BLOG </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s4.cnzz.com/z_stat.php?id=1261177704&web_id=1261177704" language="JavaScript"></script>
+  <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1261177704'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1261177704%26online%3D1%26show%3Dline' type='text/javascript'%3E%3C/script%3E"));</script>
+  </div>
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">SAKA'S BLOG</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://rangaofei.github.io/2017/04/04/使用APPBar/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="rangaofei">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="SAKA'S BLOG">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="SAKA'S BLOG" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                使用APPBar
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-04-04T00:59:30+08:00">
+                2017-04-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>APPBar是应用程序Activity中最重要的设计元素之一，因为它提供了用户熟悉的可视化结构和交互式元素。 使用APPBar，能保证你的应用程序与其他Android应用程序保持一致，允许用户快速了解如何操作你的应用程序。APPBar主要功能如下：</p>
+<ol>
+<li>为您的应用提供ID并指示用户目前在应用中的位置的专用空间。</li>
+<li>以可预测的方式访问重要的操作，例如搜索。</li>
+<li>支持导航和视图切换（带选项卡或下拉列表）。</li>
+</ol>
+<p><img src="https://developer.android.google.cn/images/training/appbar/appbar_sheets.png" alt="ActionBar示例"></p>
+<p>该课程介绍如何使用v7 appcompat支持库的“ToolBar”小工具作为APPBar。 还有其他方法来实现APPBar.例如，一些主题默认情况下将ActionBar设置为应用程序栏 - 但是使用appcompat ToolBar可以轻松设置适用于最广泛设备的APPBar，以及 随着应用程序开发，您还可以随时自定义AppBar。</p>
+<h2 id="设置APPBar"><a href="#设置APPBar" class="headerlink" title="设置APPBar"></a>设置APPBar</h2><p>在最基本的形式中，ToolBar将在一侧显示Activity的标题，另一侧显示一个溢出菜单。 即使以这种简单的形式，ToolBar可为用户提供有用的信息，并有助于给予Android应用程序一致的外观。</p>
+<p><img src="https://developer.android.google.cn/images/training/appbar/appbar_basic.png" alt="Figure 1. An app bar with the app title and overflow menu. "></p>
+<p>从Android 3.0（API级别11）开始，使用默认主题的所有Activity都将ActionBar作为APPBar。然而，APPBar功能已逐渐添加到各种Android版本的ActionBar。 因此，根据设备正在使用的Android系统的版本，ActionBar的表现会有所不同。相比之下，支持库的APPBar版本添加了最新的功能，它们可以在任何可以使用支持库的设备上使用。</p>
+<p>因此，应该使用支持库的ToolBar类来实现Activity的APPBar。使用支持库的ToolBar有助于确保应用程序在最广泛的设备上具有一致的行为。 例如，ToolBar在运行Android 2.1（API级别7）或更高版本的设备上提供MaterialDesign体验，但是ActionBar不支持MaterialDesign，除非设备正在运行Android 5.0（API级别21）或更高版本。</p>
+<h2 id="在Activity中添加ToolBar"><a href="#在Activity中添加ToolBar" class="headerlink" title="在Activity中添加ToolBar"></a>在Activity中添加ToolBar</h2><p>以下步骤描述了如何将ToolBar设置为Activity的APPBar：</p>
+<ol>
+<li>将v7 appcompat支持库添加到项目中，如支持库设置中所述。</li>
+<li>确保Activity继承自AppCompatActivity：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">public class MyActivity extends AppCompatActivity &#123;</span><br><span class="line">  // ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<blockquote>
+<p>Note:更改所有要使用ToolBar作为APPBar的应用中的Activity。</p>
+</blockquote>
+<ol>
+<li><p>在manifest中，将<application>元素设置为使用appcompat的NoActionBar主题之一。 使用这些主题之一将阻止应用程序使用ActionBar类作为APPBar。 例如：</application></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">&lt;application</span><br><span class="line">    android:theme=&quot;@style/Theme.AppCompat.Light.NoActionBar&quot;</span><br><span class="line">    /&gt;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>在Activity的布局中添加ToolBar。例如，以下布局代码添加了一个ToolBar，并将其显示为浮动在Activity上方：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&lt;android.support.v7.widget.Toolbar</span><br><span class="line">   android:id=&quot;@+id/my_toolbar&quot;</span><br><span class="line">   android:layout_width=&quot;match_parent&quot;</span><br><span class="line">   android:layout_height=&quot;?attr/actionBarSize&quot;</span><br><span class="line">   android:background=&quot;?attr/colorPrimary&quot;</span><br><span class="line">   android:elevation=&quot;4dp&quot;</span><br><span class="line">   android:theme=&quot;@style/ThemeOverlay.AppCompat.ActionBar&quot;</span><br><span class="line">   app:popupTheme=&quot;@style/ThemeOverlay.AppCompat.Light&quot;/&gt;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>在Material Design规范中,建议APPBar应具有4dp的高度.<br>将ToolBar定位在Activity布局的顶部，将其用作APPBar。</p>
+<ol>
+<li>在Activity的onCreate（）方法中，调用setSupportActionBar（）方法来设置。 此方法将ToolBar设置为Activity的APPBar。 例如：<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">protected void onCreate(Bundle savedInstanceState) &#123;</span><br><span class="line">    super.onCreate(savedInstanceState);</span><br><span class="line">    setContentView(R.layout.activity_my);</span><br><span class="line">    Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);</span><br><span class="line">    setSupportActionBar(myToolbar);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>应用程序现在有一个基本的Toolbar。默认情况下，ToolBar仅包含应用程序的名称和溢出菜单。 选项菜单最初只包含“设置”项目。 您可以添加更多操作到操作栏和溢出菜单。</p>
+<h2 id="使用App-Bar实用程序方法"><a href="#使用App-Bar实用程序方法" class="headerlink" title="使用App Bar实用程序方法"></a>使用App Bar实用程序方法</h2><p>将ToolBar设置为Activity的APPBar后，可以访问v7 appcompat支持库的ActionBar类提供的各种方法。这些方法可以让你做一些有用的事情，比如隐藏或者显示APPBar。</p>
+<p>要使用ActionBar的方法，请调用Activity的getSupportActionBar（）方法。 此方法返回对Appcompat ActionBar对象的引用。获得该引用后，你可以调用任何ActionBar方法来调整APPBar。 例如，要隐藏APPBar，请调用ActionBar.hide（）。</p>
+<h2 id="为APPBar添加操作"><a href="#为APPBar添加操作" class="headerlink" title="为APPBar添加操作"></a>为APPBar添加操作</h2><p>APPBar允许添加供用户操作的按钮。此功能可将最重要的操作放在APPBar顶部的当前上下文中。例如，当用户正在查看他们的照片时，照片浏览应用程序可能会在顶部显示共享并创建相册按钮; 当用户查看一张照片时，应用程序可能会显示裁剪和过滤器按钮。</p>
+<p>APPBar中的空间有限。如果应用程序添加的操作比适用于APPBar的操作控件更多，则APPBar会将超量的操作放置到溢出菜单。 该应用程序还可以指定一个操作应始终显示在溢出菜单中，而不是显示在APPbar上。</p>
+<p><img src="https://developer.android.google.cn/images/training/appbar/appbar_with_button.png" alt=" Figure 1. An app bar with a single action button and an overflow menu.
+"></p>
+<h2 id="添加操作按钮"><a href="#添加操作按钮" class="headerlink" title="添加操作按钮"></a>添加操作按钮</h2><p>ToolBar中所有的操作按钮包括溢出菜单按钮都在XML菜单资源中定义。 要向操作栏添加操作，请在项目的<code>res / menu /</code>目录中创建一个新的XML文件。</p>
+<p>为要包含在ToolBar中的每个项目添加一个<item>元素，如菜单XML文件的代码示例所示：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">&lt;menu xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; &gt;</span><br><span class="line"></span><br><span class="line">    &lt;!-- &quot;Mark Favorite&quot;, should appear as action button if possible --&gt;</span><br><span class="line">    &lt;item</span><br><span class="line">        android:id=&quot;@+id/action_favorite&quot;</span><br><span class="line">        android:icon=&quot;@drawable/ic_favorite_black_48dp&quot;</span><br><span class="line">        android:title=&quot;@string/action_favorite&quot;</span><br><span class="line">        app:showAsAction=&quot;ifRoom&quot;/&gt;</span><br><span class="line"></span><br><span class="line">    &lt;!-- Settings, should always be in the overflow --&gt;</span><br><span class="line">    &lt;item android:id=&quot;@+id/action_settings&quot;</span><br><span class="line">          android:title=&quot;@string/action_settings&quot;</span><br><span class="line">          app:showAsAction=&quot;never&quot;/&gt;</span><br><span class="line"></span><br><span class="line">&lt;/menu&gt;</span><br></pre></td></tr></table></figure></item></p>
+<p>上面代码中：showAsAction属性指定该操作按钮是否应显示为应用程序栏上的按钮。 如果您设置app：showAsAction =“ifRoom”（如示例代码Mark Favorite所示），则如果APPBar中有空间，该操作将显示为按钮; 如果没有足够的空间，超出的操作将被放置到溢出菜单。 如果您设置app：showAsAction =“never”（如示例代码的Settings所示），则该操作始终列在溢出菜单中，不会显示在应用程序栏中。</p>
+<p>如果操作显示在应用程序栏中，系统将使用操作的图标作为操作按钮。</p>
+<h2 id="响应操作"><a href="#响应操作" class="headerlink" title="响应操作"></a>响应操作</h2><p>当用户选择APPBar的一个按钮时，系统将调用ACtivity的onOptionsItemSelected（）方法，并传递一个MenuItem对象以指示哪个项目被单击。 在执行onOptionsItemSelected（）时，调用MenuItem.getItemId（）方法来确定点击的是哪个项目。 返回的ID与您在相应的<item>元素的android：id属性中声明的值相匹配。</item></p>
+<p>例如，以下代码检查以查看用户选择的操作。 如果该方法无法识别用户的操作，它将调用超类方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">public boolean onOptionsItemSelected(MenuItem item) &#123;</span><br><span class="line">    switch (item.getItemId()) &#123;</span><br><span class="line">        case R.id.action_settings:</span><br><span class="line">            // User chose the &quot;Settings&quot; item, show the app settings UI...</span><br><span class="line">            return true;</span><br><span class="line"></span><br><span class="line">        case R.id.action_favorite:</span><br><span class="line">            // User chose the &quot;Favorite&quot; action, mark the current item</span><br><span class="line">            // as a favorite...</span><br><span class="line">            return true;</span><br><span class="line"></span><br><span class="line">        default:</span><br><span class="line">            // If we got here, the user&apos;s action was not recognized.</span><br><span class="line">            // Invoke the superclass to handle it.</span><br><span class="line">            return super.onOptionsItemSelected(item);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="添加一个向上按钮"><a href="#添加一个向上按钮" class="headerlink" title="添加一个向上按钮"></a>添加一个向上按钮</h2><p>您的应用程序应该可以方便用户找到方法回到应用程序的主屏幕。 一个简单的方法是在应用程序栏上提供除主要功能之外的所有Activity的向上按钮。 当用户选择向上按钮时，应用程序将导航到父Activity。</p>
+<p>本课程向您展示如何通过在清单中声明Activity的父级Activity，并启用APPBar的“向上”按钮，将一个向上按钮添加到Activity中。</p>
+<h2 id="声明一个父Activity"><a href="#声明一个父Activity" class="headerlink" title="声明一个父Activity"></a>声明一个父Activity</h2><p>为了支持Activity中的功能，您需要声明Activity的父级。 您可以通过设置android：parentActivityName属性在应用程序清单中执行此操作。</p>
+<p>Android 4.1（API级别16）中引入了android：parentActivityName属性。 要支持旧版本Android的设备，请定义一个<meta-data>键值对，其名称为“android.support.PARENT_ACTIVITY”，值为父Activity的名称。</meta-data></p>
+<p>例如，假设你的应用程序有一个名为MainActivity的主要Activity和一个单独的子Activity。 以下Manifest声明了这两个Activity，并指定了父/子关系：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&lt;application ... &gt;</span><br><span class="line">    ...</span><br><span class="line"></span><br><span class="line">    &lt;!-- The main/home activity (it has no parent activity) --&gt;</span><br><span class="line"></span><br><span class="line">    &lt;activity</span><br><span class="line">        android:name=&quot;com.example.myfirstapp.MainActivity&quot; ...&gt;</span><br><span class="line">        ...</span><br><span class="line">    &lt;/activity&gt;</span><br><span class="line"></span><br><span class="line">    &lt;!-- A child of the main activity --&gt;</span><br><span class="line">    &lt;activity</span><br><span class="line">        android:name=&quot;com.example.myfirstapp.MyChildActivity&quot;</span><br><span class="line">        android:label=&quot;@string/title_activity_child&quot;</span><br><span class="line">        android:parentActivityName=&quot;com.example.myfirstapp.MainActivity&quot; &gt;</span><br><span class="line"></span><br><span class="line">        &lt;!-- Parent activity meta-data to support 4.0 and lower --&gt;</span><br><span class="line">        &lt;meta-data</span><br><span class="line">            android:name=&quot;android.support.PARENT_ACTIVITY&quot;</span><br><span class="line">            android:value=&quot;com.example.myfirstapp.MainActivity&quot; /&gt;</span><br><span class="line">    &lt;/activity&gt;</span><br><span class="line">&lt;/application&gt;</span><br></pre></td></tr></table></figure></p>
+<h2 id="激活向上按钮"><a href="#激活向上按钮" class="headerlink" title="激活向上按钮"></a>激活向上按钮</h2><p>要启用具有父级Activity的Activity的向上按钮，请调用APPBar的setDisplayHomeAsUpEnabled（）方法。 通常，您将在创建Activity时执行此操作。 例如，以下onCreate（）方法将ToolBar设置为MyChildActivity的APPBar，然后启用该APPbar的“向上”按钮：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">protected void onCreate(Bundle savedInstanceState) &#123;</span><br><span class="line">    super.onCreate(savedInstanceState);</span><br><span class="line">    setContentView(R.layout.activity_my_child);</span><br><span class="line"></span><br><span class="line">    // my_child_toolbar is defined in the layout file</span><br><span class="line">    Toolbar myChildToolbar =</span><br><span class="line">        (Toolbar) findViewById(R.id.my_child_toolbar);</span><br><span class="line">    setSupportActionBar(myChildToolbar);</span><br><span class="line"></span><br><span class="line">    // Get a support ActionBar corresponding to this toolbar</span><br><span class="line">    ActionBar ab = getSupportActionBar();</span><br><span class="line"></span><br><span class="line">    // Enable the Up button</span><br><span class="line">    ab.setDisplayHomeAsUpEnabled(true);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>不需要在Activity的onOptionsItemSelected（）方法中捕获up操作。 相反，该方法应该调用其超类，如“响应操作”中所示。 超类方法通过导航到父活动（如应用程序清单中指定）来响应向上选择。</p>
+<h2 id="操作视图"><a href="#操作视图" class="headerlink" title="操作视图"></a>操作视图</h2><p>v7 appcompat支持库ToolBar提供了几种不同的方式供用户与应用程序交互。以前的课程描述了如何定义一个操作，可以是按钮或菜单项。本课介绍如何添加两个通用组件：</p>
+<ul>
+<li>ActionView是在APPBar中提供丰富功能的操作。例如，搜索ActionView允许用户在应用栏中键入搜索文本，而不必更改Activity或fragment。</li>
+<li>action provider是一个具有自己的定制布局的操作。该操作最初显示为按钮或菜单项，但是当用户单击操作时，action provider将以任何想要定义的方式控制操作的行为。例如，action provider可以通过显示菜单来响应点击。</li>
+</ul>
+<p>Android支持库提供了几个专门的Action View和action provider小部件。例如，SearchView小部件实现用于输入搜索查询的操作视图，ShareActionProvider小部件实现与其他应用程序共享信息的操作。还可以定义自己的Action View和action provider。</p>
+<h2 id="添加一个Action-View"><a href="#添加一个Action-View" class="headerlink" title="添加一个Action View"></a>添加一个Action View</h2><p>要添加Action View，请在ToolBar的菜单资源中创建一个<item>元素. 将以下两个属性之一添加到<item>元素中：</item></item></p>
+<ul>
+<li>actionViewClass：实现该操作的窗口小部件的类。</li>
+<li>actionLayout：描述操作组件的布局资源。</li>
+</ul>
+<p>将<code>showAsAction</code>属性设置为<code>ifRoom | collapseActionView</code>或<code>never | collapseActionView</code>。 collapseActionView标志指示当用户没有与其交互时如何显示窗口小部件：如果窗口小部件在APPBar上，应用程序应将该窗口小部件显示为图标。 如果窗口小部件位于溢出菜单中，应用程序应将窗口小部件显示为菜单项。 当用户与动作视图进行交互时，它会展开以填充应用栏。</p>
+<p>例如，以下代码将SearchView小部件添加到应用程序栏中：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&lt;item android:id=&quot;@+id/action_search&quot;</span><br><span class="line">     android:title=&quot;@string/action_search&quot;</span><br><span class="line">     android:icon=&quot;@drawable/ic_search&quot;</span><br><span class="line">     app:showAsAction=&quot;ifRoom|collapseActionView&quot;</span><br><span class="line">     app:actionViewClass=&quot;android.support.v7.widget.SearchView&quot; /&gt;</span><br></pre></td></tr></table></figure></p>
+<p>如果用户没有与窗口小部件交互，则应用程序会将该窗口小部件显示为android：icon指定的图标。 （如果APPBar中没有足够的空间，应用程序会将操作添加到溢出菜单。）当用户点击图标或菜单项时，窗口小部件将展开以填充工具栏，允许用户与其进行交互。</p>
+<p><img src="https://developer.android.google.cn/images/training/appbar/action_view.png" alt="Figure 1. When the user clicks an action view&#39;s icon, the view&#39;s UI fills the toolbar. "></p>
+<p>如果需要配置操作，请在Activity的onCreateOptionsMenu（）回调中执行此操作。 您可以通过调用静态getActionView（）方法获取操作视图的对象引用。 例如，以下代码将获取前一代码示例中定义的SearchView小部件的对象引用：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">public boolean onCreateOptionsMenu(Menu menu) &#123;</span><br><span class="line">    getMenuInflater().inflate(R.menu.main_activity_actions, menu);</span><br><span class="line"></span><br><span class="line">    MenuItem searchItem = menu.findItem(R.id.action_search);</span><br><span class="line">    SearchView searchView =</span><br><span class="line">            (SearchView) MenuItemCompat.getActionView(searchItem);</span><br><span class="line"></span><br><span class="line">    // Configure the search info and add any event listeners...</span><br><span class="line"></span><br><span class="line">    return super.onCreateOptionsMenu(menu);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="响应Action-View扩展"><a href="#响应Action-View扩展" class="headerlink" title="响应Action View扩展"></a>响应Action View扩展</h2><p>如果操作的<item>元素具有collapseActionView标志，则应用程序将Action View显示为图标，直到用户与操作视图进行交互。 当用户点击图标时，onOptionsItemSelected（）的内置处理程序会扩展Action View。 如果Activity子类覆盖了onOptionsItemSelected（）方法，则覆盖方法必须调用super.onOptionsItemSelected（），以便超类可以展开动作视图。</item></p>
+<p>如果要在动作展开或折叠时执行某些操作，可以定义一个实现MenuItem.OnActionExpandListener的类，并将该类的成员传递给setOnActionExpandListener（）。 例如，您可能希望根据是否展开或折叠操作视图来更新活动。 以下代码段显示了如何定义和传递侦听器：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">public boolean onCreateOptionsMenu(Menu menu) &#123;</span><br><span class="line">    getMenuInflater().inflate(R.menu.options, menu);</span><br><span class="line">    // ...</span><br><span class="line"></span><br><span class="line">    // Define the listener</span><br><span class="line">    OnActionExpandListener expandListener = new OnActionExpandListener() &#123;</span><br><span class="line">        @Override</span><br><span class="line">        public boolean onMenuItemActionCollapse(MenuItem item) &#123;</span><br><span class="line">            // Do something when action item collapses</span><br><span class="line">            return true;  // Return true to collapse action view</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">        public boolean onMenuItemActionExpand(MenuItem item) &#123;</span><br><span class="line">            // Do something when expanded</span><br><span class="line">            return true;  // Return true to expand action view</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    // Get the MenuItem for the action item</span><br><span class="line">    MenuItem actionMenuItem = menu.findItem(R.id.myActionItem);</span><br><span class="line"></span><br><span class="line">    // Assign the listener to that action item</span><br><span class="line">    MenuItemCompat.setOnActionExpandListener(actionMenuItem, expandListener);</span><br><span class="line"></span><br><span class="line">    // Any other things you have to do when creating the options menu…</span><br><span class="line"></span><br><span class="line">    return true;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="添加一个Action-Provider"><a href="#添加一个Action-Provider" class="headerlink" title="添加一个Action Provider"></a>添加一个Action Provider</h2><p>要声明一个Action Provider，请在ToolBar的菜单资源中创建一个<item>元素,添加一个actionProviderClass属性，并将其设置为action provider类的完全限定类名。</item></p>
+<p>例如，以下代码声明一个ShareActionProvider，它是一个在支持库中定义的小部件，允许您的应用与其他应用程序共享数据：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;item android:id=&quot;@+id/action_share&quot;</span><br><span class="line">    android:title=&quot;@string/share&quot;</span><br><span class="line">    app:showAsAction=&quot;ifRoom&quot;</span><br><span class="line">    app:actionProviderClass=&quot;android.support.v7.widget.ShareActionProvider&quot;/&gt;</span><br></pre></td></tr></table></figure></p>
+<p>在这种情况下，由于ShareActionProvider提供了自己的图标，因此无需再为它声明一个图标。 如果您使用自定义操作，请声明一个图标。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/04/04/创建选项卡界面/" rel="next" title="创建选项卡界面">
+                <i class="fa fa-chevron-left"></i> 创建选项卡界面
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/04/07/ViewPager之自定义标签的使用/" rel="prev" title="ViewPager之自定义标签的使用">
+                ViewPager之自定义标签的使用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg"
+               alt="rangaofei" />
+          <p class="site-author-name" itemprop="name">rangaofei</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#设置APPBar"><span class="nav-number">1.</span> <span class="nav-text">设置APPBar</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#在Activity中添加ToolBar"><span class="nav-number">2.</span> <span class="nav-text">在Activity中添加ToolBar</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用App-Bar实用程序方法"><span class="nav-number">3.</span> <span class="nav-text">使用App Bar实用程序方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#为APPBar添加操作"><span class="nav-number">4.</span> <span class="nav-text">为APPBar添加操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#添加操作按钮"><span class="nav-number">5.</span> <span class="nav-text">添加操作按钮</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#响应操作"><span class="nav-number">6.</span> <span class="nav-text">响应操作</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#添加一个向上按钮"><span class="nav-number">7.</span> <span class="nav-text">添加一个向上按钮</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#声明一个父Activity"><span class="nav-number">8.</span> <span class="nav-text">声明一个父Activity</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#激活向上按钮"><span class="nav-number">9.</span> <span class="nav-text">激活向上按钮</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#操作视图"><span class="nav-number">10.</span> <span class="nav-text">操作视图</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#添加一个Action-View"><span class="nav-number">11.</span> <span class="nav-text">添加一个Action View</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#响应Action-View扩展"><span class="nav-number">12.</span> <span class="nav-text">响应Action View扩展</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#添加一个Action-Provider"><span class="nav-number">13.</span> <span class="nav-text">添加一个Action Provider</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">rangaofei</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

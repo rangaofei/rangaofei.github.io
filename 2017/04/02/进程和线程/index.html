@@ -1,0 +1,738 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="进程和线程当一个程序组件启动时，并且这个程序没有其他组件在运行，安卓系统会为这个程序启动一个Linux进程，这个进程只有一个线程在运行。默认情况下，同一个程序的所有组件都运行在一个被称为“主线程”的线程。当一个程序的组件在其他组件已经运行的时候启动，这两个组件会运行在同一个进程中的同一个线程。然而，你可以让程序不同的组件运行在不同的进程中，你也可以为进程创建额外的线程。 这篇文档讨论线程和进程如何">
+<meta name="keywords" content="Android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="进程和线程">
+<meta property="og:url" content="https://rangaofei.github.io/2017/04/02/进程和线程/index.html">
+<meta property="og:site_name" content="SAKA&#39;S BLOG">
+<meta property="og:description" content="进程和线程当一个程序组件启动时，并且这个程序没有其他组件在运行，安卓系统会为这个程序启动一个Linux进程，这个进程只有一个线程在运行。默认情况下，同一个程序的所有组件都运行在一个被称为“主线程”的线程。当一个程序的组件在其他组件已经运行的时候启动，这两个组件会运行在同一个进程中的同一个线程。然而，你可以让程序不同的组件运行在不同的进程中，你也可以为进程创建额外的线程。 这篇文档讨论线程和进程如何">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-04-02T07:18:30.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="进程和线程">
+<meta name="twitter:description" content="进程和线程当一个程序组件启动时，并且这个程序没有其他组件在运行，安卓系统会为这个程序启动一个Linux进程，这个进程只有一个线程在运行。默认情况下，同一个程序的所有组件都运行在一个被称为“主线程”的线程。当一个程序的组件在其他组件已经运行的时候启动，这两个组件会运行在同一个进程中的同一个线程。然而，你可以让程序不同的组件运行在不同的进程中，你也可以为进程创建额外的线程。 这篇文档讨论线程和进程如何">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://rangaofei.github.io/2017/04/02/进程和线程/"/>
+
+
+
+
+
+  <title> 进程和线程 | SAKA'S BLOG </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s4.cnzz.com/z_stat.php?id=1261177704&web_id=1261177704" language="JavaScript"></script>
+  <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1261177704'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1261177704%26online%3D1%26show%3Dline' type='text/javascript'%3E%3C/script%3E"));</script>
+  </div>
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">SAKA'S BLOG</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://rangaofei.github.io/2017/04/02/进程和线程/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="rangaofei">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="SAKA'S BLOG">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="SAKA'S BLOG" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                进程和线程
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-04-02T15:16:42+08:00">
+                2017-04-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">              
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/AsyncTask/" itemprop="url" rel="index">
+                    <span itemprop="name">AsyncTask</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="进程和线程"><a href="#进程和线程" class="headerlink" title="进程和线程"></a>进程和线程</h1><p>当一个程序组件启动时，<br>并且这个程序没有其他组件在运行，<br>安卓系统会为这个程序启动一个Linux进程，<br>这个进程只有一个线程在运行。<br>默认情况下，同一个程序的所有组件都运行在一个被称为“主线程”的线程。<br>当一个程序的组件在其他组件已经运行的时候启动，<br>这两个组件会运行在同一个进程中的同一个线程。<br>然而，你可以让程序不同的组件运行在不同的进程中，<br>你也可以为进程创建额外的线程。</p>
+<p>这篇文档讨论线程和进程如何在安卓应用中工作。</p>
+<h2 id="进程（Process）"><a href="#进程（Process）" class="headerlink" title="进程（Process）"></a>进程（Process）</h2><p>默认情况下，同一个程序的所有组件都运行在同一个进程中，<br>最好不要改变这种情况。<br>当你需要控制一个其他进程中的组件，<br>你可以在manifest中进行。</p>
+<p>Manifest中每个元素（activity，service，broadcastreceiver，contentprovider）支持<code>android:process</code>属性，<br>这个属性可以明确在哪个进程中运行组件。<br>你可以设置这个属性来使得每个组件都运行在自己的进程中，<br>或者只有一些组件共享进程而其他的组件不会干扰。<br>你也可以通过设置这个属性使得不同的应用中的组件运行在同一个进程中，<br>不同的应用程序共享相同的userId和签名证书。</p>
+<p>application标签也支持<code>android:process</code>属性，<br>设置这个属性后，为该程序中所有的组件设置了一个默认相同的进程。</p>
+<p>安卓系统在以下情况会关闭进程：内存低，用户需要使用其他进程。<br>此时应用中运行的组件会立即被销毁。<br>当用户再次需要运行此程序时，一个进程会被启动。</p>
+<p>安卓系统会对应用的重要性的权重进行对比，来决定那个进程会被杀死。<br>例如，系统会杀死那些持有activity但是不会显示在屏幕上的activity，<br>而不会杀死持有显示在屏幕上的activity。<br>因此，终止一个进程的条件取决于那个进程中组件的状态。</p>
+<h2 id="线程（Threads）"><a href="#线程（Threads）" class="headerlink" title="线程（Threads）"></a>线程（Threads）</h2><p>当一个程序被启动时，系统会为它创建一个线程，一般叫做主线程。<br>这个线程是一个非常重要的线程，<br>因为它控制了用户与控件的交互和绘制等事件分发。<br>因此也称主线程为UI线程。</p>
+<p>系统不会为每个组件单独创建一个线程，<br>运行在同一个进程中的所有的组件都运行在同一个UI线程中，<br>并且系统会在这个线程中为调用其他组件分发事件。<br>通常，系统的回调方法（例如<code>onKeyDown()</code>报告给用户的回调方法的生命周期）运行在进程中的UI线程。</p>
+<p>例如：当用户触摸屏幕上的按钮时，app的UI线程会将触摸事件分发给控件，<br>这个事件会将按压状态不断传递给事件队列。<br>UI线程不断去除队列中的请求来通知控件需要重绘；</p>
+<p>当应用程序执行大量的工作来响应用户交互时，<br>这种单线程模型可能会降低性能，<br>除非你正确的实现了你的功能。<br>如果在UI线程中执行网络访问或者数据库查询这种长时间的操作，<br>会阻塞整个UI线程。<br>当线程被阻塞时，UI线程不会再分发事件，也不会重绘控件。<br>当程序阻塞UI线程5s时，系统会ANR。<br>安卓的UI控件不是线程安全的，所以你不能从工作线程更改UI。<br>安卓单线程模型使用的两条规则：</p>
+<ol>
+<li>不要锁死UI线程</li>
+<li>不要在UI线程以外的线程更新UI。</li>
+</ol>
+<h2 id="工作线程（Worker-threads）"><a href="#工作线程（Worker-threads）" class="headerlink" title="工作线程（Worker threads）"></a>工作线程（Worker threads）</h2><p>由于安卓系统的单线程模型，保证应用程序的UI响应至关重要。<br>如果你要执行的操作不是立即能完成的，<br>那应该确保不是即时完成的工作在后台或者工作线程。</p>
+<p>为了修复这个问题，安卓系统提供了以下方法来在非UI线程中更新UI：</p>
+<ul>
+<li><code>Activity.runOnUiThread(Runnable)</code></li>
+<li><code>View.post(Runnable)</code></li>
+<li><p><code>View.postDelayed(Runnable, long)</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">public void onClick(View v) &#123;</span><br><span class="line">    new Thread(new Runnable() &#123;</span><br><span class="line">        public void run() &#123;</span><br><span class="line">            // a potentially  time consuming task</span><br><span class="line">            final Bitmap bitmap =</span><br><span class="line">                    processBitMap(&quot;image.png&quot;);</span><br><span class="line">            mImageView.post(new Runnable() &#123;</span><br><span class="line">                public void run() &#123;</span><br><span class="line">                    mImageView.setImageBitmap(bitmap);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;).start();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>这种实现方式是线程安全的：<br>后台操作是另外的非UI线程，<br>而ImageView始终从UI线程更新处理。</p>
+<p>然而，由于操作的复杂度不断增长，这种方式的代码越来越复杂并且难以维护。<br>为了应对复杂的交互，你可以在工作线程使用Handler来发送Message到UI线程。<br>还有一个更好的方式，就是使用AsyncTask，异步任务简化了工作线程和UI线程的交互。</p>
+<h3 id="使用AsyncTask"><a href="#使用AsyncTask" class="headerlink" title="使用AsyncTask"></a>使用AsyncTask</h3><p>AsyncTask允许你的交互与后台工作异步。<br>在工作线程进行操作，然后在主线程发布运行结果。</p>
+<p>要使用AsyncTask必须继承它，并实现<code>doInBackground()</code>方法，<br>这个方法在后台的线程池中运行。<br>想要更新UI，必须实现<code>onPostExecute()</code>方法，<br>这个方法将doinbackground的结果传递到主线程，<br>从而安全的更新UI。<br>通过调用execute()方法来运行任务。</p>
+<h2 id="线程安全的方法（Thread-safe-methods）"><a href="#线程安全的方法（Thread-safe-methods）" class="headerlink" title="线程安全的方法（Thread-safe methods）"></a>线程安全的方法（Thread-safe methods）</h2><p>在某些情况下，需要从多个线程调用实现方法，一次必须将其编写称为线程安全的。<br>这主要适用于可以远程调用的方法，例如绑定服务中的方法。<br>当在IBinder中调用的方法的源于IBinder运行的相同进程中的方法时，<br>该方法在调用者的线程中执行。<br>然而，当方法调用源于另一个进程时，<br>该方法在从系统维护在与IBinder相同的进程（不在进程的UI线程中执行）的线程池中选择的线程中执行。<br>例如，虽然服务的进程的UI线程将调用一个服务的onBind（）方法，<br>但是在onBind（）返回的对象中实现的方法（例如，实现RPC方法的子类）将从池中返回，<br>因为服务可以有多个客户端，<br>所以多个池线程可以同时使用相同的IBinder方法。<br>因此，IBinder方法必须实现为线程安全。</p>
+<p>类似地，ContentProvider可以接收源自其他进程的数据请求。<br> 虽然ContentResolver和ContentProvider类隐藏了进程间通信如何管理的细节，<br> 但是ContentProvider方法会响应这些请求<br> （query（），insert（），delete（），update（）和getType（））<br> 被来自ContentProvider进程中的线程池调用，<br> 而不是进程的UI线程。<br>  因为这些方法可能会同时从任意数量的线程调用，<br>  所以它们也必须被实现为线程安全的。</p>
+<h2 id="进程间通信"><a href="#进程间通信" class="headerlink" title="进程间通信"></a>进程间通信</h2><p>安卓系统提供了使用remote procedure calls (RPCs)的进程间通信（IPC）机制，<br>一个方法被activity或者其他应用破嗯的组件调用，但是在另一个进程中执行，<br>最后返回给调用这结果。<br>这需要将该方法嗲用及其数据分解为操作系统可以理解的级别，<br>将它从本地进程和地址空间发送到运城进程和地址空间，<br>然后组合并重启本次调用。<br>返回值以反方向传输。<br>安卓系统提供这些IPC事物的所有接口。</p>
+<p>要执行IPC，应用程序必须使用bindService()绑定到service。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/03/25/SocketIO官方文档-总览/" rel="next" title="SocketIO官方文档-总览">
+                <i class="fa fa-chevron-left"></i> SocketIO官方文档-总览
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/04/02/AsyncTask官方文档/" rel="prev" title="AsyncTask官方文档">
+                AsyncTask官方文档 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg"
+               alt="rangaofei" />
+          <p class="site-author-name" itemprop="name">rangaofei</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#进程和线程"><span class="nav-number">1.</span> <span class="nav-text">进程和线程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#进程（Process）"><span class="nav-number">1.1.</span> <span class="nav-text">进程（Process）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程（Threads）"><span class="nav-number">1.2.</span> <span class="nav-text">线程（Threads）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#工作线程（Worker-threads）"><span class="nav-number">1.3.</span> <span class="nav-text">工作线程（Worker threads）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用AsyncTask"><span class="nav-number">1.3.1.</span> <span class="nav-text">使用AsyncTask</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#线程安全的方法（Thread-safe-methods）"><span class="nav-number">1.4.</span> <span class="nav-text">线程安全的方法（Thread-safe methods）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#进程间通信"><span class="nav-number">1.5.</span> <span class="nav-text">进程间通信</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">rangaofei</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

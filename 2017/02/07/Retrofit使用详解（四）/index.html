@@ -1,0 +1,766 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="在安卓上使用Authentication这张内容会比较有用，在使用token添加到头信息或者刷新过期token的时候 Integrate Basic Authentication现在为ServiceGenerator类添加一个为请求增加认证（Authentication）的方法。 12345678910111213141516171819202122232425262728293031323334">
+<meta name="keywords" content="Android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Retrofit使用详解（四）">
+<meta property="og:url" content="https://rangaofei.github.io/2017/02/07/Retrofit使用详解（四）/index.html">
+<meta property="og:site_name" content="SAKA&#39;S BLOG">
+<meta property="og:description" content="在安卓上使用Authentication这张内容会比较有用，在使用token添加到头信息或者刷新过期token的时候 Integrate Basic Authentication现在为ServiceGenerator类添加一个为请求增加认证（Authentication）的方法。 12345678910111213141516171819202122232425262728293031323334">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-02-07T12:02:54.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Retrofit使用详解（四）">
+<meta name="twitter:description" content="在安卓上使用Authentication这张内容会比较有用，在使用token添加到头信息或者刷新过期token的时候 Integrate Basic Authentication现在为ServiceGenerator类添加一个为请求增加认证（Authentication）的方法。 12345678910111213141516171819202122232425262728293031323334">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://rangaofei.github.io/2017/02/07/Retrofit使用详解（四）/"/>
+
+
+
+
+
+  <title> Retrofit使用详解（四） | SAKA'S BLOG </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s4.cnzz.com/z_stat.php?id=1261177704&web_id=1261177704" language="JavaScript"></script>
+  <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1261177704'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1261177704%26online%3D1%26show%3Dline' type='text/javascript'%3E%3C/script%3E"));</script>
+  </div>
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">SAKA'S BLOG</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://rangaofei.github.io/2017/02/07/Retrofit使用详解（四）/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="rangaofei">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="SAKA'S BLOG">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="SAKA'S BLOG" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Retrofit使用详解（四）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-02-07T20:01:37+08:00">
+                2017-02-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">              
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/Retrofit/" itemprop="url" rel="index">
+                    <span itemprop="name">Retrofit</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="在安卓上使用Authentication"><a href="#在安卓上使用Authentication" class="headerlink" title="在安卓上使用Authentication"></a>在安卓上使用Authentication</h1><p>这张内容会比较有用，在使用token添加到头信息或者刷新过期token的时候</p>
+<h2 id="Integrate-Basic-Authentication"><a href="#Integrate-Basic-Authentication" class="headerlink" title="Integrate Basic Authentication"></a>Integrate Basic Authentication</h2><p>现在为ServiceGenerator类添加一个为请求增加认证（Authentication）的方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">public class ServiceGenerator &#123;</span><br><span class="line"></span><br><span class="line">    public static final String API_BASE_URL = &quot;https://your.api-base.url&quot;;</span><br><span class="line"></span><br><span class="line">    private static OkHttpClient.Builder httpClient = new OkHttpClient.Builder();</span><br><span class="line"></span><br><span class="line">    private static Retrofit.Builder builder =</span><br><span class="line">            new Retrofit.Builder()</span><br><span class="line">                    .baseUrl(API_BASE_URL)</span><br><span class="line">                    .addConverterFactory(GsonConverterFactory.create());</span><br><span class="line"></span><br><span class="line">    public static &lt;S&gt; S createService(Class&lt;S&gt; serviceClass) &#123;</span><br><span class="line">        return createService(serviceClass, null, null);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static &lt;S&gt; S createService(</span><br><span class="line">            Class&lt;S&gt; serviceClass, String username, String password) &#123;</span><br><span class="line">        if (!TextUtils.isEmpty(username)</span><br><span class="line">                &amp;&amp; !TextUtils.isEmpty(password)) &#123;</span><br><span class="line">            String authToken = Credentials.basic(username, password);</span><br><span class="line">            return createService(serviceClass, authToken);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return createService(serviceClass, null, null);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static &lt;S&gt; S createService(</span><br><span class="line">            Class&lt;S&gt; serviceClass, final String authToken) &#123;</span><br><span class="line">        if (!TextUtils.isEmpty(authToken)) &#123;</span><br><span class="line">            AuthenticationInterceptor interceptor =</span><br><span class="line">                    new AuthenticationInterceptor(authToken);</span><br><span class="line"></span><br><span class="line">            if (!httpClient.interceptors().contains(interceptor)) &#123;</span><br><span class="line">                httpClient.addInterceptor(interceptor);</span><br><span class="line"></span><br><span class="line">                builder.client(httpClient.build());</span><br><span class="line">                retrofit = builder.build();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return retrofit.create(serviceClass);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在新方法中添加了两个参数:username和password。这个和原来的方法是一样的，都可以用来创建建http请求并接收响应信息。</p>
+<p>不同的是在第二个方法中添加了一个拦截器(AuthenticationInterceptor)。但是只有在为Retrofit提供了username和pasword之后你才能有这个拦截器，假如未添加这两个字段，你会得到和第一个方法一样的结果。</p>
+<p>对于身份验证部分，必须调整给定usename和password的格式。 基本认证需要用两个值中间用冒号连接字符串。 此外，新创建（串联）字符串必须进行Base64编码。</p>
+<p>大多数网络服务和API都会使用Authorization头信息来认证http请求。假如服务器认证方式不是使用这个Authorization，可以更改头信息的字段。如果以特定格式接收服务器的响应信息，Accept Header非常重要。</p>
+<p>下面是AuthenticationInterceptor的定义类：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">public class AuthenticationInterceptor implements Interceptor &#123;</span><br><span class="line"></span><br><span class="line">    private String authToken;</span><br><span class="line"></span><br><span class="line">    public AuthenticationInterceptor(String token) &#123;</span><br><span class="line">        this.authToken = token;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public Response intercept(Chain chain) throws IOException &#123;</span><br><span class="line">        Request original = chain.request();</span><br><span class="line"></span><br><span class="line">        Request.Builder builder = original.newBuilder()</span><br><span class="line">                .header(&quot;Authorization&quot;, authToken);</span><br><span class="line"></span><br><span class="line">        Request request = builder.build();</span><br><span class="line">        return chain.proceed(request);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<h2 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h2><p>现在你只需要调用 ServiceGenerator 类中的新方法就可以使用了。</p>
+<p>请求方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public interface LoginService &#123;  </span><br><span class="line">    @POST(&quot;/login&quot;)</span><br><span class="line">    Call&lt;User&gt; basicLogin();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>创建http请求：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">LoginService loginService =  </span><br><span class="line">   ServiceGenerator.createService(LoginService.class, &quot;user&quot;, &quot;secretpassword&quot;);</span><br><span class="line">Call&lt;User&gt; call = loginService.basicLogin();  </span><br><span class="line">call.enqueue(new Callback&lt;User &gt;() &#123;  </span><br><span class="line">    @Override</span><br><span class="line">    public void onResponse(Call&lt;User&gt; call, Response&lt;User&gt; response) &#123;</span><br><span class="line">        if (response.isSuccessful()) &#123;</span><br><span class="line">            // user object available</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            // error response, no access to resource?</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void onFailure(Call&lt;User&gt; call, Throwable t) &#123;</span><br><span class="line">        // something went completely south (like no internet connection)</span><br><span class="line">        Log.d(&quot;Error&quot;, t.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>ServiceGenerator方法将创建包含定义的授权头的HTTP客户端。 一旦调用loginService的basicLogin方法，提供的凭据将自动传递到请求的API端点。</p>
+<h1 id="安卓上的Token认证"><a href="#安卓上的Token认证" class="headerlink" title="安卓上的Token认证"></a>安卓上的Token认证</h1><h2 id="Integrate-Token-Authentication"><a href="#Integrate-Token-Authentication" class="headerlink" title="Integrate Token Authentication"></a>Integrate Token Authentication</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">public class ServiceGenerator &#123;</span><br><span class="line"></span><br><span class="line">    public static final String API_BASE_URL = &quot;https://your.api-base.url&quot;;</span><br><span class="line"></span><br><span class="line">    private static OkHttpClient.Builder httpClient = new OkHttpClient.Builder();</span><br><span class="line"></span><br><span class="line">    private static Retrofit.Builder builder =</span><br><span class="line">            new Retrofit.Builder()</span><br><span class="line">                    .baseUrl(API_BASE_URL)</span><br><span class="line">                    .addConverterFactory(GsonConverterFactory.create());</span><br><span class="line"></span><br><span class="line">    public static &lt;S&gt; S createService(Class&lt;S&gt; serviceClass) &#123;</span><br><span class="line">        return createService(serviceClass, null);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static &lt;S&gt; S createService(</span><br><span class="line">        Class&lt;S&gt; serviceClass, final String authToken) &#123;</span><br><span class="line">        if (!TextUtils.isEmpty(authToken)) &#123;</span><br><span class="line">            AuthenticationInterceptor interceptor =</span><br><span class="line">                    new AuthenticationInterceptor(authToken);</span><br><span class="line"></span><br><span class="line">            if (!httpClient.interceptors().contains(interceptor)) &#123;</span><br><span class="line">                httpClient.addInterceptor(interceptor);</span><br><span class="line"></span><br><span class="line">                builder.client(httpClient.build());</span><br><span class="line">                retrofit = builder.build();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        return retrofit.create(serviceClass);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在上边的方法中，使用token作为参数传递到方法中，然后用拦截器添加头信息。（其实和上一节一样的东西）</p>
+<h2 id="Example-Usage"><a href="#Example-Usage" class="headerlink" title="Example Usage"></a>Example Usage</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public interface UserService &#123;  </span><br><span class="line">    @POST(&quot;/me&quot;)</span><br><span class="line">    Call&lt;User&gt; me();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>下面创建请求：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">UserService userService =  </span><br><span class="line">    ServiceGenerator.create(UserService.class, &quot;auth-token&quot;);</span><br><span class="line">Call&lt;User&gt; call = userService.me();  </span><br><span class="line">User user = call.execute().body();</span><br></pre></td></tr></table></figure></p>
+<h1 id="使用Retrofit上传下载文件"><a href="#使用Retrofit上传下载文件" class="headerlink" title="使用Retrofit上传下载文件"></a>使用Retrofit上传下载文件</h1><h2 id="Upload-Files-With-Retrofit-2"><a href="#Upload-Files-With-Retrofit-2" class="headerlink" title="Upload Files With Retrofit 2"></a>Upload Files With Retrofit 2</h2><p>使用Retrofit 2，您需要使用OkHttp的RequestBody或MultipartBody.Part类，并将您的文件封装到请求正文中。<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public interface FileUploadService &#123;  </span><br><span class="line">    @Multipart</span><br><span class="line">    @POST(&quot;upload&quot;)</span><br><span class="line">    Call&lt;ResponseBody&gt; upload(</span><br><span class="line">        @Part(&quot;description&quot;) RequestBody description,</span><br><span class="line">        @Part MultipartBody.Part file</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>在上边的代码中：<br>首先你需要声明Call的注解为@Multipart请求。</p>
+<p>@Part注解中的description，是一个字符串被封装在RequestBody中。</p>
+<p>另一个@Part中的是一个MultipartBodu.Part，这个类允许在请求中加入文件，包括二进制文件。</p>
+<h2 id="Android-Client-Code"><a href="#Android-Client-Code" class="headerlink" title="Android Client Code"></a>Android Client Code</h2><p>下面讲解上传文件，继续使用前边的ServiceGenerator类,下边的代码中显示了以文件的Uri作为参数传给uploadFile（Uri fileUri）方法。你启动了新的Intent来选择文件，将会在onActivityResult（）方法中返回文件的Uri。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">private void uploadFile(Uri fileUri) &#123;  </span><br><span class="line">    // create upload service client</span><br><span class="line">    FileUploadService service =</span><br><span class="line">            ServiceGenerator.createService(FileUploadService.class);</span><br><span class="line"></span><br><span class="line">    // https://github.com/iPaulPro/aFileChooser/blob/master/aFileChooser/src/com/ipaulpro/afilechooser/utils/FileUtils.java</span><br><span class="line">    // use the FileUtils to get the actual file by uri</span><br><span class="line">    File file = FileUtils.getFile(this, fileUri);</span><br><span class="line"></span><br><span class="line">    // create RequestBody instance from file</span><br><span class="line">    RequestBody requestFile =</span><br><span class="line">            RequestBody.create(</span><br><span class="line">                         MediaType.parse(getContentResolver().getType(fileUri)),</span><br><span class="line">                         file</span><br><span class="line">             );</span><br><span class="line"></span><br><span class="line">    // MultipartBody.Part is used to send also the actual file name</span><br><span class="line">    MultipartBody.Part body =</span><br><span class="line">            MultipartBody.Part.createFormData(&quot;picture&quot;, file.getName(), requestFile);</span><br><span class="line"></span><br><span class="line">    // add another part within the multipart request</span><br><span class="line">    String descriptionString = &quot;hello, this is description speaking&quot;;</span><br><span class="line">    RequestBody description =</span><br><span class="line">            RequestBody.create(</span><br><span class="line">                    okhttp3.MultipartBody.FORM, descriptionString);</span><br><span class="line"></span><br><span class="line">    // finally, execute the request</span><br><span class="line">    Call&lt;ResponseBody&gt; call = service.upload(description, body);</span><br><span class="line">    call.enqueue(new Callback&lt;ResponseBody&gt;() &#123;</span><br><span class="line">        @Override</span><br><span class="line">        public void onResponse(Call&lt;ResponseBody&gt; call,</span><br><span class="line">                               Response&lt;ResponseBody&gt; response) &#123;</span><br><span class="line">            Log.v(&quot;Upload&quot;, &quot;success&quot;);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        @Override</span><br><span class="line">        public void onFailure(Call&lt;ResponseBody&gt; call, Throwable t) &#123;</span><br><span class="line">            Log.e(&quot;Upload error:&quot;, t.getMessage());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的代码用于初始化数据并上传文件。RequestBody类来自OkHttp，它的.create()方法需要传递两个参数，媒体类型和实际数据。媒体类型可以是OkHttp提供的请求常量如：okhttp3.MultipartBody.FORM。文件的媒体类型最好是实际的内容类型。例如，PNG图像应该有image / png。我们的代码中使用getContentResolver().getType(fileUri)调用来计算内容类型，然后使用MediaType.parse()将结果解析为OkHttp的媒体类型。</p>
+<p>然后添加封装到MultipartBody.Part实例中的文件。这是您需要使用从客户端适当地上传文件。此外，您可以在createFormData()方法中添加原始文件名，并在后端重复使用它。</p>
+<h2 id="Remember-the-Content-Type"><a href="#Remember-the-Content-Type" class="headerlink" title="Remember the Content-Type"></a>Remember the Content-Type</h2><p>请注意Retrofit的内容类型。如果你拦截底层的OkHttp客户端并将内容类型更改为application / json，则您的服务器可能存在反序列化过程的问题。</p>
+<h2 id="Exemplary-Hapi-Server-for-File-Uploads"><a href="#Exemplary-Hapi-Server-for-File-Uploads" class="headerlink" title="Exemplary Hapi Server for File Uploads"></a>Exemplary Hapi Server for File Uploads</h2><p>搭建一个简单的hapi服务器，使用POST方法，路径在/ upload。 此外，hapi不解析传入的请求，我们使用一个名为multiparty的Node.js库来进行解析。</p>
+<p>在multiparty的解析函数的回调中，我们记录每个字段以显示其输出。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">method: &apos;POST&apos;,  </span><br><span class="line">path: &apos;/upload&apos;,  </span><br><span class="line">config: &#123;  </span><br><span class="line">    payload: &#123;</span><br><span class="line">        maxBytes: 209715200,</span><br><span class="line">        output: &apos;stream&apos;,</span><br><span class="line">        parse: false</span><br><span class="line">    &#125;,</span><br><span class="line">    handler: function(request, reply) &#123;</span><br><span class="line">        var multiparty = require(&apos;multiparty&apos;);</span><br><span class="line">        var form = new multiparty.Form();</span><br><span class="line">        form.parse(request.payload, function(err, fields, files) &#123;</span><br><span class="line">            console.log(err);</span><br><span class="line">            console.log(fields);</span><br><span class="line">            console.log(files);</span><br><span class="line"></span><br><span class="line">            return reply(util.inspect(&#123;fields: fields, files: files&#125;));</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>输出日志：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">null  </span><br><span class="line">&#123; description: [ &apos;hello, this is description speaking&apos; ] &#125;</span><br><span class="line">&#123; picture:</span><br><span class="line">   [ &#123; fieldName: &apos;picture&apos;,</span><br><span class="line">       originalFilename: &apos;20160312_095248.jpg&apos;,</span><br><span class="line">       path: &apos;/var/folders/rq/q_m4_21j3lqf1lw48fqttx_80000gn/T/X_sxX6LDUMBcuUcUGDMBKc2T.jpg&apos;,</span><br><span class="line">       headers: [Object],</span><br><span class="line">       size: 39369 &#125; ] &#125;</span><br></pre></td></tr></table></figure>
+<h1 id="上传多个文件"><a href="#上传多个文件" class="headerlink" title="上传多个文件"></a>上传多个文件</h1><p>为你的FileUploadService类添加一个新的方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">public interface FileUploadService &#123;  </span><br><span class="line">    // previous code for single file uploads</span><br><span class="line">    @Multipart</span><br><span class="line">    @POST(&quot;upload&quot;)</span><br><span class="line">    Call&lt;ResponseBody&gt; uploadFile(</span><br><span class="line">            @Part(&quot;description&quot;) RequestBody description,</span><br><span class="line">            @Part MultipartBody.Part file);</span><br><span class="line"></span><br><span class="line">    // new code for multiple files</span><br><span class="line">    @Multipart</span><br><span class="line">    @POST(&quot;upload&quot;)</span><br><span class="line">    Call&lt;ResponseBody&gt; uploadMultipleFiles(</span><br><span class="line">            @Part(&quot;description&quot;) RequestBody description,</span><br><span class="line">            @Part MultipartBody.Part file1,</span><br><span class="line">            @Part MultipartBody.Part file2);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>只需要向方法中添加 @Part MultipartBody.Part file即可。目前uploadMultipleFiles()支持上传两个文件，你也可以根据需求动态添加文件数量。</p>
+<p>现在来看使用方法。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">@NonNull</span><br><span class="line">private RequestBody createPartFromString(String descriptionString) &#123;  </span><br><span class="line">    return RequestBody.create(</span><br><span class="line">            okhttp3.MultipartBody.FORM, descriptionString);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@NonNull</span><br><span class="line">private MultipartBody.Part prepareFilePart(String partName, Uri fileUri) &#123;  </span><br><span class="line">    // https://github.com/iPaulPro/aFileChooser/blob/master/aFileChooser/src/com/ipaulpro/afilechooser/utils/FileUtils.java</span><br><span class="line">    // use the FileUtils to get the actual file by uri</span><br><span class="line">    File file = FileUtils.getFile(this, fileUri);</span><br><span class="line"></span><br><span class="line">    // create RequestBody instance from file</span><br><span class="line">    RequestBody requestFile =</span><br><span class="line">        RequestBody.create(</span><br><span class="line">            MediaType.parse(getContentResolver().getType(fileUri)), </span><br><span class="line">            file</span><br><span class="line">        );</span><br><span class="line"></span><br><span class="line">    // MultipartBody.Part is used to send also the actual file name</span><br><span class="line">    return MultipartBody.Part.createFormData(partName, file.getName(), requestFile);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>createPartFromString()可用于分段上传文件。prepareFilePart()方法创建了一个MultipartBody.Part对象，这个对象 包含一个文件，像照片或视频。在Retrofit2中需要使用MultipartBody.Part来封装文件。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">Uri file1Uri = ... // get it from a file chooser or a camera intent  </span><br><span class="line">Uri file2Uri = ... // get it from a file chooser or a camera intent</span><br><span class="line"></span><br><span class="line">// create upload service client</span><br><span class="line">FileUploadService service =  </span><br><span class="line">        ServiceGenerator.createService(FileUploadService.class);</span><br><span class="line"></span><br><span class="line">// create part for file (photo, video, ...)</span><br><span class="line">MultipartBody.Part body1 = prepareFilePart(&quot;video&quot;, file1Uri);  </span><br><span class="line">MultipartBody.Part body2 = prepareFilePart(&quot;thumbnail&quot;, file2Uri);</span><br><span class="line"></span><br><span class="line">// add another part within the multipart request</span><br><span class="line">RequestBody description = createPartFromString(&quot;hello, this is description speaking&quot;);</span><br><span class="line"></span><br><span class="line">// finally, execute the request</span><br><span class="line">Call&lt;ResponseBody&gt; call = service.uploadMultipleFiles(description, body1, body2);  </span><br><span class="line">call.enqueue(new Callback&lt;ResponseBody&gt;() &#123;  </span><br><span class="line">    @Override</span><br><span class="line">    public void onResponse(Call&lt;ResponseBody&gt; call,</span><br><span class="line">            Response&lt;ResponseBody&gt; response) &#123;</span><br><span class="line">        Log.v(&quot;Upload&quot;, &quot;success&quot;);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void onFailure(Call&lt;ResponseBody&gt; call, Throwable t) &#123;</span><br><span class="line">        Log.e(&quot;Upload error:&quot;, t.getMessage());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+<h1 id="使用-PartMap上传多个文件"><a href="#使用-PartMap上传多个文件" class="headerlink" title="使用@PartMap上传多个文件"></a>使用@PartMap上传多个文件</h1><p>假如你只需要上传一个文件，你可以使用@Part来完成：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public interface FileUploadService &#123;  </span><br><span class="line">    // previous code for single description</span><br><span class="line">    @Multipart</span><br><span class="line">    @POST(&quot;upload&quot;)</span><br><span class="line">    Call&lt;ResponseBody&gt; uploadFile(</span><br><span class="line">            @Part(&quot;description&quot;) RequestBody description,</span><br><span class="line">            @Part MultipartBody.Part file);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></p>
+<p>但是在需要上传多个文件并且单独配置一些属性时，使用这个方法就会出现问题。</p>
+<p>Retrofit提供了一个简单的解决办法，使用@PartMap注解。这个方法在你的表单非常长但是只有一部分会在运行时发送非常有用。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">public interface FileUploadService &#123;  </span><br><span class="line">    // declare a description explicitly</span><br><span class="line">    // would need to declare </span><br><span class="line">    @Multipart</span><br><span class="line">    @POST(&quot;upload&quot;)</span><br><span class="line">    Call&lt;ResponseBody&gt; uploadFile(</span><br><span class="line">            @Part(&quot;description&quot;) RequestBody description,</span><br><span class="line">            @Part MultipartBody.Part file);</span><br><span class="line"></span><br><span class="line">    @Multipart</span><br><span class="line">    @POST(&quot;upload&quot;)</span><br><span class="line">    Call&lt;ResponseBody&gt; uploadFileWithPartMap(</span><br><span class="line">            @PartMap() Map&lt;String, RequestBody&gt; partMap,</span><br><span class="line">            @Part MultipartBody.Part file);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>请务必使用Map <string，requestbody>实现作为请求的@PartMap部分的参数类型。 如上所述，这允许您发送依赖于运行时的数据列表以及您的文件。 PartMap后的括号是可选的。 如果要指定编码，则需要使用它们，类似于FieldMaps中的内容编码。</string，requestbody></p>
+<p>第二部分是用数据填充Map。 在前面的教程中，我们介绍了两个帮助方法来为String变量和文件变量创建RequestBody：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">@NonNull</span><br><span class="line">private MultipartBody.Part prepareFilePart(String partName, Uri fileUri) &#123;  </span><br><span class="line">    // https://github.com/iPaulPro/aFileChooser/blob/master/aFileChooser/src/com/ipaulpro/afilechooser/utils/FileUtils.java</span><br><span class="line">    // use the FileUtils to get the actual file by uri</span><br><span class="line">    File file = FileUtils.getFile(this, fileUri);</span><br><span class="line"></span><br><span class="line">    // create RequestBody instance from file</span><br><span class="line">    RequestBody requestFile =</span><br><span class="line">        RequestBody.create(</span><br><span class="line">            MediaType.parse(getContentResolver().getType(fileUri)), </span><br><span class="line">            file</span><br><span class="line">        );</span><br><span class="line"></span><br><span class="line">    // MultipartBody.Part is used to send also the actual file name</span><br><span class="line">    return MultipartBody.Part.createFormData(partName, file.getName(), requestFile);</span><br></pre></td></tr></table></figure>
+<p>使用方法：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">Uri fileUri = ... // from a file chooser or a camera intent</span><br><span class="line"></span><br><span class="line">// create upload service client</span><br><span class="line">FileUploadService service =  </span><br><span class="line">        ServiceGenerator.createService(FileUploadService.class);</span><br><span class="line"></span><br><span class="line">// create part for file (photo, video, ...)</span><br><span class="line">MultipartBody.Part body = prepareFilePart(&quot;photo&quot;, fileUri);</span><br><span class="line"></span><br><span class="line">// create a map of data to pass along</span><br><span class="line">RequestBody description = createPartFromString(&quot;hello, this is description speaking&quot;);  </span><br><span class="line">RequestBody place = createPartFromString(&quot;Magdeburg&quot;);  </span><br><span class="line">RequestBody time = createPartFromString(&quot;2016&quot;);</span><br><span class="line"></span><br><span class="line">HashMap&lt;String, RequestBody&gt; map = new HashMap&lt;&gt;();  </span><br><span class="line">map.put(&quot;description&quot;, description);  </span><br><span class="line">map.put(&quot;place&quot;, place);  </span><br><span class="line">map.put(&quot;time&quot;, time);</span><br><span class="line"></span><br><span class="line">// finally, execute the request</span><br><span class="line">Call&lt;ResponseBody&gt; call = service.uploadFileWithPartMap(map, body);  </span><br><span class="line">call.enqueue(...);</span><br></pre></td></tr></table></figure>
+<h1 id="下载文件"><a href="#下载文件" class="headerlink" title="下载文件"></a>下载文件</h1><h2 id="How-to-Specify-the-Retrofit-Request"><a href="#How-to-Specify-the-Retrofit-Request" class="headerlink" title="How to Specify the Retrofit Request"></a>How to Specify the Retrofit Request</h2><p>下载文件类似于GET方法：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// option 1: a resource relative to your base URL</span><br><span class="line">@GET(&quot;/resource/example.zip&quot;)</span><br><span class="line">Call&lt;ResponseBody&gt; downloadFileWithFixedUrl();</span><br><span class="line"></span><br><span class="line">// option 2: using a dynamic URL</span><br><span class="line">@GET</span><br><span class="line">Call&lt;ResponseBody&gt; downloadFileWithDynamicUrlSync(@Url String fileUrl);</span><br></pre></td></tr></table></figure></p>
+<p>方法1是下载一个固定网址的文件，请注意Call中的泛型，一定要是ResponseBody类型。</p>
+<p>方法2是在代码中传入URL作为下载地址。</p>
+<h2 id="How-to-Call-the-Request"><a href="#How-to-Call-the-Request" class="headerlink" title="How to Call the Request"></a>How to Call the Request</h2><p>发出请求：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">FileDownloadService downloadService = ServiceGenerator.create(FileDownloadService.class);</span><br><span class="line"></span><br><span class="line">Call&lt;ResponseBody&gt; call = downloadService.downloadFileWithDynamicUrlSync(fileUrl);</span><br><span class="line"></span><br><span class="line">call.enqueue(new Callback&lt;ResponseBody&gt;() &#123;  </span><br><span class="line">    @Override</span><br><span class="line">    public void onResponse(Call&lt;ResponseBody&gt; call, Response&lt;ResponseBody&gt; response) &#123;</span><br><span class="line">        if (response.isSuccess()) &#123;</span><br><span class="line">            Log.d(TAG, &quot;server contacted and has file&quot;);</span><br><span class="line"></span><br><span class="line">            boolean writtenToDisk = writeResponseBodyToDisk(response.body());</span><br><span class="line"></span><br><span class="line">            Log.d(TAG, &quot;file download was a success? &quot; + writtenToDisk);</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            Log.d(TAG, &quot;server contact failed&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    @Override</span><br><span class="line">    public void onFailure(Call&lt;ResponseBody&gt; call, Throwable t) &#123;</span><br><span class="line">        Log.e(TAG, &quot;error&quot;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure></p>
+<p>上边的代码中writeResponseBodyToDisk()是存盘，下边讲解。</p>
+<h2 id="How-to-Save-the-File"><a href="#How-to-Save-the-File" class="headerlink" title="How to Save the File"></a>How to Save the File</h2><p>writeResponseBodyToDisk()方法将ResponseBody转换为文件存放发到存储当中。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line">private boolean writeResponseBodyToDisk(ResponseBody body) &#123;  </span><br><span class="line">    try &#123;</span><br><span class="line">        // todo change the file location/name according to your needs</span><br><span class="line">        File futureStudioIconFile = new File(getExternalFilesDir(null) + File.separator + &quot;Future Studio Icon.png&quot;);</span><br><span class="line"></span><br><span class="line">        InputStream inputStream = null;</span><br><span class="line">        OutputStream outputStream = null;</span><br><span class="line"></span><br><span class="line">        try &#123;</span><br><span class="line">            byte[] fileReader = new byte[4096];</span><br><span class="line"></span><br><span class="line">            long fileSize = body.contentLength();</span><br><span class="line">            long fileSizeDownloaded = 0;</span><br><span class="line"></span><br><span class="line">            inputStream = body.byteStream();</span><br><span class="line">            outputStream = new FileOutputStream(futureStudioIconFile);</span><br><span class="line"></span><br><span class="line">            while (true) &#123;</span><br><span class="line">                int read = inputStream.read(fileReader);</span><br><span class="line"></span><br><span class="line">                if (read == -1) &#123;</span><br><span class="line">                    break;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                outputStream.write(fileReader, 0, read);</span><br><span class="line"></span><br><span class="line">                fileSizeDownloaded += read;</span><br><span class="line"></span><br><span class="line">                Log.d(TAG, &quot;file download: &quot; + fileSizeDownloaded + &quot; of &quot; + fileSize);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            outputStream.flush();</span><br><span class="line"></span><br><span class="line">            return true;</span><br><span class="line">        &#125; catch (IOException e) &#123;</span><br><span class="line">            return false;</span><br><span class="line">        &#125; finally &#123;</span><br><span class="line">            if (inputStream != null) &#123;</span><br><span class="line">                inputStream.close();</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            if (outputStream != null) &#123;</span><br><span class="line">                outputStream.close();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; catch (IOException e) &#123;</span><br><span class="line">        return false;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在转换文件的时候会将文件放到内存中，所以下载大文件时不要使用这种方法。</p>
+<h2 id="Beware-with-Large-Files-Use-Streaming"><a href="#Beware-with-Large-Files-Use-Streaming" class="headerlink" title="Beware with Large Files: Use @Streaming!"></a>Beware with Large Files: Use @Streaming!</h2><p>为了防止下载大文件时占用内存过多，我们必须使用@Streaming注解来解决这个问题：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">@Streaming</span><br><span class="line">@GET</span><br><span class="line">Call&lt;ResponseBody&gt; downloadFileWithDynamicUrlAsync(@Url String fileUrl);</span><br></pre></td></tr></table></figure>
+<p>这样就能使用流来传送文件了</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">final FileDownloadService downloadService =  </span><br><span class="line">                ServiceGenerator.create(FileDownloadService.class);</span><br><span class="line"></span><br><span class="line">new AsyncTask&lt;Void, Long, Void&gt;() &#123;  </span><br><span class="line">   @Override</span><br><span class="line">   protected Void doInBackground(Void... voids) &#123;</span><br><span class="line">       Call&lt;ResponseBody&gt; call = downloadService.downloadFileWithDynamicUrlSync(fileUrl);</span><br><span class="line">       call.enqueue(new Callback&lt;ResponseBody&gt;() &#123;</span><br><span class="line">           @Override</span><br><span class="line">           public void onResponse(Call&lt;ResponseBody&gt; call, Response&lt;ResponseBody&gt; response) &#123;</span><br><span class="line">               if (response.isSuccess()) &#123;</span><br><span class="line">                   Log.d(TAG, &quot;server contacted and has file&quot;);</span><br><span class="line"></span><br><span class="line">                   boolean writtenToDisk = writeResponseBodyToDisk(response.body());</span><br><span class="line"></span><br><span class="line">                   Log.d(TAG, &quot;file download was a success? &quot; + writtenToDisk);</span><br><span class="line">               &#125;</span><br><span class="line">               else &#123;</span><br><span class="line">                   Log.d(TAG, &quot;server contact failed&quot;);</span><br><span class="line">               &#125;</span><br><span class="line">           &#125;</span><br><span class="line">       return null;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;.execute();</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/02/06/西江月·夜行黄沙道中/" rel="next" title="西江月·夜行黄沙道中">
+                <i class="fa fa-chevron-left"></i> 西江月·夜行黄沙道中
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/02/07/Retrofit使用详解（五）/" rel="prev" title="Retrofit使用详解（五）">
+                Retrofit使用详解（五） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg"
+               alt="rangaofei" />
+          <p class="site-author-name" itemprop="name">rangaofei</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#在安卓上使用Authentication"><span class="nav-number">1.</span> <span class="nav-text">在安卓上使用Authentication</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Integrate-Basic-Authentication"><span class="nav-number">1.1.</span> <span class="nav-text">Integrate Basic Authentication</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#使用"><span class="nav-number">1.2.</span> <span class="nav-text">使用</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#安卓上的Token认证"><span class="nav-number">2.</span> <span class="nav-text">安卓上的Token认证</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Integrate-Token-Authentication"><span class="nav-number">2.1.</span> <span class="nav-text">Integrate Token Authentication</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Example-Usage"><span class="nav-number">2.2.</span> <span class="nav-text">Example Usage</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用Retrofit上传下载文件"><span class="nav-number">3.</span> <span class="nav-text">使用Retrofit上传下载文件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Upload-Files-With-Retrofit-2"><span class="nav-number">3.1.</span> <span class="nav-text">Upload Files With Retrofit 2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Android-Client-Code"><span class="nav-number">3.2.</span> <span class="nav-text">Android Client Code</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Remember-the-Content-Type"><span class="nav-number">3.3.</span> <span class="nav-text">Remember the Content-Type</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Exemplary-Hapi-Server-for-File-Uploads"><span class="nav-number">3.4.</span> <span class="nav-text">Exemplary Hapi Server for File Uploads</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#上传多个文件"><span class="nav-number">4.</span> <span class="nav-text">上传多个文件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#使用-PartMap上传多个文件"><span class="nav-number">5.</span> <span class="nav-text">使用@PartMap上传多个文件</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#下载文件"><span class="nav-number">6.</span> <span class="nav-text">下载文件</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#How-to-Specify-the-Retrofit-Request"><span class="nav-number">6.1.</span> <span class="nav-text">How to Specify the Retrofit Request</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#How-to-Call-the-Request"><span class="nav-number">6.2.</span> <span class="nav-text">How to Call the Request</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#How-to-Save-the-File"><span class="nav-number">6.3.</span> <span class="nav-text">How to Save the File</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Beware-with-Large-Files-Use-Streaming"><span class="nav-number">6.4.</span> <span class="nav-text">Beware with Large Files: Use @Streaming!</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">rangaofei</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

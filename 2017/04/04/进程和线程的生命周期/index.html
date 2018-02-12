@@ -1,0 +1,718 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="在大多数情况下每个安卓应用都运行在它自己的Linux进程中。这个进程在应用的代码需要执行的时候创建，直到不再需要它并且系统需要为其他应用重新申请内存的时候才会销毁。 安卓的一个不寻常的基本特征时应用程序的生命周期不受应用程序本身直接控制。而是由系统通过系统了解到的正在运行的部分应用的组合，这些程序对用户的重要性以及系统中可用的整体内存来确定。 不正确的使用组件（activity，service，b">
+<meta name="keywords" content="Android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="进程和线程的生命周期">
+<meta property="og:url" content="https://rangaofei.github.io/2017/04/04/进程和线程的生命周期/index.html">
+<meta property="og:site_name" content="SAKA&#39;S BLOG">
+<meta property="og:description" content="在大多数情况下每个安卓应用都运行在它自己的Linux进程中。这个进程在应用的代码需要执行的时候创建，直到不再需要它并且系统需要为其他应用重新申请内存的时候才会销毁。 安卓的一个不寻常的基本特征时应用程序的生命周期不受应用程序本身直接控制。而是由系统通过系统了解到的正在运行的部分应用的组合，这些程序对用户的重要性以及系统中可用的整体内存来确定。 不正确的使用组件（activity，service，b">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-04-03T16:53:10.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="进程和线程的生命周期">
+<meta name="twitter:description" content="在大多数情况下每个安卓应用都运行在它自己的Linux进程中。这个进程在应用的代码需要执行的时候创建，直到不再需要它并且系统需要为其他应用重新申请内存的时候才会销毁。 安卓的一个不寻常的基本特征时应用程序的生命周期不受应用程序本身直接控制。而是由系统通过系统了解到的正在运行的部分应用的组合，这些程序对用户的重要性以及系统中可用的整体内存来确定。 不正确的使用组件（activity，service，b">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://rangaofei.github.io/2017/04/04/进程和线程的生命周期/"/>
+
+
+
+
+
+  <title> 进程和线程的生命周期 | SAKA'S BLOG </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s4.cnzz.com/z_stat.php?id=1261177704&web_id=1261177704" language="JavaScript"></script>
+  <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1261177704'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1261177704%26online%3D1%26show%3Dline' type='text/javascript'%3E%3C/script%3E"));</script>
+  </div>
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">SAKA'S BLOG</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://rangaofei.github.io/2017/04/04/进程和线程的生命周期/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="rangaofei">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="SAKA'S BLOG">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="SAKA'S BLOG" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                进程和线程的生命周期
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-04-04T00:52:25+08:00">
+                2017-04-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">              
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/AsyncTask/" itemprop="url" rel="index">
+                    <span itemprop="name">AsyncTask</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在大多数情况下每个安卓应用都运行在它自己的Linux进程中。<br>这个进程在应用的代码需要执行的时候创建，<br>直到不再需要它并且系统需要为其他应用重新申请内存的时候才会销毁。</p>
+<p>安卓的一个不寻常的基本特征时应用程序的生命周期不受应用程序本身直接控制。<br>而是由系统通过系统了解到的正在运行的部分应用的组合，<br>这些程序对用户的重要性以及系统中可用的整体内存来确定。</p>
+<p>不正确的使用组件（activity，service，broadcastreceiver）会导致当程序运行时程序进程被系统杀死。</p>
+<p>进程生命周期错误的一个常见问题时关于BroadcastReceiver，<br>它在<code>BroadcastReceiver.onReceive（）</code>方法中接收到intent时启动一个线程，然后从该函数返回。<br>一旦返回，系统会认为BroadCastReceiver不再是活动的，<br>因此它的持有进程不再是必须的（除非其他的应用程序中的组件在这个进程中是活跃的）。<br>因此它的持有进程可能会随时被杀死以回收内存，<br>这样做会终止在进程运行的线程。<br>这中问题的解决方案通常是使用一个Josservice来管理BroadcastReceiver，<br>这样系统知道进程中仍然有未完成的工作。</p>
+<p>为了确定哪些进程在内存不足时应该被杀死，<br>安卓系统会根据运行的组件和这些组件的状态将每个进程置于“重要性层次结构”中。 按重要性顺序：</p>
+<ol>
+<li>前台进程（foreground process）</li>
+</ol>
+<p>前台进程是用户当前正在操作的进程。<br>各种应用程序组件可以使其包含的进程以不同的方式被修同视为前台。<br>如果满足以下条件之一，则认为进程处于前台：</p>
+<ul>
+<li>它正在屏幕顶部运行与用户交互的Activity（已调用其onResume（）方法）。</li>
+<li>它有一个BroadcastReceiver正在运行（它的BroadcastReceiver.onReceive（）方法正在执行）。</li>
+<li>它具有当前正在其一个回调方法（Service.onCreate（），Service.onStart（）或Service.onDestroy（））中执行的service。<br>这些进程只有当系统的内存太低太低的时候，甚至连这些进程都不能继续运行，才会被杀死。</li>
+</ul>
+<ol>
+<li>可见进程（visible process）</li>
+</ol>
+<p>可见进程是正在工作的进程，杀死它将对用户体验产生显著的负面影响。</p>
+<ul>
+<li><p>它正在运行一个对用户屏幕上可见但不在前台的Activity（其onPause（）方法已被调用）。<br>这可能会发生，例如，如果前台活动显示为允许在其后面看到之前的活动的对话框。</p>
+</li>
+<li><p>它具有作为前台服务运行的服务，通过Service.startForeground（）<br>（它要求系统将该服务视为用户知道的内容，或对其基本可见）。</p>
+</li>
+<li>它正在托管系统用于用户知道的特定功能的服务，例如实况壁纸，输入法服务等。</li>
+</ul>
+<p>在系统中运行的这些进程的数量少于前台进程的限制，但仍然相对受控。<br>这些进程被认为是非常重要的，不会被杀死，除非这样做是为了保持所有前台进程的运行。</p>
+<ol>
+<li>服务进程（service process）<br>服务进程是一个持有已经以startService（）方法启动的service的进程。<br>虽然这些进程对用户来说不是直接可见的，<br>但它们通常是用户关心的事情（例如后台网络数据上传或下载），<br>因此系统将始终保持这些进程的运行，<br>除非没有足够的内存来保留所有前台进程和可见进程。</li>
+</ol>
+<p>已经运行了很长时间（例如30分钟或更长时间）的service可能被降级，<br>允许他们的进程丢弃到下面描述的缓存的LRU列表中。<br>这有助于避免长时间运行的内存泄漏服务或其他问题消耗这么多RAM的情况，<br>从而阻止系统有效使用缓存进程。</p>
+<ol>
+<li>缓存进程（cached process）<br>缓存过程是当前不需要的进程，<br>因此当需要其更多存时，系统可以随意杀死它。<br>在正常的系统中，下面是内存管理中唯一的过程：<br>运行良好的系统将具有始终可用的多个缓存进程（用于在应用程序之间进行更有效的切换），<br>并根据需要定期杀死最老的进程。<br>只有在非常关键（和不可取的）情况下<br>，系统才能达到所有缓存进程被杀死的程度，并且必须开始杀死服务进程。</li>
+</ol>
+<p>这些进程通常保存用户当前不可见的一个或多个Activity实例（已调用并返回onStop（）方法）。<br>如果系统正确执行其活动生命周期，当系统杀死此类进程时，<br>在返回到该应用程序时不会影响用户的体验：<br>当相关联的活动重新创建时，可以恢复以前保存的状态一个新的过程。</p>
+<p>这些进程保存在伪LRU列表中，<br>其中列表中的最后一个进程首次被终止以回收内存。<br>在这个列表上的具体策略是平台的实现细节，<br>但是通常会在其他类型的进程之前保留更多有用的进程（一个托管用户的home应用程序，他们看到的最后一个活动等）。<br>还可以应用其他方法来销毁进程：允许的进程数量的严格限制，进程可以不断缓存的时间限制等。</p>
+<p>在决定如何对进程进行分类时，<br>系统将根据当前处于活动状态的所有组件中找到的最重要的级别进行决策。</p>
+<p>进程的优先级也可以基于其他进程对它的依赖性而增加。<br>例如，如果进程A已经绑定到具有Context.BIND_AUTO_CREATE标志的服务或正在进程B中使用ContentProvider，<br>那么进程B的分类将始终至少与进程A一样重要。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/04/02/AsyncTask官方文档/" rel="next" title="AsyncTask官方文档">
+                <i class="fa fa-chevron-left"></i> AsyncTask官方文档
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/04/04/ViewPager官方文档/" rel="prev" title="ViewPager官方文档">
+                ViewPager官方文档 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg"
+               alt="rangaofei" />
+          <p class="site-author-name" itemprop="name">rangaofei</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">rangaofei</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

@@ -1,0 +1,763 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="Material Design支持跨平台的设计和可用性最佳的实践，以帮助创建优秀的用户体验。1. 什么时候适配Material Design建立在传统和网络设计的最佳实践的基础上，由用户体验研究和认知科学提供。 从这些发现开发的设计指南旨在被广泛应用于所有平台和设备。 设计约定可能因平台而异。 这些约定的差异可以影响用户理解UI或完成某些任务的能力。 在这些情况下，建议适应平台特定的约定。 在设计">
+<meta name="keywords" content="Android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MaterialDesign PlatformAdaptation">
+<meta property="og:url" content="https://rangaofei.github.io/2017/01/25/MaterialDesign-PlatformAdaptation/index.html">
+<meta property="og:site_name" content="SAKA&#39;S BLOG">
+<meta property="og:description" content="Material Design支持跨平台的设计和可用性最佳的实践，以帮助创建优秀的用户体验。1. 什么时候适配Material Design建立在传统和网络设计的最佳实践的基础上，由用户体验研究和认知科学提供。 从这些发现开发的设计指南旨在被广泛应用于所有平台和设备。 设计约定可能因平台而异。 这些约定的差异可以影响用户理解UI或完成某些任务的能力。 在这些情况下，建议适应平台特定的约定。 在设计">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://ohy9exujk.bkt.clouddn.com/material_design.platform_adaptation_intro.png">
+<meta property="og:image" content="http://ohy9exujk.bkt.clouddn.com/material_design.platform_adaptation_toolbar_1.png">
+<meta property="og:image" content="http://ohy9exujk.bkt.clouddn.com/material_design.platform_adaptation_toolbar_2.png">
+<meta property="og:image" content="http://ohy9exujk.bkt.clouddn.com/material_design.platform_adaptation_toolbar_3.png">
+<meta property="og:image" content="http://ohy9exujk.bkt.clouddn.com/material_design.platform_adaptation_toolbar_4.png">
+<meta property="og:image" content="http://ohy9exujk.bkt.clouddn.com/material_design.platform_adaptation_toolbar_1.png">
+<meta property="og:image" content="http://ohy9exujk.bkt.clouddn.com/material_design.platform_adaptation_toolbar_2.png">
+<meta property="og:image" content="http://ohy9exujk.bkt.clouddn.com/material_design.platform_adaptation_iconography_3.png">
+<meta property="og:image" content="http://ohy9exujk.bkt.clouddn.com/material_design.platform_adaptation_iconography_4.png">
+<meta property="og:image" content="http://ohy9exujk.bkt.clouddn.com/material_design.platform_adaptation_control_1.png">
+<meta property="og:image" content="http://ohy9exujk.bkt.clouddn.com/material_design.platform_adaptation_control_2.png">
+<meta property="og:image" content="http://ohy9exujk.bkt.clouddn.com/slidbound.gif">
+<meta property="og:image" content="http://ohy9exujk.bkt.clouddn.com/slidbound2.gif">
+<meta property="og:image" content="http://ohy9exujk.bkt.clouddn.com/material_design.platform_adaptation_typography_1.png">
+<meta property="og:image" content="http://ohy9exujk.bkt.clouddn.com/material_design.platform_adaptation_typography_2.png">
+<meta property="og:updated_time" content="2017-02-04T00:59:10.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MaterialDesign PlatformAdaptation">
+<meta name="twitter:description" content="Material Design支持跨平台的设计和可用性最佳的实践，以帮助创建优秀的用户体验。1. 什么时候适配Material Design建立在传统和网络设计的最佳实践的基础上，由用户体验研究和认知科学提供。 从这些发现开发的设计指南旨在被广泛应用于所有平台和设备。 设计约定可能因平台而异。 这些约定的差异可以影响用户理解UI或完成某些任务的能力。 在这些情况下，建议适应平台特定的约定。 在设计">
+<meta name="twitter:image" content="http://ohy9exujk.bkt.clouddn.com/material_design.platform_adaptation_intro.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://rangaofei.github.io/2017/01/25/MaterialDesign-PlatformAdaptation/"/>
+
+
+
+
+
+  <title> MaterialDesign PlatformAdaptation | SAKA'S BLOG </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s4.cnzz.com/z_stat.php?id=1261177704&web_id=1261177704" language="JavaScript"></script>
+  <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1261177704'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1261177704%26online%3D1%26show%3Dline' type='text/javascript'%3E%3C/script%3E"));</script>
+  </div>
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">SAKA'S BLOG</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://rangaofei.github.io/2017/01/25/MaterialDesign-PlatformAdaptation/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="rangaofei">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="SAKA'S BLOG">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="SAKA'S BLOG" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                MaterialDesign PlatformAdaptation
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-01-25T21:40:16+08:00">
+                2017-01-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">              
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/" itemprop="url" rel="index">
+                    <span itemprop="name">Android</span>
+                  </a>
+                </span>
+
+                
+                
+                  ， 
+                
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Android/MaterialDesign/" itemprop="url" rel="index">
+                    <span itemprop="name">MaterialDesign</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h5 id="Material-Design支持跨平台的设计和可用性最佳的实践，以帮助创建优秀的用户体验。"><a href="#Material-Design支持跨平台的设计和可用性最佳的实践，以帮助创建优秀的用户体验。" class="headerlink" title="Material Design支持跨平台的设计和可用性最佳的实践，以帮助创建优秀的用户体验。"></a>Material Design支持跨平台的设计和可用性最佳的实践，以帮助创建优秀的用户体验。</h5><h4 id="1-什么时候适配"><a href="#1-什么时候适配" class="headerlink" title="1. 什么时候适配"></a>1. 什么时候适配</h4><p>Material Design建立在传统和网络设计的最佳实践的基础上，由用户体验研究和认知科学提供。 从这些发现开发的设计指南旨在被广泛应用于所有平台和设备。</p>
+<p>设计约定可能因平台而异。 这些约定的差异可以影响用户理解UI或完成某些任务的能力。 在这些情况下，建议适应平台特定的约定。 在设计差异最小化的地区，适应平台是可选的。</p>
+<p>以下准则指示您何时应该适应本机平台约定，以及何时可以选择适应。 平台惯例不断发展，材料设计正在与他们一起发展，以提高我们的设计模式的质量。</p>
+<p><img src="http://ohy9exujk.bkt.clouddn.com/material_design.platform_adaptation_intro.png" alt="image"></p>
+<h4 id="2-平台建议"><a href="#2-平台建议" class="headerlink" title="2. 平台建议"></a>2. 平台建议</h4><h5 id="工具栏"><a href="#工具栏" class="headerlink" title="工具栏"></a>工具栏</h5><p>工具栏通常用于框架屏幕的上下文。</p>
+<p>建议对工具栏标题使用平台的默认文本对齐方式，除非存在多个操作按钮。</p>
+<p><img src="http://ohy9exujk.bkt.clouddn.com/material_design.platform_adaptation_toolbar_1.png" alt="image"></p>
+<h5 id="Android-Web"><a href="#Android-Web" class="headerlink" title="Android/Web"></a>Android/Web</h5><p>标题总是左对齐</p>
+<p><img src="http://ohy9exujk.bkt.clouddn.com/material_design.platform_adaptation_toolbar_2.png" alt="iamge"></p>
+<h5 id="iOS"><a href="#iOS" class="headerlink" title="iOS"></a>iOS</h5><p>标题默认居中</p>
+<p><img src="http://ohy9exujk.bkt.clouddn.com/material_design.platform_adaptation_toolbar_3.png" alt="image"></p>
+<h5 id="Android"><a href="#Android" class="headerlink" title="Android"></a>Android</h5><p>当有多个操作图标时，甚至没有操作图标出现在右侧时，工具栏标题总是左对齐。</p>
+<p><img src="http://ohy9exujk.bkt.clouddn.com/material_design.platform_adaptation_toolbar_4.png" alt="image"></p>
+<h5 id="ios"><a href="#ios" class="headerlink" title="ios"></a>ios</h5><p>当多个动作按钮位于应用程序的右侧或主屏幕时，标题可以左对齐。</p>
+<h5 id="图标"><a href="#图标" class="headerlink" title="图标"></a>图标</h5><p>系统图标用于表示平台最普遍可用的操作。</p>
+<p><img src="http://ohy9exujk.bkt.clouddn.com/material_design.platform_adaptation_toolbar_1.png" alt="image"></p>
+<h5 id="Android-Web-1"><a href="#Android-Web-1" class="headerlink" title="Android/Web"></a>Android/Web</h5><p>后退按钮包含带杆的细箭头。</p>
+<p><img src="http://ohy9exujk.bkt.clouddn.com/material_design.platform_adaptation_toolbar_2.png" alt="iamge"></p>
+<h5 id="iOS-1"><a href="#iOS-1" class="headerlink" title="iOS"></a>iOS</h5><p>在iOS上，后退箭头更厚，没有杆。</p>
+<p><img src="http://ohy9exujk.bkt.clouddn.com/material_design.platform_adaptation_iconography_3.png" alt="image"></p>
+<h5 id="Android-Web-2"><a href="#Android-Web-2" class="headerlink" title="Android/Web"></a>Android/Web</h5><p>操作溢出菜单图标（由“更多…”符号指示）包含三个垂直点。</p>
+<p><img src="http://ohy9exujk.bkt.clouddn.com/material_design.platform_adaptation_iconography_4.png" alt="image"></p>
+<h5 id="ios-1"><a href="#ios-1" class="headerlink" title="ios"></a>ios</h5><p>操作溢出菜单图标（由“更多…”符号指示）包含三个水平点。</p>
+<h5 id="控件"><a href="#控件" class="headerlink" title="控件"></a>控件</h5><p>控件应清楚地指示用户应如何与它们进行交互。</p>
+<p><img src="http://ohy9exujk.bkt.clouddn.com/material_design.platform_adaptation_control_1.png" alt="image"></p>
+<h5 id="Android-1"><a href="#Android-1" class="headerlink" title="Android"></a>Android</h5><p>使用Materials控件：Switch，checkboxes，radio buttons</p>
+<p><img src="http://ohy9exujk.bkt.clouddn.com/material_design.platform_adaptation_control_2.png" alt="image"></p>
+<h5 id="ios-2"><a href="#ios-2" class="headerlink" title="ios"></a>ios</h5><p>Native平台qaitch可以被使用，因为它们具有与Material switch匹配的功能和外观。</p>
+<p>使用开关而不是复选框和复选标记列表，而不是单选按钮，因为这些是iOS上预期的图形。</p>
+<h5 id="手势"><a href="#手势" class="headerlink" title="手势"></a>手势</h5><h6 id="边缘滑动"><a href="#边缘滑动" class="headerlink" title="边缘滑动"></a>边缘滑动</h6><p>边缘滑动从屏幕外部开始，以显示屏幕外部内容。</p>
+<p>边缘滑动可能与其他滑动手势发生冲突，例如通过页面或表行的水平滑动。 为了避免这些类型的冲突，边缘滑动应该执行与存在于内容区域上的任何其他滑动相同的行为。</p>
+<p><img src="http://ohy9exujk.bkt.clouddn.com/slidbound.gif" alt="image"></p>
+<h5 id="Android-2"><a href="#Android-2" class="headerlink" title="Android"></a>Android</h5><p>当不存在冲突手势时，从左边执行边缘滑动显示内容，诸如DrawerLayout。</p>
+<p><img src="http://ohy9exujk.bkt.clouddn.com/slidbound2.gif" alt="image"></p>
+<h5 id="ios-3"><a href="#ios-3" class="headerlink" title="ios"></a>ios</h5><p>当不存在冲突手势时，从左侧执行边缘滑动可导航回通过应用程序的层次结构。</p>
+<h4 id="排版"><a href="#排版" class="headerlink" title="排版"></a>排版</h4><p>排版同时传达文本内容和品牌。 在这两种情况下，文本必须可访问和可调整大小。</p>
+<p>如果您的应用程序已使用排版的品牌，建议这样做适度。</p>
+<p><img src="http://ohy9exujk.bkt.clouddn.com/material_design.platform_adaptation_typography_1.png" alt="image"></p>
+<h5 id="Android-3"><a href="#Android-3" class="headerlink" title="Android"></a>Android</h5><p>Android上的默认字体是Roboto。 在Android上，应以可缩放像素指定文字大小，以允许使用辅助功能来调整类型大小。</p>
+<p><img src="http://ohy9exujk.bkt.clouddn.com/material_design.platform_adaptation_typography_2.png" alt="image"></p>
+<h5 id="ios-4"><a href="#ios-4" class="headerlink" title="ios"></a>ios</h5><p>iOS上的默认字体是旧金山。 使用此字体是实现辅助功能（如“动态类型”）的最简单方法。 使用其他字体可能需要进行调整才能获得相同的辅助功能。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/01/25/（译）MaterialDesign（一）-Introduction/" rel="next" title="（译）MaterialDesign（一）-Introduction">
+                <i class="fa fa-chevron-left"></i> （译）MaterialDesign（一）-Introduction
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/01/26/beauty-17-01-26/" rel="prev" title="beauty 17-01-26">
+                beauty 17-01-26 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg"
+               alt="rangaofei" />
+          <p class="site-author-name" itemprop="name">rangaofei</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-5"><a class="nav-link" href="#Material-Design支持跨平台的设计和可用性最佳的实践，以帮助创建优秀的用户体验。"><span class="nav-number">1.</span> <span class="nav-text">Material Design支持跨平台的设计和可用性最佳的实践，以帮助创建优秀的用户体验。</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-什么时候适配"><span class="nav-number"></span> <span class="nav-text">1. 什么时候适配</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-平台建议"><span class="nav-number"></span> <span class="nav-text">2. 平台建议</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#工具栏"><span class="nav-number">1.</span> <span class="nav-text">工具栏</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Android-Web"><span class="nav-number">2.</span> <span class="nav-text">Android/Web</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#iOS"><span class="nav-number">3.</span> <span class="nav-text">iOS</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Android"><span class="nav-number">4.</span> <span class="nav-text">Android</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ios"><span class="nav-number">5.</span> <span class="nav-text">ios</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#图标"><span class="nav-number">6.</span> <span class="nav-text">图标</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Android-Web-1"><span class="nav-number">7.</span> <span class="nav-text">Android/Web</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#iOS-1"><span class="nav-number">8.</span> <span class="nav-text">iOS</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Android-Web-2"><span class="nav-number">9.</span> <span class="nav-text">Android/Web</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ios-1"><span class="nav-number">10.</span> <span class="nav-text">ios</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#控件"><span class="nav-number">11.</span> <span class="nav-text">控件</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Android-1"><span class="nav-number">12.</span> <span class="nav-text">Android</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ios-2"><span class="nav-number">13.</span> <span class="nav-text">ios</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#手势"><span class="nav-number">14.</span> <span class="nav-text">手势</span></a><ol class="nav-child"><li class="nav-item nav-level-6"><a class="nav-link" href="#边缘滑动"><span class="nav-number">14.1.</span> <span class="nav-text">边缘滑动</span></a></li></ol></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Android-2"><span class="nav-number">15.</span> <span class="nav-text">Android</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ios-3"><span class="nav-number">16.</span> <span class="nav-text">ios</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#排版"><span class="nav-number"></span> <span class="nav-text">排版</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Android-3"><span class="nav-number">1.</span> <span class="nav-text">Android</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#ios-4"><span class="nav-number">2.</span> <span class="nav-text">ios</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">rangaofei</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>

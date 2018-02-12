@@ -1,0 +1,702 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="在安卓中我们会经常使用EditText,这个控件允许我们输入字符并获取字符.有时我们需要对输入的字符内容进行过滤,通常情况下是自定义正则表达式,这样定制性更高.但是本节将要讲的是哈斯用InputFilter来过滤输入的文本,同样可以达到正则表达式的部分功能. InputFilter有两个直接子类,AllCaps和LengthFilter. InputFilter.AllCaps这个过滤器将会将输入">
+<meta name="keywords" content="Android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="EditText的InputFilter">
+<meta property="og:url" content="https://rangaofei.github.io/2017/04/07/EditText的InputFilter/index.html">
+<meta property="og:site_name" content="SAKA&#39;S BLOG">
+<meta property="og:description" content="在安卓中我们会经常使用EditText,这个控件允许我们输入字符并获取字符.有时我们需要对输入的字符内容进行过滤,通常情况下是自定义正则表达式,这样定制性更高.但是本节将要讲的是哈斯用InputFilter来过滤输入的文本,同样可以达到正则表达式的部分功能. InputFilter有两个直接子类,AllCaps和LengthFilter. InputFilter.AllCaps这个过滤器将会将输入">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="https://dn-mhke0kuv.qbox.me/33a9ce0cdf51d4610781.jpg">
+<meta property="og:image" content="https://dn-mhke0kuv.qbox.me/0fcdf5408523a7e70d3f.jpg">
+<meta property="og:image" content="https://dn-mhke0kuv.qbox.me/ef583b53e78d1616c4b4.gif">
+<meta property="og:updated_time" content="2017-04-07T05:28:48.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="EditText的InputFilter">
+<meta name="twitter:description" content="在安卓中我们会经常使用EditText,这个控件允许我们输入字符并获取字符.有时我们需要对输入的字符内容进行过滤,通常情况下是自定义正则表达式,这样定制性更高.但是本节将要讲的是哈斯用InputFilter来过滤输入的文本,同样可以达到正则表达式的部分功能. InputFilter有两个直接子类,AllCaps和LengthFilter. InputFilter.AllCaps这个过滤器将会将输入">
+<meta name="twitter:image" content="https://dn-mhke0kuv.qbox.me/33a9ce0cdf51d4610781.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://rangaofei.github.io/2017/04/07/EditText的InputFilter/"/>
+
+
+
+
+
+  <title> EditText的InputFilter | SAKA'S BLOG </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s4.cnzz.com/z_stat.php?id=1261177704&web_id=1261177704" language="JavaScript"></script>
+  <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1261177704'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1261177704%26online%3D1%26show%3Dline' type='text/javascript'%3E%3C/script%3E"));</script>
+  </div>
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">SAKA'S BLOG</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://rangaofei.github.io/2017/04/07/EditText的InputFilter/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="rangaofei">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="SAKA'S BLOG">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="SAKA'S BLOG" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                EditText的InputFilter
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-04-07T13:28:24+08:00">
+                2017-04-07
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在安卓中我们会经常使用EditText,这个控件允许我们输入字符并获取字符.有时我们需要对输入的字符内容进行过滤,通常情况下是自定义正则表达式,这样定制性更高.但是本节将要讲的是哈斯用InputFilter来过滤输入的文本,同样可以达到正则表达式的部分功能.</p>
+<p>InputFilter有两个直接子类,AllCaps和LengthFilter.</p>
+<h2 id="InputFilter-AllCaps"><a href="#InputFilter-AllCaps" class="headerlink" title="InputFilter.AllCaps"></a>InputFilter.AllCaps</h2><p>这个过滤器将会将输入的所有的英文小写字母变为大写字母.</p>
+<h2 id="InputFilter-LengthFilter"><a href="#InputFilter-LengthFilter" class="headerlink" title="InputFilter.LengthFilter"></a>InputFilter.LengthFilter</h2><p>这个过滤器会设置一个输入的最大长度,当输入的长度超过设置的最大值时,只显示前边的字符.</p>
+<p>该过滤器的作用相当于XML布局文件的maxLength属性.<br>当你需要在java代码中使用固定长度的方法时你会发现没有setMaxLength方法,我们需要定义一个过滤器数组,然后添加LengthFilter到数组,并赋给给EditText才会产生一个拥有固定长度的EditText.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">private InputFilter[] filters=&#123;new InputFilter.LengthFilter(5)&#125;;</span><br><span class="line">editText.setFilters(filters);</span><br></pre></td></tr></table></figure></p>
+<p>这两个类都非常简单,它们主要是利用了InputFilter接口的中的<code>filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend)</code>方法来实现对字符的操作.<br>那么我们可以通过模拟上边两个类来实现我们自己的过滤器,例如:</p>
+<ol>
+<li>将所有的大写字母转换为小写字母</li>
+</ol>
+<p>首先看一下接口文档的方法说明:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">CharSequence filter (CharSequence source, </span><br><span class="line">                int start, </span><br><span class="line">                int end, </span><br><span class="line">                Spanned dest, </span><br><span class="line">                int dstart, </span><br><span class="line">                int dend)</span><br></pre></td></tr></table></figure></p>
+<p>当缓冲区的字符要使用从source字符串的start到end位置的字符替换dest的字符串的从dstart到dend的字符时会调用这个方法,其实就是输入或者删除字符串的时候.返回的是你替换好的字符串,包括空字符串(如果对此适用),或者null来接受替换操作.注意,当删除字符串时不要忽略对0长度的字符串的替换.同样需要注意的是不要试图更改dest的内容,你只能在上下文中检查dest.如果soruce是Spanned或者Spannable的实例,source应该被复制到过滤后的结果中,使用<code>copySpansFrom(Spanned, int, int, Class, Spannable, int)</code>方法会更简单.</p>
+<p>画一个简单的模型:</p>
+<p><img src="https://dn-mhke0kuv.qbox.me/33a9ce0cdf51d4610781.jpg" alt=""></p>
+<p>我们数据流从键盘接收,然后经过一个缓冲区,最后由缓冲区进入EditText显示.</p>
+<p>加上filter以后相当于加上了一个拦截器,此时模型变为:</p>
+<p><img src="https://dn-mhke0kuv.qbox.me/0fcdf5408523a7e70d3f.jpg" alt=""></p>
+<p>输入的字符要经过filter转换以后才显示到EditText上.</p>
+<p>source相当于缓冲区给filter的字符,dest相当于未更改前的EditText上显示的字符串,当经过我们的filter后会立即转变为输入后filter转换的字符串.</p>
+<p>理解了这个原理后我们就可以定义自己的过滤器了.</p>
+<h2 id="实现大写转小写的过滤器"><a href="#实现大写转小写的过滤器" class="headerlink" title="实现大写转小写的过滤器"></a>实现大写转小写的过滤器</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">ublic class Alllower implements InputFilter &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) &#123;</span><br><span class="line">        Log.d(&quot;inputfilter&quot;, &quot;source=&quot; + source + &quot;,start=&quot; + start + &quot;,end=&quot; + end +</span><br><span class="line">                &quot;,dest=&quot; + dest + &quot;,dstart=&quot; + dstart + &quot;,dend=&quot; + dend);</span><br><span class="line">        for (int i = start; i &lt; end; i++) &#123;</span><br><span class="line">            if (Character.isUpperCase(source.charAt(i))) &#123;//是否大写的字符</span><br><span class="line">                char[] v = new char[end - start];//是大写的字符则新建一个等长的数组</span><br><span class="line">                TextUtils.getChars(source, start, end, v, 0);//将source中的字符复制到我们新建的数组v中</span><br><span class="line">                String s = new String(v).toLowerCase();//将我们新建的数组中的字符全部转换为小写</span><br><span class="line">                if (source instanceof Spanned) &#123;//如果是Spanble的情况下要保持原样返回</span><br><span class="line">                    SpannableString sp = new SpannableString(s);</span><br><span class="line">                    TextUtils.copySpansFrom((Spanned) source, start, end, null, sp, 0);</span><br><span class="line">                    Log.d(&quot;inputfiler&quot;, &quot;sp=&quot; + sp);</span><br><span class="line">                    return sp;</span><br><span class="line">                &#125; else &#123;</span><br><span class="line">                    Log.d(&quot;inputfilter&quot;, &quot;s=&quot; + s);</span><br><span class="line">                    return s;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return null;//未发生转换或者删除字符的时候我们要保持不变</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>此时我们可以测试一下这个过滤器是否有用:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">private InputFilter[] filters=&#123;new Alllower(),new InputFilter.LengthFilter(5)&#125;;editText.setFilters(filters);</span><br></pre></td></tr></table></figure></p>
+<p>看一下结果:</p>
+<p><img src="https://dn-mhke0kuv.qbox.me/ef583b53e78d1616c4b4.gif" alt=""></p>
+<p>可以看到只是将大写字母转换为了小写字母,并没有影响其他.</p>
+<h2 id="其他实现接口的类"><a href="#其他实现接口的类" class="headerlink" title="其他实现接口的类"></a>其他实现接口的类</h2><p>DateKeyListener,DateTimeKeyListener,DialerKeyListener, DigitsKeyListener,TimeKeyListener均继承自NumberKeyListener,而NumberKeyListener实现了InputFilter接口.但是这些都是用来监听硬件输入设备的,暂不研究.<br>LoginFilter, LoginFilter.PasswordFilterGMail, LoginFilter.UsernameFilterGMail, LoginFilter.UsernameFilterGeneric是实现的一个专门为Gmail登录的过滤器.</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/04/07/AsyncTask深入讲解/" rel="next" title="AsyncTask深入讲解">
+                <i class="fa fa-chevron-left"></i> AsyncTask深入讲解
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/02/10/shell变量/" rel="prev" title="shell变量">
+                shell变量 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg"
+               alt="rangaofei" />
+          <p class="site-author-name" itemprop="name">rangaofei</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">55</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#InputFilter-AllCaps"><span class="nav-number">1.</span> <span class="nav-text">InputFilter.AllCaps</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#InputFilter-LengthFilter"><span class="nav-number">2.</span> <span class="nav-text">InputFilter.LengthFilter</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现大写转小写的过滤器"><span class="nav-number">3.</span> <span class="nav-text">实现大写转小写的过滤器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他实现接口的类"><span class="nav-number">4.</span> <span class="nav-text">其他实现接口的类</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">rangaofei</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
