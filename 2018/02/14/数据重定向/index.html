@@ -84,18 +84,18 @@
 
 
 
-<meta name="description" content="数据重定向这一节内容相对比较简单。 首先理解一下linux的标准输入与输出：|类型|名称|文件描述符|说明|—|—|—|—|stdin|标准输入|0|一般是键盘输入|stdout|标准输出|1|命令执行成功后的正确信息|stderr|标准错误输出|2|命令执行失败后的错误信息 假如我们不需要再屏幕上输出而是保存到某个文件，那重定向符就有用了，使用它可以将本来在标准输出上的内容存储到某个文件或者文件">
+<meta name="description" content="数据重定向这一节内容相对比较简单。 首先理解一下linux的标准输入与输出：    类型 名称 文件描述符 说明     stdin 标准输入 0 一般是键盘输入   stdout 标准输出 1 命令执行成功后的正确信息   stderr 标准错误输出 2 命令执行失败后的错误信息    假如我们不需要再屏幕上输出而是保存到某个文件，那重定向符就有用了，使用它可以将本来在标准输出上的内容存储到某个">
 <meta name="keywords" content="Shell">
 <meta property="og:type" content="article">
 <meta property="og:title" content="数据重定向">
 <meta property="og:url" content="https://rangaofei.github.io/2018/02/14/数据重定向/index.html">
 <meta property="og:site_name" content="SAKA&#39;S BLOG">
-<meta property="og:description" content="数据重定向这一节内容相对比较简单。 首先理解一下linux的标准输入与输出：|类型|名称|文件描述符|说明|—|—|—|—|stdin|标准输入|0|一般是键盘输入|stdout|标准输出|1|命令执行成功后的正确信息|stderr|标准错误输出|2|命令执行失败后的错误信息 假如我们不需要再屏幕上输出而是保存到某个文件，那重定向符就有用了，使用它可以将本来在标准输出上的内容存储到某个文件或者文件">
+<meta property="og:description" content="数据重定向这一节内容相对比较简单。 首先理解一下linux的标准输入与输出：    类型 名称 文件描述符 说明     stdin 标准输入 0 一般是键盘输入   stdout 标准输出 1 命令执行成功后的正确信息   stderr 标准错误输出 2 命令执行失败后的错误信息    假如我们不需要再屏幕上输出而是保存到某个文件，那重定向符就有用了，使用它可以将本来在标准输出上的内容存储到某个">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-02-14T05:42:03.274Z">
+<meta property="og:updated_time" content="2018-02-15T13:07:42.843Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="数据重定向">
-<meta name="twitter:description" content="数据重定向这一节内容相对比较简单。 首先理解一下linux的标准输入与输出：|类型|名称|文件描述符|说明|—|—|—|—|stdin|标准输入|0|一般是键盘输入|stdout|标准输出|1|命令执行成功后的正确信息|stderr|标准错误输出|2|命令执行失败后的错误信息 假如我们不需要再屏幕上输出而是保存到某个文件，那重定向符就有用了，使用它可以将本来在标准输出上的内容存储到某个文件或者文件">
+<meta name="twitter:description" content="数据重定向这一节内容相对比较简单。 首先理解一下linux的标准输入与输出：    类型 名称 文件描述符 说明     stdin 标准输入 0 一般是键盘输入   stdout 标准输出 1 命令执行成功后的正确信息   stderr 标准错误输出 2 命令执行失败后的错误信息    假如我们不需要再屏幕上输出而是保存到某个文件，那重定向符就有用了，使用它可以将本来在标准输出上的内容存储到某个">
 
 
 
@@ -335,7 +335,37 @@
 
       
         <h1 id="数据重定向"><a href="#数据重定向" class="headerlink" title="数据重定向"></a>数据重定向</h1><p>这一节内容相对比较简单。</p>
-<p>首先理解一下linux的标准输入与输出：<br>|类型|名称|文件描述符|说明<br>|—|—|—|—<br>|stdin|标准输入|0|一般是键盘输入<br>|stdout|标准输出|1|命令执行成功后的正确信息<br>|stderr|标准错误输出|2|命令执行失败后的错误信息</p>
+<p>首先理解一下linux的标准输入与输出：</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>名称</th>
+<th>文件描述符</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>stdin</td>
+<td>标准输入</td>
+<td>0</td>
+<td>一般是键盘输入</td>
+</tr>
+<tr>
+<td>stdout</td>
+<td>标准输出</td>
+<td>1</td>
+<td>命令执行成功后的正确信息</td>
+</tr>
+<tr>
+<td>stderr</td>
+<td>标准错误输出</td>
+<td>2</td>
+<td>命令执行失败后的错误信息</td>
+</tr>
+</tbody>
+</table>
 <p>假如我们不需要再屏幕上输出而是保存到某个文件，那重定向符就有用了，使用它可以将本来在标准输出上的内容存储到某个文件或者文件描述符。</p>
 <ol>
 <li><code>&gt;</code></li>
