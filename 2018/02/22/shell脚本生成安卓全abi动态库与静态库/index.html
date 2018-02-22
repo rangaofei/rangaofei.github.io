@@ -84,18 +84,18 @@
 
 
 
-<meta name="description" content="以jrtplib的依赖库jthread的编译为例，介绍cmake的交叉编译,因为这个库相对简单，构建完成后就可以直接使用，将动态库或者静态库放置到安卓指定的文件夹下，通过引用头文件来编写jni即可。这篇文章用到了一点cmake交叉编译的东西，在我的掘金主页有关于如何使用cmake的教程。https://juejin.im/post/5a8ab0e4f265da4e9d223972 关于ndk的东西">
+<meta name="description" content="以jrtplib的依赖库jthread的编译为例，介绍cmake的交叉编译,因为这个库相对简单，构建完成后就可以直接使用，将动态库或者静态库放置到安卓指定的文件夹下，通过引用头文件来编写jni即可。 这篇文章用到了一点cmake交叉编译的东西，在我的掘金主页有关于如何使用cmake的教程。https://juejin.im/post/5a8ab0e4f265da4e9d223972 文章废话少，干">
 <meta name="keywords" content="Shell">
 <meta property="og:type" content="article">
 <meta property="og:title" content="shell脚本生成安卓全abi动态库与静态库">
 <meta property="og:url" content="https://rangaofei.github.io/2018/02/22/shell脚本生成安卓全abi动态库与静态库/index.html">
 <meta property="og:site_name" content="SAKA&#39;S BLOG">
-<meta property="og:description" content="以jrtplib的依赖库jthread的编译为例，介绍cmake的交叉编译,因为这个库相对简单，构建完成后就可以直接使用，将动态库或者静态库放置到安卓指定的文件夹下，通过引用头文件来编写jni即可。这篇文章用到了一点cmake交叉编译的东西，在我的掘金主页有关于如何使用cmake的教程。https://juejin.im/post/5a8ab0e4f265da4e9d223972 关于ndk的东西">
+<meta property="og:description" content="以jrtplib的依赖库jthread的编译为例，介绍cmake的交叉编译,因为这个库相对简单，构建完成后就可以直接使用，将动态库或者静态库放置到安卓指定的文件夹下，通过引用头文件来编写jni即可。 这篇文章用到了一点cmake交叉编译的东西，在我的掘金主页有关于如何使用cmake的教程。https://juejin.im/post/5a8ab0e4f265da4e9d223972 文章废话少，干">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-02-22T09:17:40.410Z">
+<meta property="og:updated_time" content="2018-02-22T09:22:04.659Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="shell脚本生成安卓全abi动态库与静态库">
-<meta name="twitter:description" content="以jrtplib的依赖库jthread的编译为例，介绍cmake的交叉编译,因为这个库相对简单，构建完成后就可以直接使用，将动态库或者静态库放置到安卓指定的文件夹下，通过引用头文件来编写jni即可。这篇文章用到了一点cmake交叉编译的东西，在我的掘金主页有关于如何使用cmake的教程。https://juejin.im/post/5a8ab0e4f265da4e9d223972 关于ndk的东西">
+<meta name="twitter:description" content="以jrtplib的依赖库jthread的编译为例，介绍cmake的交叉编译,因为这个库相对简单，构建完成后就可以直接使用，将动态库或者静态库放置到安卓指定的文件夹下，通过引用头文件来编写jni即可。 这篇文章用到了一点cmake交叉编译的东西，在我的掘金主页有关于如何使用cmake的教程。https://juejin.im/post/5a8ab0e4f265da4e9d223972 文章废话少，干">
 
 
 
@@ -334,7 +334,9 @@
       
 
       
-        <p>以jrtplib的依赖库jthread的编译为例，介绍cmake的交叉编译,因为这个库相对简单，构建完成后就可以直接使用，将动态库或者静态库放置到安卓指定的文件夹下，通过引用头文件来编写jni即可。<br>这篇文章用到了一点cmake交叉编译的东西，在我的掘金主页有关于如何使用cmake的教程。<br><a href="https://juejin.im/post/5a8ab0e4f265da4e9d223972" target="_blank" rel="noopener">https://juejin.im/post/5a8ab0e4f265da4e9d223972</a></p>
+        <p>以jrtplib的依赖库jthread的编译为例，介绍cmake的交叉编译,因为这个库相对简单，构建完成后就可以直接使用，将动态库或者静态库放置到安卓指定的文件夹下，通过引用头文件来编写jni即可。</p>
+<p>这篇文章用到了一点cmake交叉编译的东西，在我的掘金主页有关于如何使用cmake的教程。<br><a href="https://juejin.im/post/5a8ab0e4f265da4e9d223972" target="_blank" rel="noopener">https://juejin.im/post/5a8ab0e4f265da4e9d223972</a></p>
+<p>文章废话少，干货多，请静下心来看：</p>
 <p>关于ndk的东西网上已经烂大街了，我这里就不多介绍了。这篇文章主要是关于如何使用bash控制cmake来cross-compile。</p>
 <ol>
 <li>创建build文件夹用于外部构建</li>
@@ -359,6 +361,9 @@
 <p>构建全平台<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sbuild armeabi</span><br></pre></td></tr></table></figure></p>
 <p>构建armeabi平台。七种架构都能单独构建。<br>单独构建后只有一种平台架构：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">└── armeabi</span><br><span class="line">    ├── libjthread.a</span><br><span class="line">    └── libjthread.so</span><br><span class="line"></span><br><span class="line">1 directory, 2 files</span><br></pre></td></tr></table></figure></p>
 <p>全部构建后：<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── arm64-v8a</span><br><span class="line">│   ├── libjthread.a</span><br><span class="line">│   └── libjthread.so</span><br><span class="line">├── armeabi</span><br><span class="line">│   ├── libjthread.a</span><br><span class="line">│   └── libjthread.so</span><br><span class="line">├── armeabi-v7a</span><br><span class="line">│   ├── libjthread.a</span><br><span class="line">│   └── libjthread.so</span><br><span class="line">├── mips</span><br><span class="line">│   ├── libjthread.a</span><br><span class="line">│   └── libjthread.so</span><br><span class="line">├── mips64</span><br><span class="line">│   ├── libjthread.a</span><br><span class="line">│   └── libjthread.so</span><br><span class="line">├── x86</span><br><span class="line">│   ├── libjthread.a</span><br><span class="line">│   └── libjthread.so</span><br><span class="line">└── x86_64</span><br><span class="line">    ├── libjthread.a</span><br><span class="line">    └── libjthread.so</span><br><span class="line"></span><br><span class="line">7 directories, 14 files</span><br></pre></td></tr></table></figure></p>
+<blockquote>
+<p>最后说明一下，这个方式是用cmake来构建安卓平台的动态库和静态库的方式，生成好的文件最后还是要放进安卓指定的文件夹中，这些库的调用必须是用jni编程来实现的，不能直接来调用。</p>
+</blockquote>
 
       
     </div>
