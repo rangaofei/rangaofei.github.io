@@ -92,7 +92,7 @@
 <meta property="og:site_name" content="SAKA&#39;S BLOG">
 <meta property="og:description" content="shell中的条件判断与循环条件判断符形式如下： 1[ condition1 == condition2 ] 注意  在中括号内的每个组件都必须有空格来分隔 在括号内的常量，最好以单引号或双引号括起来 在括号内的变量，最好以双引号括起来  12345678name=&quot;one two&quot;if [ $name == &quot;one two&quot; ];then    echo equal one twoelif [">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-02-22T07:22:44.960Z">
+<meta property="og:updated_time" content="2018-02-22T07:24:46.994Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="shell中的条件判断与循环">
 <meta name="twitter:description" content="shell中的条件判断与循环条件判断符形式如下： 1[ condition1 == condition2 ] 注意  在中括号内的每个组件都必须有空格来分隔 在括号内的常量，最好以单引号或双引号括起来 在括号内的变量，最好以双引号括起来  12345678name=&quot;one two&quot;if [ $name == &quot;one two&quot; ];then    echo equal one twoelif [">
@@ -346,7 +346,41 @@
 <p>$name会被替换为one two,调试程序输出如下：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">promote:条件判断 rangaofei$ sh -x condition.sh</span><br><span class="line">+ name='one two'</span><br><span class="line">+ '[' one two == 'one two' ']'</span><br><span class="line">condition.sh: line 2: [: too many arguments</span><br><span class="line">+ '[' one two == one ']'</span><br><span class="line">condition.sh: line 4: [: too many arguments</span><br><span class="line">+ echo no</span><br><span class="line">no</span><br></pre></td></tr></table></figure></p>
 <p>可以看到条件语句被替换为了<br>[ one two == ‘one two’],所以会报参数过多的错误,所以我们修改程序如下:<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">name="one two"</span><br><span class="line">if [ "$name" == "one two" ];then</span><br><span class="line">    echo equal one two</span><br><span class="line">elif [ "$name" == "one" ]; then</span><br><span class="line">    echo one</span><br><span class="line">else</span><br><span class="line">    echo no</span><br><span class="line">fi</span><br></pre></td></tr></table></figure></p>
 <p>此时可以得到正确的结果。</p>
-<p>通过一个表格展示整数的判断依据<br>|标志|意义<br>|—|—<br>|n1 -eq n2|n1==n2<br>|n1 -ne n2|n1!=n2<br>|n1 -gt n2|n1&gt;n2<br>|n1 -lt n2|n1&lt; n2<br>|n1 -ge n2|n1&gt;=n2<br>|n1 -le n2|n1&lt;=n1</p>
+<p>通过一个表格展示整数的判断依据</p>
+<table>
+<thead>
+<tr>
+<th>标志</th>
+<th>意义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>n1 -eq n2</td>
+<td>n1==n2</td>
+</tr>
+<tr>
+<td>n1 -ne n2</td>
+<td>n1!=n2</td>
+</tr>
+<tr>
+<td>n1 -gt n2</td>
+<td>n1&gt;n2</td>
+</tr>
+<tr>
+<td>n1 -lt n2</td>
+<td>n1&lt; n2</td>
+</tr>
+<tr>
+<td>n1 -ge n2</td>
+<td>n1&gt;=n2</td>
+</tr>
+<tr>
+<td>n1 -le n2</td>
+<td>n1&lt;=n1</td>
+</tr>
+</tbody>
+</table>
 <h2 id="条件判断"><a href="#条件判断" class="headerlink" title="条件判断"></a>条件判断</h2><p>条件判断相对简单，和java中的if..else 和switch..case 类似</p>
 <h3 id="if-then"><a href="#if-then" class="headerlink" title="if..then"></a>if..then</h3><p>shell中的条件判断主要是if..then关键字。形式如下：<br><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">if [ condition ];then</span><br><span class="line">    command</span><br><span class="line">elif [ condition ];then</span><br><span class="line">    command</span><br><span class="line">else </span><br><span class="line">    command</span><br><span class="line">fi</span><br></pre></td></tr></table></figure></p>
 <p>注意一下几点：</p>
