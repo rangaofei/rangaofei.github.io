@@ -92,7 +92,7 @@
 <meta property="og:site_name" content="SAKA&#39;S BLOG">
 <meta property="og:description" content="1. 变量设置1234&amp;lt;variable&amp;gt;=&amp;lt;value&amp;gt;  #为变量赋值echo $&amp;lt;variable&amp;gt;    #输出变量的值echo $&amp;#123;&amp;lt;variable&amp;gt;&amp;#125;  #输出变量的值，效果同上unset variable      #取消变量的值  变量与值之间以一个=连接 等号两边不能有空格 变量名称只能是英文字母与数字，且不能">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-02-12T13:41:03.658Z">
+<meta property="og:updated_time" content="2018-02-22T13:29:57.656Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="shell变量">
 <meta name="twitter:description" content="1. 变量设置1234&amp;lt;variable&amp;gt;=&amp;lt;value&amp;gt;  #为变量赋值echo $&amp;lt;variable&amp;gt;    #输出变量的值echo $&amp;#123;&amp;lt;variable&amp;gt;&amp;#125;  #输出变量的值，效果同上unset variable      #取消变量的值  变量与值之间以一个=连接 等号两边不能有空格 变量名称只能是英文字母与数字，且不能">
@@ -485,7 +485,7 @@
 <li>通过用户输入设置变量的值</li>
 </ul>
 <p>声明形式</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">read [-pt] &lt;variable&gt;</span><br><span class="line">参数：</span><br><span class="line">-p : 后面接提示的内容</span><br><span class="line">-t : 后面接等待的时间，单位为秒</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">read [-ptns] &lt;variable&gt;</span><br><span class="line">参数：</span><br><span class="line">-p : 后面接提示的内容</span><br><span class="line">-t : 后面接等待的时间，单位为秒</span><br><span class="line">-n : 后面接需要读取的字符个数</span><br><span class="line">-s : 以无回显得方式读取数据，例如密码</span><br></pre></td></tr></table></figure>
 <p>编写一个简单的脚本测试：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span>/bin/zsh</span><br><span class="line">echo "请根据下面的提示输入你想要设置的值"</span><br><span class="line">read -p "var1= " var1</span><br><span class="line">read -p "var2= " var2</span><br><span class="line">read -p "你已经输入了所有的变量值，是否立即打印？y/n:" print</span><br><span class="line">if [ $&#123;print&#125;x == yx ];then</span><br><span class="line">    echo "var1= $var1"</span><br><span class="line">    echo "var2= $var2"</span><br><span class="line">elif [ $&#123;print&#125;x == nx ];then</span><br><span class="line">    echo "complete"</span><br><span class="line">else</span><br><span class="line">    echo unknow command</span><br><span class="line">fi</span><br></pre></td></tr></table></figure>
 <p>执行即可：</p>
@@ -501,6 +501,7 @@
 <p>bash中的变量假如不是用声明方式，默认都是字符串。声明后可以进行简单的操作。一个简单的例子说明：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span>bin/bash</span><br><span class="line">sum_one=100+10          #*直接声明，是字符串格式</span><br><span class="line">echo $sum_one           #*输出100+10</span><br><span class="line">declare -i sum          #*声明为整型</span><br><span class="line">sum=100+10              #*计算结果</span><br><span class="line">echo $sum               #*输出为110</span><br><span class="line">declare -a array        #*定义数组</span><br><span class="line">array[1]="a"            #*定义元素1</span><br><span class="line">array[2]="b"            #*定义元素2</span><br><span class="line">echo $&#123;array[*]&#125;        #*输出数组</span><br></pre></td></tr></table></figure>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">100+10</span><br><span class="line">110</span><br><span class="line">a b</span><br></pre></td></tr></table></figure>
+
       
     </div>
 
@@ -614,7 +615,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">59</span>
+                <span class="site-state-item-count">60</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
