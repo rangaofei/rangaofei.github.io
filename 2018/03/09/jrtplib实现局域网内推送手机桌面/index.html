@@ -1,0 +1,749 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="涉及的内容较多，碰到不熟悉的请自行谷歌，基本问题都能解决，并且不提供任何技术支持与demo，主要介绍一下思路。  mediacodec编码与解码h264流 h264流的基本知识 rtp协议的基本知识 jni编程的基础知识  主要功能是实现安卓局域网内桌面推送。 简单看一个下效果：              &amp;lt;video id=”video” controls=”” preload=”none">
+<meta name="keywords" content="Android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="jrtplib实现局域网内推送手机桌面">
+<meta property="og:url" content="https://rangaofei.github.io/2018/03/09/jrtplib实现局域网内推送手机桌面/index.html">
+<meta property="og:site_name" content="SAKA&#39;S BLOG">
+<meta property="og:description" content="涉及的内容较多，碰到不熟悉的请自行谷歌，基本问题都能解决，并且不提供任何技术支持与demo，主要介绍一下思路。  mediacodec编码与解码h264流 h264流的基本知识 rtp协议的基本知识 jni编程的基础知识  主要功能是实现安卓局域网内桌面推送。 简单看一个下效果：              &amp;lt;video id=”video” controls=”” preload=”none">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://ohy9exujk.bkt.clouddn.com/rtp%E7%BC%96%E8%A7%A3%E7%A0%81-2.png">
+<meta property="og:updated_time" content="2018-03-09T09:28:04.054Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="jrtplib实现局域网内推送手机桌面">
+<meta name="twitter:description" content="涉及的内容较多，碰到不熟悉的请自行谷歌，基本问题都能解决，并且不提供任何技术支持与demo，主要介绍一下思路。  mediacodec编码与解码h264流 h264流的基本知识 rtp协议的基本知识 jni编程的基础知识  主要功能是实现安卓局域网内桌面推送。 简单看一个下效果：              &amp;lt;video id=”video” controls=”” preload=”none">
+<meta name="twitter:image" content="http://ohy9exujk.bkt.clouddn.com/rtp%E7%BC%96%E8%A7%A3%E7%A0%81-2.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://rangaofei.github.io/2018/03/09/jrtplib实现局域网内推送手机桌面/"/>
+
+
+
+
+
+  <title> jrtplib实现局域网内推送手机桌面 | SAKA'S BLOG </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s4.cnzz.com/z_stat.php?id=1261177704&web_id=1261177704" language="JavaScript"></script>
+  <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1261177704'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1261177704%26online%3D1%26show%3Dline' type='text/javascript'%3E%3C/script%3E"));</script>
+  </div>
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">SAKA'S BLOG</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://rangaofei.github.io/2018/03/09/jrtplib实现局域网内推送手机桌面/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="rangaofei">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="SAKA'S BLOG">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="SAKA'S BLOG" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                jrtplib实现局域网内推送手机桌面
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-03-09T17:25:09+08:00">
+                2018-03-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>涉及的内容较多，碰到不熟悉的请自行谷歌，基本问题都能解决，并且不提供任何技术支持与demo，主要介绍一下思路。</p>
+<ol>
+<li>mediacodec编码与解码h264流</li>
+<li>h264流的基本知识</li>
+<li>rtp协议的基本知识</li>
+<li>jni编程的基础知识</li>
+</ol>
+<p>主要功能是实现安卓局域网内桌面推送。</p>
+<p>简单看一个下效果：</p>
+<video id="video" controls preload="none" poster="http://ok7v12rvl.bkt.clouddn.com/25b45-1.jpg"><br>      <source id="mp4" src="http://ohy9exujk.bkt.clouddn.com/1.mp4" type="video/mp4"><br>    </video>
+
+
+&lt;video id=”video” controls=”” preload=”none” poster=“<a href="http://ok7v12rvl.bkt.clouddn.com/25b45-1.jpg&quot;&gt;" target="_blank" rel="noopener">http://ok7v12rvl.bkt.clouddn.com/25b45-1.jpg&quot;&gt;</a><br>      <source id="mp4" src="http://ohy9exujk.bkt.clouddn.com/1.mp4" type="video/mp4"><br>    
+
+<p>对比一下ffplay：</p>
+&lt;video id=”video” controls=”” preload=”none” poster=”<a href="http://ok7v12rvl.bkt.clouddn.com/25b45-1.jpg”&gt;" target="_blank" rel="noopener">http://ok7v12rvl.bkt.clouddn.com/25b45-1.jpg”&gt;</a><br>      <source id="mp4" src="http://ohy9exujk.bkt.clouddn.com/2.mp4" type="video/mp4"><br>    
+
+<p>ffplay在播放白色动画时处理并不好，会在缓冲区卡住一些帧，不能立即刷新。没研究过sdl，不知道什么原因。</p>
+<h3 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h3><p>关于这个项目有讲不完的东西，挑主要的讲一下：</p>
+<p><img src="http://ohy9exujk.bkt.clouddn.com/rtp%E7%BC%96%E8%A7%A3%E7%A0%81-2.png" alt="server_client"></p>
+<h3 id="获取桌面录制权限"><a href="#获取桌面录制权限" class="headerlink" title="获取桌面录制权限"></a>获取桌面录制权限</h3><p>android.media.projection是安卓api21提供的一个包，共有三个类:</p>
+<ul>
+<li>MediaProjection 授予应用获取屏幕截图和系统声音的令牌</li>
+<li>MediaProjection.Callback 第一个类的回调函数</li>
+<li>MediaProjectionManager 管理令牌的工具</li>
+</ul>
+<h4 id="MediaProjectionManager"><a href="#MediaProjectionManager" class="headerlink" title="MediaProjectionManager"></a>MediaProjectionManager</h4><p><code>MediaProjectionManager</code>非常简单，共有两个方法<code>createScreenCaptureIntent()</code>,<code>getMediaProjection(int resultCode, Intent resultData)</code>。</p>
+<p>想要获取录屏权限，首先需先实例化<code>MediaProjectionManager</code>，有两种方式</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">MediaProjectionManager projectionManager = (MediaProjectionManager) getSystemService(MEDIA_PROJECTION_SERVICE);</span><br><span class="line">pMediaProjectionManager rojectionManager = getSystemService(MediaProjectionManager.class); <span class="comment">//API&gt;=23</span></span><br></pre></td></tr></table></figure>
+<p>下面用到第一个方法了，<code>createScreenCaptureIntent()</code>会返回一个<code>Inten</code>类型，这个值我们必须传给<code>startactivityforresult()</code>，系统会弹出提示是否允许用户录制屏幕，用户选择的结果将会在<code>onactivityresult</code>方法中表示。</p>
+<blockquote>
+<p>这种方式只能获取屏幕截图的权限，不能获取录制系统声音的权限</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">startActivityForResult(projectionManager.createScreenCaptureIntent(), REQUEST_CODE);</span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">onActivityResult</span><span class="params">(<span class="keyword">int</span> requestCode, <span class="keyword">int</span> resultCode, Intent data)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">super</span>.onActivityResult(requestCode, resultCode, data);</span><br><span class="line">    <span class="keyword">if</span> (resultCode != RESULT_OK) &#123;</span><br><span class="line">        Toast.makeText(<span class="keyword">this</span>, <span class="string">"录屏权限获取失败"</span>, Toast.LENGTH_SHORT).show();</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    MediaProjection mediaProjection = projectionManager.getMediaProjection(resultCode, data);</span><br><span class="line">    <span class="comment">//其他代码</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>getMediaProjection(int resultCode, Intent resultData)</code>接两个参数，假如第一个参数<code>resultCode</code>不等于<code>RESULT_OK</code>，那么我们湖区截屏权限就是败了，返回的MediaProjection为空。</p>
+<h4 id="MediaProjection"><a href="#MediaProjection" class="headerlink" title="MediaProjection"></a>MediaProjection</h4><p>总共四个方法。先介绍最重要的一个：<br><code>createVirtualDisplay(String name, int width, int height, int dpi, int flags, Surface surface, VirtualDisplay.Callback callback, Handler handler)</code>。这个方法创建了一个<code>VirtualDisplay</code>，承载了所有的截图后的图像数据，这些图像数据将会被渲染到传入的参数surface中，这个surface将是解码的重要工具。<br>第一个参数是要创建的<code>virtualdisplay</code>的名称，这个名称可以自己定，但是不能为空。width heiht dpi三个参数都必须大于0，是创建virtualdisplay的三个参数，比较简单。最后两个参数是用来启注册virtualdisplay的回调函数，假如是在主线程中handler可以省略。假如是在非主线程中，最好用<code>handlerthread</code>，需要开启<code>looper</code>，最后一个参数传入<code>handlerthread</code>的<code>handler</code>就可。</p>
+<p>stop()方法是用来结束本次截屏会话的，当调用此方法后系统会终止屏幕数据的输出，并且如果为mediaprojection注册了回调函数(<code>mediaprojection.callback</code>,只有一个自己的方法<code>onstop()</code>),就会回调给<code>onstop()</code>方法，在这里可以用来释放一些资源，比如virtualdisplay。</p>
+<p>另外两个方法就是注册和解注册回调方法，</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">registerCallback (MediaProjection.Callback callback, Handler handler)<span class="comment">//主线程中handler可以设置为空，非主线程需设置handler并开启looper。</span></span><br><span class="line">unregisterCallback (MediaProjection.Callback callback)</span><br></pre></td></tr></table></figure>
+<p>这样就完成了获取屏幕录制权限，并将屏幕数据定向到了一个surface中。这个surface将在后边继续讲解。</p>
+<h3 id="创建编码器"><a href="#创建编码器" class="headerlink" title="创建编码器"></a>创建编码器</h3><h4 id="mediacodec"><a href="#mediacodec" class="headerlink" title="mediacodec"></a>mediacodec</h4><blockquote>
+<p>关于这部分内容可以参考官方文档，或者<a href="https://rangaofei.github.io/2018/03/09/安卓解码器MediaCodec解析/">安卓解码器MediaCodec解析</a>;</p>
+</blockquote>
+<p>mediacodec是安卓底层编码解码的一个工具，使用它可以以更高效率的编解码视频音频。</p>
+<p>目的是将屏幕数据以rtp协议荷载h264流来传输，需要将屏幕数据转换为h264流，那么使用mediacodec创建一个编码器来将数据编码。</p>
+<p>创建解码器是一个非常蛋疼的过程，谷歌官方推荐使用mediacodecinfo来获取支持的编码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"> <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> MediaCodecInfo <span class="title">selectCodec</span><span class="params">(String mimeType)</span> </span>&#123;</span><br><span class="line">    MediaCodecList list = <span class="keyword">new</span> MediaCodecList(REGULAR_CODECS);</span><br><span class="line">    MediaCodecInfo[] infos = list.getCodecInfos();</span><br><span class="line">    <span class="keyword">for</span> (MediaCodecInfo m : infos) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!m.isEncoder()) &#123;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (String type : m.getSupportedTypes()) &#123;</span><br><span class="line">            <span class="keyword">if</span> (type.equalsIgnoreCase(mimeType)) &#123;</span><br><span class="line">                Log.d(TAG, <span class="string">"the selected encoder is :"</span> + m.getName());</span><br><span class="line">                <span class="keyword">return</span> m;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里的mimetype我们传入<code>video/avc</code>,该函数会挑选出适合的编码格式用来创建编码器。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">MediaCodecInfo codecInfo = selectCodec(MIME_TYPE);</span><br><span class="line"><span class="keyword">if</span> (codecInfo == <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"不支持的格式"</span>);</span><br><span class="line">&#125;</span><br><span class="line">MediaFormat format = MediaFormat.createVideoFormat(MIME_TYPE, screenWidth, screenHeight);</span><br><span class="line"><span class="comment">//必须设置为COLOR_FormatSurface，因为是用surface作为输入源</span></span><br><span class="line"><span class="keyword">int</span> colorFormat = MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface;</span><br><span class="line">format.setInteger(MediaFormat.KEY_COLOR_FORMAT, colorFormat);</span><br><span class="line">format.setInteger(MediaFormat.KEY_BIT_RATE, BIT_RATE);</span><br><span class="line"><span class="comment">//设置帧率</span></span><br><span class="line">format.setInteger(MediaFormat.KEY_FRAME_RATE, FRAME_RATE);</span><br><span class="line"><span class="comment">//设置抽取关键帧的间隔，以s为单位，负数或者0会不抽取关键帧</span></span><br><span class="line">format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, IFRAME_INTERVAL);</span><br><span class="line">Log.d(TAG, <span class="string">"created video format: "</span> + format);</span><br><span class="line">encoder = MediaCodec.createByCodecName(codecInfo.getName());</span><br></pre></td></tr></table></figure>
+<p>因为使用surface作为输入源，系统会自动为解码器注入surface上的数据，开发者只需要关心数据的获取就行了。谷歌官方推荐使用异步回调方式来获取数据。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">setEncodeCallback</span><span class="params">(MediaCodec encoder)</span> </span>&#123;</span><br><span class="line">    encoder.setCallback(<span class="keyword">new</span> MediaCodec.Callback() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onInputBufferAvailable</span><span class="params">(@NonNull MediaCodec mediaCodec, <span class="keyword">int</span> i)</span> </span>&#123;</span><br><span class="line">            <span class="comment">//这个方法在使用surface模式的时候不会回调</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onOutputBufferAvailable</span><span class="params">(@NonNull MediaCodec mediaCodec, <span class="keyword">int</span> i, @NonNullMediaCodec.BufferInfo bufferInfo)</span> </span>&#123;</span><br><span class="line">            ByteBuffer outputBuffer = mediaCodec.getOutputBuffer(i);</span><br><span class="line">            <span class="comment">//处理数据</span></span><br><span class="line">            mediaCodec.releaseOutputBuffer(i, <span class="keyword">false</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onError</span><span class="params">(@NonNull MediaCodec</span></span></span><br><span class="line"><span class="function"><span class="params">                                    mediaCodec, @NonNull MediaCodec.CodecException e)</span> </span>&#123;</span><br><span class="line">            Log.e(<span class="string">"TAG"</span>, <span class="string">"OnError\n"</span> + e.getDiagnosticInfo());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onOutputFormatChanged</span><span class="params">(@NonNull MediaCodec</span></span></span><br><span class="line"><span class="function"><span class="params">                                                  mediaCodec, @NonNull MediaFormat mediaFormat)</span> </span>&#123;</span><br><span class="line">            Log.d(<span class="string">"TAG"</span>, <span class="string">"onOutputFormatChanged"</span>);</span><br><span class="line">            getSpsPpsByteBuffer(mediaFormat);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>回调函数的设置必须在mediacodec调用start方法之前。下面就可以调用start()函数使mediacodec进入一个running的状态了，在回调函数中会收到所有的数据。</p>
+<blockquote>
+<p>注意，编码器使用了surface作为输入源，则会选择surface模式，不会回调<code>onInputBufferAvailable</code>，我们同样不能手动输入数据给编码器，否则会发生错误。</p>
+</blockquote>
+<p>系统会首先回调<code>onOutputFormatChanged</code>方法，这个方法就是关于h264的sps和pps信息，这两个数据在解析h264的时候非常重要，不能丢失。sps和pps会存放在MediaForamt中，可以通过<code>getByteBuffer</code>来获取，他们的key分别是”csd-0”和”csd-1”，注意顺序不能取反。</p>
+<p>h264流屏幕在变化很小的时候产生的数据很小，变化的时候产生的数据较大，这些数据都是通过<code>onOutputBufferAvailable</code>函数回调回来。</p>
+<p>所有的数据都存入一个线程安全的阻塞队列(LinkedBlockingQueue)中，启动另一个线程不断的从这个队列中取出数据传递给jni包装的jrtplib，发送包装好的rtp数据给接收端。</p>
+<h3 id="发送数据"><a href="#发送数据" class="headerlink" title="发送数据"></a>发送数据</h3><p>首先讲一下MTU， 最大传输单元（Maximum Transmission Unit)是指一种通信协议的某一层上面所能通过的最大数据包大小（以字节为单位）。最大传输单元这个参数通常与通信接口有关（网络接口卡、串口等）。一般在1400-1500byte左右。</p>
+<p>h264的每一帧数据包含一个固定的分隔符(<code>0x000x000x000x01或者0x000x000x01</code>),包括sps和pps同样会有，在发送rtp数据时需要将这些分隔符去掉。分隔符后面即NALU单元，每个NALU单元的大小不定，NALU单元的第一个字节是一个头信息。</p>
+<p>有了MTU这么个蛋疼的玩意真的是让人头大了，假如所有的NALU都小于MTU多好啊…简直做梦！！！。<br>rtp默认采用udp形式发送所有数据，也就是我们包装好的一帧数据不能超过MTU的限制，对于小于MTU的NAL单元，我们可以直接打包发送，超过这个限制后，必须要将它分割为小于MTU的数据段来发送，这个分割方法在rtp协议中有具体讲解。然而jrtplib这个优秀的库并没有为我们封装这个方法，我们必须手动分割然后发送，否则数据接收者根本收不到结果。</p>
+<p>下边是一个简单的发送实现:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">send_rtp</span><span class="params">(<span class="keyword">char</span> *data, size_t length)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (data) &#123;</span><br><span class="line">        memset(sendBuf, <span class="number">0</span>, RTP_PACKET_MAX_LENGTH + <span class="number">3</span>);</span><br><span class="line">        <span class="keyword">if</span> (length &lt; <span class="number">4</span>) &#123;</span><br><span class="line">            LOGE(<span class="string">"数据长度错误"</span>);</span><br><span class="line">            <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (data[<span class="number">0</span>] == <span class="number">0</span> &amp;&amp; data[<span class="number">1</span>] == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">if</span> (data[<span class="number">2</span>] == <span class="number">1</span>) &#123;</span><br><span class="line">                a_length = <span class="number">3</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> <span class="keyword">if</span> (data[<span class="number">2</span>] == <span class="number">0</span> &amp;&amp; data[<span class="number">3</span>] == <span class="number">1</span>) &#123;</span><br><span class="line">                a_length = <span class="number">4</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                LOGE(<span class="string">"分片错误了"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            LOGE(<span class="string">"非常严重的错误"</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> status;</span><br><span class="line">        LOGD(<span class="string">"接收到数据%d"</span>, length);</span><br><span class="line">        <span class="keyword">if</span> (length - a_length &lt;= RTP_PACKET_MAX_LENGTH) &#123;</span><br><span class="line">            sess.SetDefaultMark(<span class="keyword">true</span>);</span><br><span class="line">            LOGD(<span class="string">"单帧"</span>);</span><br><span class="line">            memcpy(&amp;sendBuf, data + a_length, length - a_length);</span><br><span class="line">            status = sess.SendPacket(sendBuf, length - a_length, <span class="number">96</span>, <span class="keyword">true</span>, <span class="number">3600</span>);</span><br><span class="line">            checkerror(status);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            LOGD(<span class="string">"多帧"</span>);</span><br><span class="line">            <span class="keyword">int</span> NAL_HEADER = (<span class="keyword">int</span>) data[a_length];</span><br><span class="line">            <span class="keyword">char</span> FU_INDICATOR = (<span class="keyword">char</span>) (NAL_HEADER &amp; <span class="number">0xE0</span> | <span class="number">0x1C</span>);</span><br><span class="line">            sendBuf[<span class="number">0</span>] = FU_INDICATOR;</span><br><span class="line">            size_t k = <span class="number">0</span>, l = <span class="number">0</span>;</span><br><span class="line">            k = (length - a_length - <span class="number">1</span>) / RTP_PACKET_MAX_LENGTH;</span><br><span class="line">            l = (length - a_length - <span class="number">1</span>) % RTP_PACKET_MAX_LENGTH;</span><br><span class="line">            <span class="keyword">int</span> t = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">while</span> (t &lt; k || (t == k &amp;&amp; l != <span class="number">0</span>)) &#123;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (t == <span class="number">0</span>) &#123;</span><br><span class="line">                    <span class="keyword">char</span> FU_HEADER = (<span class="keyword">char</span>) (NAL_HEADER &amp; <span class="number">0x1F</span> | <span class="number">0x80</span>);</span><br><span class="line">                    sendBuf[<span class="number">1</span>] = FU_HEADER;</span><br><span class="line">                    memcpy(&amp;sendBuf[<span class="number">2</span>], data + a_length + <span class="number">1</span> + (t * RTP_PACKET_MAX_LENGTH),</span><br><span class="line">                           RTP_PACKET_MAX_LENGTH);</span><br><span class="line">                    status = sess.SendPacket(sendBuf, RTP_PACKET_MAX_LENGTH + <span class="number">2</span>, <span class="number">96</span>, <span class="keyword">false</span>, <span class="number">0</span>);</span><br><span class="line">                    checkerror(status);</span><br><span class="line">                    t++;</span><br><span class="line">                &#125; <span class="keyword">else</span> <span class="keyword">if</span> (t &lt; k &amp;&amp; l != <span class="number">0</span>) &#123;</span><br><span class="line">                    <span class="keyword">char</span> FU_HEADER = (<span class="keyword">char</span>) (NAL_HEADER &amp; <span class="number">0x1F</span> | <span class="number">0x00</span>);</span><br><span class="line">                    sendBuf[<span class="number">1</span>] = FU_HEADER;</span><br><span class="line">                    memcpy(&amp;sendBuf[<span class="number">2</span>], data + a_length + <span class="number">1</span> + (t * RTP_PACKET_MAX_LENGTH),</span><br><span class="line">                           RTP_PACKET_MAX_LENGTH);</span><br><span class="line">                    status = sess.SendPacket(sendBuf, RTP_PACKET_MAX_LENGTH + <span class="number">2</span>, <span class="number">96</span>, <span class="keyword">false</span>, <span class="number">0</span>);</span><br><span class="line">                    checkerror(status);</span><br><span class="line">                    t++;</span><br><span class="line">                &#125; <span class="keyword">else</span> <span class="keyword">if</span> ((k == t &amp;&amp; l &gt; <span class="number">0</span>) || (t == (k - <span class="number">1</span>) &amp;&amp; l == <span class="number">0</span>)) &#123;</span><br><span class="line">                    sess.SetDefaultMark(<span class="keyword">true</span>);</span><br><span class="line">                    size_t isSendLength;</span><br><span class="line">                    <span class="keyword">if</span> (l &gt; <span class="number">0</span>) &#123;</span><br><span class="line">                        isSendLength = length - a_length + <span class="number">1</span> - t * RTP_PACKET_MAX_LENGTH;</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        isSendLength = RTP_PACKET_MAX_LENGTH + <span class="number">2</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">char</span> FU_HEADER = (<span class="keyword">char</span>) (NAL_HEADER &amp; <span class="number">0x1F</span> | <span class="number">0x40</span>);</span><br><span class="line">                    sendBuf[<span class="number">1</span>] = FU_HEADER;</span><br><span class="line">                    memcpy(&amp;sendBuf[<span class="number">2</span>], data + a_length + <span class="number">1</span> + (t * RTP_PACKET_MAX_LENGTH),</span><br><span class="line">                           isSendLength);</span><br><span class="line">                    status = sess.SendPacket(sendBuf, isSendLength, <span class="number">96</span>, <span class="keyword">true</span>, <span class="number">3600</span>);</span><br><span class="line">                    checkerror(status);</span><br><span class="line">                    t++;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+<p>注意在分包时时间戳的设定，和最后一个分包的标记。</p>
+<h3 id="接收数据"><a href="#接收数据" class="headerlink" title="接收数据"></a>接收数据</h3><p>同样使用jrtplib来接收数据，mediacodec解码，解码后有两种方式可以显示输出的数据：一是直接使用surfaceview渲染，二是采用image获取数据后手动渲染到surfacevew或者textureview或者opengl。后者更灵活，可以对数据进行二次处理，做一些滤镜效果等。这篇文章先讲第一种直接渲染的方式。</p>
+<p>接收数据必须在线程中实现，同样将接收到的数据存入到一个阻塞队列中，然后不断的取出数据渲染到surface上。</p>
+<p>当我们初始化好rtpsesson后，通过不断的接收到rtp数据，我们首先需要判断是否是分片的帧还是完整帧完整帧相对来说比较简单，直接回调java方法来放入队列；分片帧的话需要先拼装起来，相当于发送时候的分片的逆向，然后回调java方法放入队列。</p>
+<p>简单的代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">do</span> &#123;</span><br><span class="line">                RTPPacket *packet;</span><br><span class="line">                <span class="keyword">while</span> (sess.IsActive() &amp;&amp; (packet = sess.GetNextPacket()) != NULL) &#123;</span><br><span class="line">                    printf(<span class="string">"收到了包:%lu\n"</span>, packet-&gt;GetPayloadLength());</span><br><span class="line">                    <span class="keyword">if</span> (current_index == -<span class="number">1</span>) &#123;</span><br><span class="line">                        current_index = packet-&gt;GetSequenceNumber();</span><br><span class="line">                        start_index = current_index;</span><br><span class="line">                        printf(<span class="string">"set the num:%d\n"</span>, start_index);</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        current_index = packet-&gt;GetSequenceNumber();</span><br><span class="line">                    &#125;</span><br><span class="line">                    SAKA_LOG_WARN(<span class="string">"receive data length=%d"</span>, (<span class="keyword">int</span>) packet-&gt;GetPayloadLength());</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">char</span> indicator = packet-&gt;GetPayloadData()[<span class="number">0</span>];</span><br><span class="line">                    <span class="keyword">char</span> header = packet-&gt;GetPayloadData()[<span class="number">1</span>];</span><br><span class="line">                    <span class="keyword">if</span> ((indicator &amp; <span class="number">0x1F</span>) != (uint8_t) <span class="number">28</span> &amp;&amp; packet-&gt;HasMarker()) <span class="comment">//不是分割帧则直接存储</span></span><br><span class="line">                    &#123;</span><br><span class="line">                        <span class="keyword">if</span> ((indicator &amp; <span class="number">0x1F</span>) == <span class="number">0x07</span> ||</span><br><span class="line">                            (indicator &amp; <span class="number">0x1F</span>) == <span class="number">0x08</span>) &#123;</span><br><span class="line">                            type = <span class="number">2</span>;</span><br><span class="line">                        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                            type = <span class="number">1</span>;</span><br><span class="line">                        &#125;</span><br><span class="line">                        packet_length = <span class="number">0</span>;</span><br><span class="line">                        packet_length = packet-&gt;GetPayloadLength() + <span class="number">4</span>;</span><br><span class="line">                        env-&gt;SetByteArrayRegion(target, <span class="number">4</span>, packet_length - <span class="number">4</span>,</span><br><span class="line">                                                (jbyte *) packet-&gt;GetPayloadData());</span><br><span class="line"></span><br><span class="line">                        env-&gt;CallStaticVoidMethod(classz, passDataMethodId, target,</span><br><span class="line">                                                  packet_length, type);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">                    &#125; <span class="keyword">else</span> <span class="keyword">if</span> ((indicator &amp; <span class="number">0x1F</span>) == <span class="number">0x1c</span>) &#123;<span class="comment">//是分割帧，需要写入正常的数据</span></span><br><span class="line"></span><br><span class="line">                        <span class="keyword">if</span> ((header &amp; <span class="number">0xC0</span>) == <span class="number">0x80</span>) &#123;</span><br><span class="line">                            uint8_t nal_header = (indicator &amp; <span class="number">0xE0</span>) | (header &amp; <span class="number">0x1F</span>);</span><br><span class="line">                            env-&gt;SetByteArrayRegion(target, <span class="number">4</span>, <span class="number">1</span>, (<span class="keyword">const</span> jbyte *) &amp;nal_header);</span><br><span class="line">                            env-&gt;SetByteArrayRegion(target, <span class="number">5</span>, packet-&gt;GetPayloadLength() - <span class="number">2</span>,</span><br><span class="line">                                                    (jbyte *) (packet-&gt;GetPayloadData() + <span class="number">2</span>));</span><br><span class="line">                            packet_length = packet-&gt;GetPayloadLength() + <span class="number">3</span>;</span><br><span class="line">                        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                            env-&gt;SetByteArrayRegion(target, packet_length,</span><br><span class="line">                                                    packet-&gt;GetPayloadLength() - <span class="number">2</span>,</span><br><span class="line">                                                    (jbyte *) (packet-&gt;GetPayloadData() + <span class="number">2</span>));</span><br><span class="line">                            packet_length = packet_length + packet-&gt;GetPayloadLength() - <span class="number">2</span>;</span><br><span class="line">                            <span class="keyword">if</span> ((header &amp; <span class="number">0xC0</span>) == <span class="number">0x40</span>) &#123;</span><br><span class="line">                                env-&gt;CallStaticVoidMethod(classz, passDataMethodId, target,</span><br><span class="line">                                                          packet_length, <span class="number">1</span>);</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                    sess.DeletePacket(packet);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; <span class="keyword">while</span> (sess.IsActive() &amp;&amp; sess.GotoNextSourceWithData());</span><br></pre></td></tr></table></figure>
+<p>注意着段代码并没有处理丢包的情况，全部依赖h264的IDR帧来实现修复。</p>
+<h3 id="初始化mediacodec"><a href="#初始化mediacodec" class="headerlink" title="初始化mediacodec"></a>初始化mediacodec</h3><p>相对编码器来说简单一些：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">MediaCodecInfo codecInfo = selectCodec(MIME_TYPE);</span><br><span class="line"><span class="keyword">if</span> (codecInfo == <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">"不支持的格式"</span>);</span><br><span class="line">&#125;</span><br><span class="line">MediaFormat format = MediaFormat.createVideoFormat(MIME_TYPE, screenWidth, screenHeight);</span><br><span class="line">format.setInteger(MediaFormat.KEY_FRAME_RATE, FRAME_RATE);</span><br><span class="line">mediaCodec = MediaCodec.createByCodecName(codecInfo.getName());</span><br><span class="line">mediaCodec.setCallback(<span class="keyword">new</span> MediaCodec.Callback() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onInputBufferAvailable</span><span class="params">(@NonNull MediaCodec mc, <span class="keyword">int</span> inputBufferId)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//处理数据</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onOutputBufferAvailable</span><span class="params">(@NonNull MediaCodec codec, <span class="keyword">int</span> index, @NonNulMediaCodec.BufferInfo info)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//直接释放即可</span></span><br><span class="line">        codec.releaseOutputBuffer(index, <span class="keyword">true</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onError</span><span class="params">(@NonNull MediaCodec codec, @NonNull MediaCodec.CodecException e)</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onOutputFormatChanged</span><span class="params">(@NonNull MediaCodec codec, @NonNull MediaFormat format)</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;)</span><br><span class="line"></span><br><span class="line">mediaCodec.configure(mediaFormat, surface, <span class="keyword">null</span>, <span class="number">0</span>);</span><br><span class="line">mediaCodec.start();</span><br></pre></td></tr></table></figure>
+<p>注意，configure方法中的surface就是通过surfaceview的surfaceholder获取的surface，直接当参数传入即可，最后一个参数是flag，用来标记是否是编码，传入0表示作为解码。</p>
+<p><code>onInputBufferAvailable</code>会一直回调来让我们不断的从队列中取出数据提交给解码器。此处一定要注意，假如用户通过dequeuinputbuffer方法获取了缓冲的索引，必须调用queueinputbuffer方法来释放缓冲区，将缓冲区的所有权交给mediacodec，否则后续将不会回调<code>onInputBufferAvailable</code>方法。</p>
+<p>队列中没有数据的时候可以提交空数据给解码器</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mc.queueInputBuffer(inputBufferId, <span class="number">0</span>,<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+<p>队列中有数据的时候首先要区分一下是不是sps或者pps，是的话就必须当做配置信息提交给解码器，不是的话就直接提交一帧完整的数据给解码器。</p>
+<p>这样基本完成了整个项目。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/09/安卓解码器MediaCodec解析/" rel="next" title="安卓解码器MediaCodec解析">
+                <i class="fa fa-chevron-left"></i> 安卓解码器MediaCodec解析
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg"
+               alt="rangaofei" />
+          <p class="site-author-name" itemprop="name">rangaofei</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">62</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#思路"><span class="nav-number">1.</span> <span class="nav-text">思路</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#获取桌面录制权限"><span class="nav-number">2.</span> <span class="nav-text">获取桌面录制权限</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#MediaProjectionManager"><span class="nav-number">2.1.</span> <span class="nav-text">MediaProjectionManager</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#MediaProjection"><span class="nav-number">2.2.</span> <span class="nav-text">MediaProjection</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#创建编码器"><span class="nav-number">3.</span> <span class="nav-text">创建编码器</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#mediacodec"><span class="nav-number">3.1.</span> <span class="nav-text">mediacodec</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#发送数据"><span class="nav-number">4.</span> <span class="nav-text">发送数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#接收数据"><span class="nav-number">5.</span> <span class="nav-text">接收数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#初始化mediacodec"><span class="nav-number">6.</span> <span class="nav-text">初始化mediacodec</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">rangaofei</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
