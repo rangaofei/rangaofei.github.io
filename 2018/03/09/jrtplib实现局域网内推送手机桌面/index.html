@@ -84,19 +84,19 @@
 
 
 
-<meta name="description" content="涉及的内容较多，碰到不熟悉的请自行谷歌，基本问题都能解决，并且不提供任何技术支持与demo，主要介绍一下思路。  mediacodec编码与解码h264流 h264流的基本知识 rtp协议的基本知识 jni编程的基础知识  主要功能是实现安卓局域网内桌面推送。 简单看一个下效果：              &amp;lt;video id=”video” controls=”” preload=”none">
+<meta name="description" content="涉及的内容较多，碰到不熟悉的请自行谷歌，基本问题都能解决，并且不提供任何技术支持与demo，主要介绍一下思路。  mediacodec编码与解码h264流 h264流的基本知识 rtp协议的基本知识 jni编程的基础知识  主要功能是实现安卓局域网内桌面推送。 简单看一个下效果：              对比一下ffplay：              ffplay在播放白色动画时处理并不好，会">
 <meta name="keywords" content="Android">
 <meta property="og:type" content="article">
 <meta property="og:title" content="jrtplib实现局域网内推送手机桌面">
 <meta property="og:url" content="https://rangaofei.github.io/2018/03/09/jrtplib实现局域网内推送手机桌面/index.html">
 <meta property="og:site_name" content="SAKA&#39;S BLOG">
-<meta property="og:description" content="涉及的内容较多，碰到不熟悉的请自行谷歌，基本问题都能解决，并且不提供任何技术支持与demo，主要介绍一下思路。  mediacodec编码与解码h264流 h264流的基本知识 rtp协议的基本知识 jni编程的基础知识  主要功能是实现安卓局域网内桌面推送。 简单看一个下效果：              &amp;lt;video id=”video” controls=”” preload=”none">
+<meta property="og:description" content="涉及的内容较多，碰到不熟悉的请自行谷歌，基本问题都能解决，并且不提供任何技术支持与demo，主要介绍一下思路。  mediacodec编码与解码h264流 h264流的基本知识 rtp协议的基本知识 jni编程的基础知识  主要功能是实现安卓局域网内桌面推送。 简单看一个下效果：              对比一下ffplay：              ffplay在播放白色动画时处理并不好，会">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://ohy9exujk.bkt.clouddn.com/rtp%E7%BC%96%E8%A7%A3%E7%A0%81-2.png">
-<meta property="og:updated_time" content="2018-03-09T09:28:04.054Z">
+<meta property="og:updated_time" content="2018-03-09T09:30:40.322Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="jrtplib实现局域网内推送手机桌面">
-<meta name="twitter:description" content="涉及的内容较多，碰到不熟悉的请自行谷歌，基本问题都能解决，并且不提供任何技术支持与demo，主要介绍一下思路。  mediacodec编码与解码h264流 h264流的基本知识 rtp协议的基本知识 jni编程的基础知识  主要功能是实现安卓局域网内桌面推送。 简单看一个下效果：              &amp;lt;video id=”video” controls=”” preload=”none">
+<meta name="twitter:description" content="涉及的内容较多，碰到不熟悉的请自行谷歌，基本问题都能解决，并且不提供任何技术支持与demo，主要介绍一下思路。  mediacodec编码与解码h264流 h264流的基本知识 rtp协议的基本知识 jni编程的基础知识  主要功能是实现安卓局域网内桌面推送。 简单看一个下效果：              对比一下ffplay：              ffplay在播放白色动画时处理并不好，会">
 <meta name="twitter:image" content="http://ohy9exujk.bkt.clouddn.com/rtp%E7%BC%96%E8%A7%A3%E7%A0%81-2.png">
 
 
@@ -348,10 +348,9 @@
 <video id="video" controls preload="none" poster="http://ok7v12rvl.bkt.clouddn.com/25b45-1.jpg"><br>      <source id="mp4" src="http://ohy9exujk.bkt.clouddn.com/1.mp4" type="video/mp4"><br>    </video>
 
 
-&lt;video id=”video” controls=”” preload=”none” poster=“<a href="http://ok7v12rvl.bkt.clouddn.com/25b45-1.jpg&quot;&gt;" target="_blank" rel="noopener">http://ok7v12rvl.bkt.clouddn.com/25b45-1.jpg&quot;&gt;</a><br>      <source id="mp4" src="http://ohy9exujk.bkt.clouddn.com/1.mp4" type="video/mp4"><br>    
-
 <p>对比一下ffplay：</p>
-&lt;video id=”video” controls=”” preload=”none” poster=”<a href="http://ok7v12rvl.bkt.clouddn.com/25b45-1.jpg”&gt;" target="_blank" rel="noopener">http://ok7v12rvl.bkt.clouddn.com/25b45-1.jpg”&gt;</a><br>      <source id="mp4" src="http://ohy9exujk.bkt.clouddn.com/2.mp4" type="video/mp4"><br>    
+<video id="video" controls preload="none" poster="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg"><br>      <source id="mp4" src="http://ohy9exujk.bkt.clouddn.com/2.mp4" type="video/mp4"><br>    </video>
+
 
 <p>ffplay在播放白色动画时处理并不好，会在缓冲区卡住一些帧，不能立即刷新。没研究过sdl，不知道什么原因。</p>
 <h3 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h3><p>关于这个项目有讲不完的东西，挑主要的讲一下：</p>
