@@ -1,0 +1,773 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="首先要推荐一篇关于mediacodec的国外博客bigflake，这篇博客对mediacodec的官方文档一些坑做了较好的说明，配合起来看更有效率。 mediacodec可以用来获得安卓底层的多媒体编码，可以用来编码和解码，它是安卓low-level多媒体基础框架的重要组成部分。它经常和 MediaExtractor, MediaSync, MediaMuxer, MediaCrypto, Med">
+<meta name="keywords" content="Android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="安卓解码器MediaCodec解析">
+<meta property="og:url" content="https://rangaofei.github.io/2018/03/09/安卓解码器MediaCodec解析/index.html">
+<meta property="og:site_name" content="SAKA&#39;S BLOG">
+<meta property="og:description" content="首先要推荐一篇关于mediacodec的国外博客bigflake，这篇博客对mediacodec的官方文档一些坑做了较好的说明，配合起来看更有效率。 mediacodec可以用来获得安卓底层的多媒体编码，可以用来编码和解码，它是安卓low-level多媒体基础框架的重要组成部分。它经常和 MediaExtractor, MediaSync, MediaMuxer, MediaCrypto, Med">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://ohy9exujk.bkt.clouddn.com/media_codec_1.png">
+<meta property="og:image" content="http://ohy9exujk.bkt.clouddn.com/media_codec_2.png">
+<meta property="og:image" content="http://ohy9exujk.bkt.clouddn.com/media_codec_3.png">
+<meta property="og:image" content="http://ohy9exujk.bkt.clouddn.com/media_codec_4.png">
+<meta property="og:image" content="http://ohy9exujk.bkt.clouddn.com/media_codec_5.png">
+<meta property="og:updated_time" content="2018-03-09T07:14:14.335Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="安卓解码器MediaCodec解析">
+<meta name="twitter:description" content="首先要推荐一篇关于mediacodec的国外博客bigflake，这篇博客对mediacodec的官方文档一些坑做了较好的说明，配合起来看更有效率。 mediacodec可以用来获得安卓底层的多媒体编码，可以用来编码和解码，它是安卓low-level多媒体基础框架的重要组成部分。它经常和 MediaExtractor, MediaSync, MediaMuxer, MediaCrypto, Med">
+<meta name="twitter:image" content="http://ohy9exujk.bkt.clouddn.com/media_codec_1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://rangaofei.github.io/2018/03/09/安卓解码器MediaCodec解析/"/>
+
+
+
+
+
+  <title> 安卓解码器MediaCodec解析 | SAKA'S BLOG </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s4.cnzz.com/z_stat.php?id=1261177704&web_id=1261177704" language="JavaScript"></script>
+  <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1261177704'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1261177704%26online%3D1%26show%3Dline' type='text/javascript'%3E%3C/script%3E"));</script>
+  </div>
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">SAKA'S BLOG</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://rangaofei.github.io/2018/03/09/安卓解码器MediaCodec解析/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="rangaofei">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="SAKA'S BLOG">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="SAKA'S BLOG" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                安卓解码器MediaCodec解析
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-03-09T15:13:51+08:00">
+                2018-03-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>首先要推荐一篇关于mediacodec的国外博客<a href="https://www.bigflake.com/mediacodec/" target="_blank" rel="noopener">bigflake</a>，这篇博客对mediacodec的官方文档一些坑做了较好的说明，配合起来看更有效率。</p>
+<p>mediacodec可以用来获得安卓底层的多媒体编码，可以用来编码和解码，它是安卓low-level多媒体基础框架的重要组成部分。它经常和 <code>MediaExtractor, MediaSync, MediaMuxer, MediaCrypto, MediaDrm, Image, Surface,  AudioTrack</code>一起使用。</p>
+<p><img src="http://ohy9exujk.bkt.clouddn.com/media_codec_1.png" alt="mediacodec"></p>
+<p>通过上图可以看出，mediacodec的作用是处理输入的数据生成输出数据。首先生成一个输入数据缓冲区，将数据填入缓冲区提供给codec，codec会采用异步的方式处理这些输入的数据，然后将填满输出缓冲区提供给消费者，消费者消费完后将缓冲区返还给codec。</p>
+<p>首先明确一下下边将会提到的两种输入输出模式：<br>|模式名称|含义<br>|—|—<br>|surface模式|输入/输出以surface作为源<br>|ByteBuffer模式|输入/输出时以ByteBuffer作为源</p>
+<h2 id="数据格式"><a href="#数据格式" class="headerlink" title="数据格式"></a>数据格式</h2><p>mediacodec接受三种数据格式：压缩数据，原始音频数据和原始视频数据。</p>
+<p>这三种数据都可以使用<code>ByteBuffer</code>作为载体传输给mediacodec来处理。但是当使用原视频数据时，最好采用<code>Surface</code>作为输入源来替代<code>ByteBuffer</code>，这样效率更高，效果更好，因为surface使用的更底层的视频数据，不会映射或者复制到ByteBuffer缓冲区。在使用surface作为输入源时，开发者不能访问到到原始视频数据，但是可以使用<code>ImageReader</code>来获取到原始未加密的视频数据，这个地方我理解的是<code>imagereader</code>的工作流程是接受自己的surface数据来生成image，将<code>imagereader</code>的surface传给<code>mediacodec</code>作为解码器的输出surface，就可以访问解码的数据，但是必须是未加密的，这种方式同样比使用<code>ByteBuffer</code>更快，因为native缓冲区会直接映射到<code>directbytebuffer</code>区域，这是一块native和java共享的缓冲区。当使用<code>ByteBuffer</code>模式时可以使用Image来获取原始视频数据,mediacodec提供了两个方法，<code>getInput/OutputImage(int)</code>。</p>
+<h3 id="压缩数据格式"><a href="#压缩数据格式" class="headerlink" title="压缩数据格式"></a>压缩数据格式</h3><p>压缩数据可以作为解码器的输入数据或者编码器的输出数据，需要指定数据格式，这样编码/解码器才能知道如何处理这些压缩数据。当使用视频时，一般是包含完整的一帧数据，也就是我们要输入给解码器一帧完整的数据或者从编码器得到一帧完整的数据。</p>
+<blockquote>
+<p>常用的就是让mediacodec解码H264数据，我们必须将分割符和NALU单元作为一个完整的数据帧传给解码器才能正确解码。</p>
+</blockquote>
+<p>对于音频数据，这通常是单个访问单元（编码音频片段通常包含由格式类型指示的几毫秒的音频），但是这个要求稍微宽松，因为缓冲器可能包含多个编码的音频存取单元。</p>
+<p>切记，一般都不要传递给mediacodec不是完整帧的数据，除非是标记了<code>BUFFER_FLAG_PARTIAL_FRAME</code>的数据。`BUFFER_FLAG_PARTIAL_FRAME指示了缓冲区只包含帧的一部分，并且解码器应该对数据进行批处理，直到没有该标志的缓冲区在解码帧之前出现。但是这个标记是API26之后引入的，一般用不到。</p>
+<h3 id="原始音频数据"><a href="#原始音频数据" class="headerlink" title="原始音频数据"></a>原始音频数据</h3><p>原始音频缓冲区包含整个PCM音频数据帧，这是通道顺序中每个通道的一个样本。 每个采样都是以本地字节顺序的16位有符号整数(<code>ENCODING_PCM_16BIT</code>)。<br>一段示例代码来获取采样数据：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">short</span>[] getSamplesForChannel(MediaCodec codec, <span class="keyword">int</span> bufferId, <span class="keyword">int</span> channelIx) &#123;</span><br><span class="line">   ByteBuffer outputBuffer = codec.getOutputBuffer(bufferId);</span><br><span class="line">   MediaFormat format = codec.getOutputFormat(bufferId);</span><br><span class="line">   ShortBuffer samples = outputBuffer.order(ByteOrder.nativeOrder()).asShortBuffer();</span><br><span class="line">   <span class="keyword">int</span> numChannels = formet.getInteger(MediaFormat.KEY_CHANNEL_COUNT);</span><br><span class="line">   <span class="keyword">if</span> (channelIx &lt; <span class="number">0</span> || channelIx &gt;= numChannels) &#123;</span><br><span class="line">     <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">short</span>[] res = <span class="keyword">new</span> <span class="keyword">short</span>[samples.remaining() / numChannels];</span><br><span class="line">   <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; res.length; ++i) &#123;</span><br><span class="line">     res[i] = samples.get(i * numChannels + channelIx);</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">return</span> res;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<h3 id="原始视频数据"><a href="#原始视频数据" class="headerlink" title="原始视频数据"></a>原始视频数据</h3><p>关于视频色彩格式的内容我也不是很了解，只是用h264和yuv数据较多。</p>
+<p>视频编解码支持三种色彩格式：</p>
+<ul>
+<li>native raw video format : <code>COLOR_FormatSurface</code>，可以用来处理surface模式的数据输入输出。</li>
+<li>flexible YUV buffers : 例如<code>COLOR_FormatYUV420Flexible</code>,可以用来处理surface模式的输出输出，在使用ByteBuffer模式的时候可以用<code>getInput/OutputImage(int)</code>方法来获取image数据。</li>
+<li>specific formats: 支持ByteBuffer模式，有一些厂家会定制， 其他的在<code>MediaCodecInfo.CodecCapabilities</code>中可以看到，格式较多，不列举. 假如是flexible format, 同样可以使用Image来处理数据，getInput/OutputImage(int)。</li>
+</ul>
+<p>从<code>LOLLIPOP_MR1(api22)</code>以后，mediacodec支持所有的flexible YUV 4:2:0格式。</p>
+<h2 id="生命周期中的状态"><a href="#生命周期中的状态" class="headerlink" title="生命周期中的状态"></a>生命周期中的状态</h2><p>mediacodec分为三种状态，Stopped, Executing和Released。一张图表示：</p>
+<p><img src="http://ohy9exujk.bkt.clouddn.com/media_codec_2.png" alt="mediacodec state"></p>
+<p>Stopped状态包含三个子状态：Uninitialized, Configured和Error，Executing同样包含三个状态：Flushed, Running 和End-of-Stream。</p>
+<p>在mediacodec的使用过程中必须遵守图里标出的流程，否则会发生错误。</p>
+<p>以解码器为例，讲解一下使用流程。当使用工厂方法创建mediacodec并且指定为解码后，进入Uninitialized状态，调用<code>configure</code>方法后，进入Configured状态，然后调用<code>start</code>方法进入Executing状态。</p>
+<p>进入Executing状态后，首先到达Flush状态，此时mediacodec会持有所有的数据，当第一个inputbufffer从队列中取出时，立即进入Running状态，这个时间很短。然后就可以调用dequeueInputBuffer和getInputBuffer来获取用户可用的缓冲区，用户填满数据后调用queueinputbuffer方法返回给解码器，解码器大部分时间都会工作在Running状态。当想inputbufferqueue中输入一帧标记<code>EndOfStream</code>的时候，进入End-of-Stream状态，在这种状态下，解码器不再接受任何新的数据输入，缓冲区中的数据和标记<code>EndOfStream</code>最终会执行完毕。在任何时候都可以调用flush方法回到Flush状态。</p>
+<p>调用stop方法会使mediacode进入Uninitialized状态，这时候可以执行configure方法来进入下一循环。当mediacodec使用完毕后必须调用release方法来释放所有的资源。</p>
+<p>在某些情况下，例如取出缓冲区索引时，mediacodec会发生错误进入Error状态，此时调用reset方法来是mediacodec重新处于Uninitialized状态，或者调用release来结束解码。</p>
+<p>下面介绍一下mediacodec工作的详细过程。</p>
+<h3 id="创建"><a href="#创建" class="headerlink" title="创建"></a>创建</h3><p>meidacodec提供了单个工厂方法来创建实例。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">MediaCodec <span class="title">createDecoderByType</span> <span class="params">(String type)</span></span></span><br><span class="line"><span class="function">MediaCodec <span class="title">createEncoderByType</span> <span class="params">(String type)</span></span></span><br><span class="line"><span class="function">MediaCodec <span class="title">createByCodecName</span> <span class="params">(String name)</span></span></span><br></pre></td></tr></table></figure>
+<p>前两个方法相似，传入字符串类型的创建种类，即可创建编码/解码器。参数一定不能为空，否则抛出<code>NullPointerException</code>。假如传入的参数不是系统指定的某中类型，同样会抛出<code>IllegalArgumentException</code>。看一下支持的类型：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"video/x-vnd.on2.vp8"</span> - <span class="function">VP8 <span class="title">video</span> <span class="params">(i.e. video in .webm)</span></span></span><br><span class="line"><span class="function">"video/x-vnd.on2.vp9" - VP9 <span class="title">video</span> <span class="params">(i.e. video in .webm)</span></span></span><br><span class="line"><span class="function">"video/avc" - H.264/AVC video</span></span><br><span class="line"><span class="function">"video/hevc" - H.265/HEVC video</span></span><br><span class="line"><span class="function">"video/mp4v-es" - MPEG4 video</span></span><br><span class="line"><span class="function">"video/3gpp" - H.263 video</span></span><br><span class="line"><span class="function">"audio/3gpp" - AMR narrowband audio</span></span><br><span class="line"><span class="function">"audio/amr-wb" - AMR wideband audio</span></span><br><span class="line"><span class="function">"audio/mpeg" - MPEG1/2 audio layer III</span></span><br><span class="line"><span class="function">"audio/mp4a-latm" - AAC <span class="title">audio</span> <span class="params">(note, <span class="keyword">this</span> is raw AAC packets, not packaged in LATM!)</span></span></span><br><span class="line"><span class="function">"audio/vorbis" - vorbis audio</span></span><br><span class="line"><span class="function">"audio/g711-alaw" - G.711 alaw audio</span></span><br><span class="line"><span class="function">"audio/g711-mlaw" - G.711 ulaw audio</span></span><br></pre></td></tr></table></figure>
+<p>这些参数可以直接传给前两个方法用来创建mediacodec。<br>但是官方推荐的是使用第三个方法，避免用户传入不正确的媒体类型。重点介绍一下。<br>首先是创建MediaFormat。这个玩意在初始化的时候需要指定一系列的键值对，这些设置的值都是mediacodec在编码/解码过程中用到的值。<br>上一张恶心的图来说明一下：</p>
+<p><img src="http://ohy9exujk.bkt.clouddn.com/media_codec_3.png" alt="mediacodec"></p>
+<p>假如是本地文件或者网络流，可以用<code>MediaExtractor.getTrackFormat</code>这个方法来提取MediaFormat信息。写一个简单的方法来测试这个玩意：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">getMediaFormatFrom</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    MediaExtractor extractor = <span class="keyword">new</span> MediaExtractor();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        File file=<span class="keyword">new</span> File(Environment.getExternalStorageDirectory(),<span class="string">"ddmsrec.mp4"</span>);</span><br><span class="line">        Log.d(TAG,file.getAbsolutePath());</span><br><span class="line">        extractor.setDataSource(file.getAbsolutePath());</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> numTracks = extractor.getTrackCount();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; numTracks; ++i) &#123;</span><br><span class="line">        MediaFormat format = extractor.getTrackFormat(i);</span><br><span class="line">        String mime = format.getString(MediaFormat.KEY_MIME);</span><br><span class="line">        Log.d(TAG, <span class="string">"mime="</span>+mime);</span><br><span class="line">    &#125;</span><br><span class="line">    extractor.release();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这段代码的作用提取该文件的MediaFormat的信息。输出结果如下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mime=video/avc</span><br></pre></td></tr></table></figure>
+<p>这个方法同样适用于获取url地址的流。<br>然后可以调用<code>MediaFormat.setFeatureEnabled</code>方法来激活一些特性(使用<code>MediaCodec createDecoderByType (String type)MediaCodec createEncoderByType (String type)</code>时不支持这个功能)。</p>
+<p>假如你知道确切的名称，可以直接传给<code>createByCodecName</code>函数，否则的话需要从<code>MediaCodecList</code>类中找出合适的类型来作为参数传入。那么这个名字如何获取呢，官方推荐的方式是采用<code>String findDecoderForFormat (MediaFormat format)</code>/<code>String findEncoderForFormat (MediaFormat format)</code>来获取这个名称，看一下函数原型：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> String <span class="title">findCodecForFormat</span><span class="params">(<span class="keyword">boolean</span> encoder, MediaFormat format)</span> </span>&#123;</span><br><span class="line">    String mime = format.getString(MediaFormat.KEY_MIME);</span><br><span class="line">    <span class="keyword">for</span> (MediaCodecInfo info: mCodecInfos) &#123;</span><br><span class="line">        <span class="keyword">if</span> (info.isEncoder() != encoder) &#123;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            MediaCodecInfo.CodecCapabilities caps = info.getCapabilitiesForType(mime);</span><br><span class="line">            <span class="keyword">if</span> (caps != <span class="keyword">null</span> &amp;&amp; caps.isFormatSupported(format)) &#123;</span><br><span class="line">                <span class="keyword">return</span> info.getName();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IllegalArgumentException e) &#123;</span><br><span class="line">            <span class="comment">// type is not supported</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>在api21(LOLLIPOP)时，必须清楚mediaformat的frame_rate参数。<code>format.setString(MediaFormat.KEY_FRAME_RATE, null)</code></p>
+</blockquote>
+<p>这个函数实际上需要的只有MediaFormat这个类的KEY_MIME对应的值。这样我们就可以搞点事情，在未创建MediaFormat的时候获取支持的类型。修改代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> MediaCodecInfo <span class="title">selectCodec</span><span class="params">(<span class="keyword">boolean</span> encoder,String mimeType)</span> </span>&#123;</span><br><span class="line">    MediaCodecList list = <span class="keyword">new</span> MediaCodecList(REGULAR_CODECS);</span><br><span class="line">    MediaCodecInfo[] infos = list.getCodecInfos();</span><br><span class="line">    <span class="keyword">for</span> (MediaCodecInfo m : infos) &#123;</span><br><span class="line">        <span class="keyword">if</span> (m.isEncoder()!=encoder) &#123;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (String type : m.getSupportedTypes()) &#123;</span><br><span class="line">            <span class="keyword">if</span> (type.equalsIgnoreCase(mimeType)) &#123;</span><br><span class="line">                Log.d(TAG, <span class="string">"the selected encoder is :"</span> + m.getName());</span><br><span class="line">                <span class="keyword">return</span> m;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>使用的时候只需要判断String结果就可以了。</p>
+<h4 id="创建一个加密的解码器"><a href="#创建一个加密的解码器" class="headerlink" title="创建一个加密的解码器"></a>创建一个加密的解码器</h4><p>在<code>KITKAT_WATCH</code>及之前的版本，<code>MediaCodecList</code>没有列出这些可用的组件，但是这些在系统中是可以使用的，只需要在名字后边添加<code>.secure</code>即可。假如系统不支持该名字的加密版则会抛出一个IO异常。</p>
+<p>从LOLLIPOP开始，使用<code>FEATURE_SecurePlayback</code>来创建一个加密解码器。</p>
+<h3 id="初始化"><a href="#初始化" class="headerlink" title="初始化"></a>初始化</h3><p>创建解码器之后，我们需要为这个祖宗来设置一系列的参数来初始化它。后边将会讲到处理数据的两种方式：同步和异步。假如是异步的方式的话，必须要在configure之前来为它设置回调函数(回调函数在处理数据的时候会讲到)。设置好回调函数后，就可以调用configure函数了。<br>函数有两个方法:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">configure</span> <span class="params">(MediaFormat format, Surface surface, MediaCrypto crypto, <span class="keyword">int</span> flags)</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">configure</span> <span class="params">(MediaFormat format, Surface surface, <span class="keyword">int</span> flags, MediaDescrambler descrambler)</span></span></span><br></pre></td></tr></table></figure>
+<p>假如不涉及加密和解密（这里不展开加密方法和解密方法了），这两个方法没什么区别，mediaformat传入刚才获取的值，surface可以为空。在不解码生成outputbuffers的时候或者不想将生成的outputbuffers渲染到surface的时候，可以设置为null。flag有两种模式，<code>CONFIGURE_FLAG_ENCODE</code>(值等于1)为编码模式，其他的值为解码模式。</p>
+<p>假如想处理原始视频帧，需要将原始视频帧编码为类似于h264或者其他格式，需要调用<code>createInputSurface()</code>方法产生一个surface，<strong>并且必须在configure</strong>之后，这个surface上目前是空数据，然后调用start方法，当有数据注入到surface时，mediacodec就能立即获取到并解码。假如是api23之后，也可以使用<code>Surface createPersistentInputSurface ()</code>来创建一个surface，其他的编码器可以调用<code>setInputSurface(Surface)</code>方法来继续使用这个surface。</p>
+<h4 id="指定的特殊数据"><a href="#指定的特殊数据" class="headerlink" title="指定的特殊数据"></a>指定的特殊数据</h4><p> AAC audio， MPEG4, H.264， H.265 video格式的数据作为输入源解码的时候，需要指定一个特殊的前缀设置信息，这个信息通常包含在数据中，但是需要自己提取出来，在mediacodec执行start之后提交这些数据，比如h264的sps和pps，在queueinputbuffer的时候flag设置为<code>BUFFER_FLAG_CODEC_CONFIG</code>提交给解码器。同样这些数据可以在configure的时候提交给mediacodec，效果和前边的一样:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mediaFormat.setByteBuffer(<span class="string">"csd-0"</span>, ByteBuffer.wrap(sps));<span class="comment">//sps是一个包含sps信息的byte数组</span></span><br><span class="line">mediaFormat.setByteBuffer(<span class="string">"csd-1"</span>, ByteBuffer.wrap(pps));<span class="comment">//pps是一个包含pps信息的byte数组</span></span><br></pre></td></tr></table></figure>
+<p>当调用start方法启动时这些信息同样会传给mediacodec。你绝不能直接提交这些数据。 如果格式不包含编解码器特定数据，则可以根据格式要求，选择使用指定数量的缓冲区以正确的顺序提交它。 在H.264 AVC的情况下，还可以连接所有编解码器专用数据并将其作为单个编解码器配置缓冲区提交。</p>
+<p>再来一张恶心的图:(所有带*的值必须加上前缀”\x00\x00\x00\x01”)<br><img src="http://ohy9exujk.bkt.clouddn.com/media_codec_4.png" alt="codec"></p>
+<blockquote>
+<p>注意当提交配置信息后可能flush的时候丢失信息，必须重新提交这个信息。提交信息是时间戳将被忽略。</p>
+</blockquote>
+<p>编码器在收到这些信息后将会同样输出带有<code>BUFFER_FLAG_CODEC_CONFIG</code>标记的outputbuffer。</p>
+<h2 id="数据处理"><a href="#数据处理" class="headerlink" title="数据处理"></a>数据处理</h2><p>进入正题了。每个codec都有一片属于自己的输入/输出缓冲区，每个缓冲区都有bufferID来指向。在调用start方法后，用户不能访问任何的inputbuffer和outbuffer，需要通过以下两种方式<br>|模式|输入方法|输出方法<br>|—|—|—<br>|同步模式|dequeueInputBuffer()|dequeueOutputBuffer()<br>|异步模式|MediaCodec.Callback.OnInputBufferAvailabe()|MediaCodec.Callback.OnInputBufferAvailabe()</p>
+<p>当获得inputbuffer(输入方法执行后)后，所有权交给了用户，这些缓冲区由用户填满数据后需要使用queueInputBuffer(加密数据的话请使用queueSecureInputBuffer)提交缓冲区，提交后缓冲区后所有权交给了codec。注意不要为多个帧提供相同的时间戳，除非是配置信息，也就是标记为<code>BUFFER_FLAG_CODEC_CONFIG</code>的帧可以随意使用时间戳。</p>
+<p>当获得outputbuffer(输出方法执行)后，用户可访问一个只读的缓冲区，当使用完毕后，请调用<code>releaseOutputBuffer</code>方法来将缓冲区返回给codec。</p>
+<p>我们可以不立即<code>queueinputbuffer/releaseOutputBuffer</code>到编解码器，但用户持有input/outputbuffer可能会使编解码器停止工作，并且此行为取决于设备。 编解码器有可能在产生输出缓冲区之前暂停，直到所有未完成的缓冲区<code>queueinputbuffer/releaseOutputBuffer</code>。 因此，用户最好每次获得缓冲区后执行释放操作。</p>
+<h3 id="异步模式"><a href="#异步模式" class="headerlink" title="异步模式"></a>异步模式</h3><p>从LOLLIPOP开始，首选方法是在调用configure方法之前通过设置回调来异步处理数据。 异步模式会稍微改变状态转换步骤，在running状态时必须在调用flush（）之后调用start（）方法，将编解码器转换为Running子状态并开始接收输入缓冲区。 同样，在初始调用开始时，codec将直接移至Running子状态，并通过回调开始传递可用的输入缓冲区。来一张蛋疼的图示意：</p>
+<p><img src="http://ohy9exujk.bkt.clouddn.com/media_codec_5.png" alt="codec"></p>
+<p>官方给出的一段典型代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">MediaCodec codec = MediaCodec.createByCodecName(name);</span><br><span class="line">MediaFormat mOutputFormat; <span class="comment">// member variable</span></span><br><span class="line">codec.setCallback(<span class="keyword">new</span> MediaCodec.Callback() &#123;</span><br><span class="line">   <span class="meta">@Override</span></span><br><span class="line">   <span class="function"><span class="keyword">void</span> <span class="title">onInputBufferAvailable</span><span class="params">(MediaCodec mc, <span class="keyword">int</span> inputBufferId)</span> </span>&#123;</span><br><span class="line">     ByteBuffer inputBuffer = codec.getInputBuffer(inputBufferId);</span><br><span class="line">     <span class="comment">// fill inputBuffer with valid data</span></span><br><span class="line">     …</span><br><span class="line">     codec.queueInputBuffer(inputBufferId, …);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="meta">@Override</span></span><br><span class="line">   <span class="function"><span class="keyword">void</span> <span class="title">onOutputBufferAvailable</span><span class="params">(MediaCodec mc, <span class="keyword">int</span> outputBufferId, …)</span> </span>&#123;</span><br><span class="line">     ByteBuffer outputBuffer = codec.getOutputBuffer(outputBufferId);</span><br><span class="line">     MediaFormat bufferFormat = codec.getOutputFormat(outputBufferId); <span class="comment">// option A</span></span><br><span class="line">     <span class="comment">// bufferFormat is equivalent to mOutputFormat</span></span><br><span class="line">     <span class="comment">// outputBuffer is ready to be processed or rendered.</span></span><br><span class="line">     …</span><br><span class="line">     codec.releaseOutputBuffer(outputBufferId, …);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="meta">@Override</span></span><br><span class="line">   <span class="function"><span class="keyword">void</span> <span class="title">onOutputFormatChanged</span><span class="params">(MediaCodec mc, MediaFormat format)</span> </span>&#123;</span><br><span class="line">     <span class="comment">// Subsequent data will conform to new format.</span></span><br><span class="line">     <span class="comment">// Can ignore if using getOutputFormat(outputBufferId)</span></span><br><span class="line">     mOutputFormat = format; <span class="comment">// option B</span></span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="meta">@Override</span></span><br><span class="line">   <span class="function"><span class="keyword">void</span> <span class="title">onError</span><span class="params">(…)</span> </span>&#123;</span><br><span class="line">     …</span><br><span class="line">   &#125;</span><br><span class="line"> &#125;);</span><br><span class="line"> codec.configure(format, …);</span><br><span class="line"> mOutputFormat = codec.getOutputFormat(); <span class="comment">// option B</span></span><br><span class="line"> codec.start();</span><br><span class="line"> <span class="comment">// wait for processing to complete</span></span><br><span class="line"> codec.stop();</span><br><span class="line"> codec.release();</span><br></pre></td></tr></table></figure>
+<p> 设置回调方法必须在mediacodec创建之后，并且在configure方法之前。mediacodec共有四个方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">onError</span><span class="params">(MediaCodec codec, MediaCodec.CodecException e)</span><span class="comment">//发生错误时回调此方法</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">onInputBufferAvailable</span><span class="params">(MediaCodec codec, <span class="keyword">int</span> index)</span><span class="comment">//当inputbuffer可用时回调此方法</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">onOutputBufferAvailable</span><span class="params">(MediaCodec codec, <span class="keyword">int</span> index, MediaCodec.BufferInfo info)</span></span></span><br><span class="line"><span class="function"><span class="comment">//当output方法可用时回调此方法</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">onOutputFormatChanged</span><span class="params">(MediaCodec codec, MediaFormat format)</span><span class="comment">//当输出格式变化时回调此方法</span></span></span><br></pre></td></tr></table></figure>
+<p>所有方法中的codec就是我们创建的那个mediacodec，index是指向缓冲区的BufferId，利用这个index用户可以获得缓冲区；format是变化后的Mediaformat，在h264流里边这个就是sps和pps。</p>
+<p>看一下几个重要的方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">ByteBuffer <span class="title">getInputBuffer</span> <span class="params">(<span class="keyword">int</span> index)</span></span></span><br></pre></td></tr></table></figure>
+<p>该方法会返回一个已清空、可写入的input缓冲区,通过调用ByteBuffer.put(data)方法将data中的数据放到缓冲区后，也可以进行其他处理，然后调用<code>void queueInputBuffer (int index, int offset, int size, long presentationTimeUs, int flags)</code>就可以将缓冲区返回给codec。index是回调函数中返回的index，offset是缓冲区提交数据的起始未知，可以不从0开始，size是需要提交的长度，presentationTimeUs是时间戳，这个时间戳最好是按帧率来计算(单位:ns)，当使用surface作为输出时，这个时间会作为食品的时间戳来显示；flags一般三个值：<code>BUFFER_FLAG_CODEC_CONFIG</code>:配置信息，<code>BUFFER_FLAG_END_OF_STREAM</code>:结束标志，<code>BUFFER_FLAG_KEY_FRAME</code>:关键帧，不建议使用。在执行此方法后index指向的缓冲区将不可访问，继续使用将会抛出异常。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">ByteBuffer <span class="title">getOutputBuffer</span> <span class="params">(<span class="keyword">int</span> index)</span></span></span><br></pre></td></tr></table></figure>
+<p>用法同getinputbuffer一样。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">releaseOutputBuffer</span> <span class="params">(<span class="keyword">int</span> index,<span class="keyword">boolean</span> render)</span></span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">releaseOutputBuffer</span> <span class="params">(<span class="keyword">int</span> index,<span class="keyword">long</span> renderTimestampNs)</span></span></span><br></pre></td></tr></table></figure>
+<p>这两个方法都会释放index所指向的缓冲区。假如使用了surface，第二个参数传入传入true将会把数据先输出给surface，当surface不再使用时立即返回给codec，传入long型时：<br>如果在SurfaceView上渲染缓冲区，则可以使用时间戳在特定时间渲染缓冲区（在缓冲区时间戳之后或之后的VSYNC处）。为了达到这个目的，时间戳需要合理地接近当前的nanoTime（）。目前，这是在一（1）秒内设定的。一些注意事项：</p>
+<blockquote>
+<p>该缓冲区将不会返回到编解码器，直到时间戳已经过去并且该缓冲区不再被Surface使用。<br>缓冲区会按顺序处理，因此您可能会阻止后续缓冲区显示在Surface上。如果您想对用户操作做出反应，这很重要。停止视频或寻求。<br>如果将多个缓冲区发送到要在同一个VSYNC上渲染的Surface，则会显示最后一个缓冲区，其他将被放弃。<br>如果时间戳不与当前系统时间“合理接近”，Surface将忽略时间戳，并在最早的可行时间显示缓冲区。在这种模式下，它不会丢帧。<br>为获得最佳性能和质量，当您在所需渲染时间之前约两个VSYNC的时间时调用此方法。对于60Hz的显示器，这是大约33毫秒。</p>
+</blockquote>
+<p>这段话的大概意思就是不要使用这个方法。</p>
+<h3 id="同步方法"><a href="#同步方法" class="headerlink" title="同步方法"></a>同步方法</h3><p><code>getInput/OutputBuffers()</code>已经被废弃，使用<code>getInput/OutputBuffer(int)</code>来获取缓冲区。</p>
+<p>一段官方代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">MediaCodec codec = MediaCodec.createByCodecName(name);</span><br><span class="line"> codec.configure(format, …);</span><br><span class="line"> MediaFormat outputFormat = codec.getOutputFormat(); <span class="comment">// option B</span></span><br><span class="line"> codec.start();</span><br><span class="line"> <span class="keyword">for</span> (;;) &#123;</span><br><span class="line">   <span class="keyword">int</span> inputBufferId = codec.dequeueInputBuffer(timeoutUs);</span><br><span class="line">   <span class="keyword">if</span> (inputBufferId &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">     ByteBuffer inputBuffer = codec.getInputBuffer(…);</span><br><span class="line">     <span class="comment">// fill inputBuffer with valid data</span></span><br><span class="line">     …</span><br><span class="line">     codec.queueInputBuffer(inputBufferId, …);</span><br><span class="line">   &#125;</span><br><span class="line">   <span class="keyword">int</span> outputBufferId = codec.dequeueOutputBuffer(…);</span><br><span class="line">   <span class="keyword">if</span> (outputBufferId &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">     ByteBuffer outputBuffer = codec.getOutputBuffer(outputBufferId);</span><br><span class="line">     MediaFormat bufferFormat = codec.getOutputFormat(outputBufferId); <span class="comment">// option A</span></span><br><span class="line">     <span class="comment">// bufferFormat is identical to outputFormat</span></span><br><span class="line">     <span class="comment">// outputBuffer is ready to be processed or rendered.</span></span><br><span class="line">     …</span><br><span class="line">     codec.releaseOutputBuffer(outputBufferId, …);</span><br><span class="line">   &#125; <span class="keyword">else</span> <span class="keyword">if</span> (outputBufferId == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) &#123;</span><br><span class="line">     <span class="comment">// Subsequent data will conform to new format.</span></span><br><span class="line">     <span class="comment">// Can ignore if using getOutputFormat(outputBufferId)</span></span><br><span class="line">     outputFormat = codec.getOutputFormat(); <span class="comment">// option B</span></span><br><span class="line">   &#125;</span><br><span class="line"> &#125;</span><br><span class="line"> codec.stop();</span><br><span class="line"> codec.release();</span><br></pre></td></tr></table></figure>
+<p> 几个重要方法：</p>
+ <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">dequeueInputBuffer</span> <span class="params">(<span class="keyword">long</span> timeoutUs)</span></span></span><br></pre></td></tr></table></figure>
+<p> 返回值是缓冲区的BufferId，假如返回值为-1则表示缓冲区不能使用。传入的参数为正，则是最长等待时间，为0则会立即返回缓冲区的id，负数则会无限等待。</p>
+<h3 id="End-of-stream"><a href="#End-of-stream" class="headerlink" title="End-of-stream"></a>End-of-stream</h3><p>当结束输入数据时，发送如下代码即可：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">codec.queueInputBuffer(index,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,BUFFER_FLAG_END_OF_STREAM);<span class="comment">//第三个时间戳可以随意设置</span></span><br></pre></td></tr></table></figure>
+<p>前边提到过，接受到这个信号后，codec将不再接受任何新的数据，在这个信号之前的数据会全部输出。</p>
+<h3 id="使用surface作为输出"><a href="#使用surface作为输出" class="headerlink" title="使用surface作为输出"></a>使用surface作为输出</h3><p>使用surface做为输出时与使用Bytebuffer基本一致，只是在surface模式下所有的bytebuffer和image全部为null。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">releaseOutputBuffer(bufferId, <span class="keyword">false</span>);  <span class="comment">//不会渲染到surface上</span></span><br><span class="line">releaseOutputBuffer(bufferId, <span class="keyword">true</span>); <span class="comment">//使用默认的时间戳渲染视频</span></span><br><span class="line">releaseOutputBuffer(bufferId, timestamp) <span class="comment">//使用指定的时间戳渲染视频</span></span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/02/24/移植jrtplib到安卓平台/" rel="next" title="移植jrtplib到安卓平台">
+                <i class="fa fa-chevron-left"></i> 移植jrtplib到安卓平台
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg"
+               alt="rangaofei" />
+          <p class="site-author-name" itemprop="name">rangaofei</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">61</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/">
+                <span class="site-state-item-count">5</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#数据格式"><span class="nav-number">1.</span> <span class="nav-text">数据格式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#压缩数据格式"><span class="nav-number">1.1.</span> <span class="nav-text">压缩数据格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原始音频数据"><span class="nav-number">1.2.</span> <span class="nav-text">原始音频数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#原始视频数据"><span class="nav-number">1.3.</span> <span class="nav-text">原始视频数据</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#生命周期中的状态"><span class="nav-number">2.</span> <span class="nav-text">生命周期中的状态</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#创建"><span class="nav-number">2.1.</span> <span class="nav-text">创建</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#创建一个加密的解码器"><span class="nav-number">2.1.1.</span> <span class="nav-text">创建一个加密的解码器</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#初始化"><span class="nav-number">2.2.</span> <span class="nav-text">初始化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#指定的特殊数据"><span class="nav-number">2.2.1.</span> <span class="nav-text">指定的特殊数据</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据处理"><span class="nav-number">3.</span> <span class="nav-text">数据处理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#异步模式"><span class="nav-number">3.1.</span> <span class="nav-text">异步模式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#同步方法"><span class="nav-number">3.2.</span> <span class="nav-text">同步方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#End-of-stream"><span class="nav-number">3.3.</span> <span class="nav-text">End-of-stream</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用surface作为输出"><span class="nav-number">3.4.</span> <span class="nav-text">使用surface作为输出</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">rangaofei</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
