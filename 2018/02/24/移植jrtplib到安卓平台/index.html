@@ -84,19 +84,19 @@
 
 
 
-<meta name="description" content="*本篇文章已授权微信公众号 guolin_blog （郭霖）独家发布  关于rtp协议RTP协议介绍实时传输协议RTP（Real-time Transport Protocol）是网络传输协议的一种，构建与TCP/IP之上，广泛用于局域网推送视频与音频的推送。RTP协议本身比较复杂，而且各厂商基本不提供基于RTP协议的sdk，大多数是基于RTMP和RTSP，但是后边两者实时性远不如RTP高。为了">
+<meta name="description" content="关于rtp协议RTP协议介绍实时传输协议RTP（Real-time Transport Protocol）是网络传输协议的一种，构建与TCP/IP之上，广泛用于局域网推送视频与音频的推送。RTP协议本身比较复杂，而且各厂商基本不提供基于RTP协议的sdk，大多数是基于RTMP和RTSP，但是后边两者实时性远不如RTP高。为了实现将安卓手机屏幕录屏取得H264流，并将之分片或者组合发送至电脑端播放器">
 <meta name="keywords" content="Android">
 <meta property="og:type" content="article">
 <meta property="og:title" content="移植jrtplib到安卓平台">
 <meta property="og:url" content="https://rangaofei.github.io/2018/02/24/移植jrtplib到安卓平台/index.html">
 <meta property="og:site_name" content="SAKA&#39;S BLOG">
-<meta property="og:description" content="*本篇文章已授权微信公众号 guolin_blog （郭霖）独家发布  关于rtp协议RTP协议介绍实时传输协议RTP（Real-time Transport Protocol）是网络传输协议的一种，构建与TCP/IP之上，广泛用于局域网推送视频与音频的推送。RTP协议本身比较复杂，而且各厂商基本不提供基于RTP协议的sdk，大多数是基于RTMP和RTSP，但是后边两者实时性远不如RTP高。为了">
+<meta property="og:description" content="关于rtp协议RTP协议介绍实时传输协议RTP（Real-time Transport Protocol）是网络传输协议的一种，构建与TCP/IP之上，广泛用于局域网推送视频与音频的推送。RTP协议本身比较复杂，而且各厂商基本不提供基于RTP协议的sdk，大多数是基于RTMP和RTSP，但是后边两者实时性远不如RTP高。为了实现将安卓手机屏幕录屏取得H264流，并将之分片或者组合发送至电脑端播放器">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://p3lublj5c.bkt.clouddn.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-02-24%20%E4%B8%8B%E5%8D%888.18.16.png">
-<meta property="og:updated_time" content="2018-03-01T02:41:52.381Z">
+<meta property="og:updated_time" content="2018-03-13T04:27:15.502Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="移植jrtplib到安卓平台">
-<meta name="twitter:description" content="*本篇文章已授权微信公众号 guolin_blog （郭霖）独家发布  关于rtp协议RTP协议介绍实时传输协议RTP（Real-time Transport Protocol）是网络传输协议的一种，构建与TCP/IP之上，广泛用于局域网推送视频与音频的推送。RTP协议本身比较复杂，而且各厂商基本不提供基于RTP协议的sdk，大多数是基于RTMP和RTSP，但是后边两者实时性远不如RTP高。为了">
+<meta name="twitter:description" content="关于rtp协议RTP协议介绍实时传输协议RTP（Real-time Transport Protocol）是网络传输协议的一种，构建与TCP/IP之上，广泛用于局域网推送视频与音频的推送。RTP协议本身比较复杂，而且各厂商基本不提供基于RTP协议的sdk，大多数是基于RTMP和RTSP，但是后边两者实时性远不如RTP高。为了实现将安卓手机屏幕录屏取得H264流，并将之分片或者组合发送至电脑端播放器">
 <meta name="twitter:image" content="http://p3lublj5c.bkt.clouddn.com/%E5%B1%8F%E5%B9%95%E5%BF%AB%E7%85%A7%202018-02-24%20%E4%B8%8B%E5%8D%888.18.16.png">
 
 
@@ -336,8 +336,7 @@
       
 
       
-        <p><strong> *本篇文章已授权微信公众号 guolin_blog （郭霖）独家发布 </strong></p>
-<h2 id="关于rtp协议"><a href="#关于rtp协议" class="headerlink" title="关于rtp协议"></a>关于rtp协议</h2><h3 id="RTP协议介绍"><a href="#RTP协议介绍" class="headerlink" title="RTP协议介绍"></a>RTP协议介绍</h3><p>实时传输协议RTP（Real-time Transport Protocol）是网络传输协议的一种，构建与TCP/IP之上，广泛用于局域网推送视频与音频的推送。RTP协议本身比较复杂，而且各厂商基本不提供基于RTP协议的sdk，大多数是基于RTMP和RTSP，但是后边两者实时性远不如RTP高。为了实现将安卓手机屏幕录屏取得H264流，并将之分片或者组合发送至电脑端播放器，延时低于1s，最后选择采用RTP协议发送。</p>
+        <h2 id="关于rtp协议"><a href="#关于rtp协议" class="headerlink" title="关于rtp协议"></a>关于rtp协议</h2><h3 id="RTP协议介绍"><a href="#RTP协议介绍" class="headerlink" title="RTP协议介绍"></a>RTP协议介绍</h3><p>实时传输协议RTP（Real-time Transport Protocol）是网络传输协议的一种，构建与TCP/IP之上，广泛用于局域网推送视频与音频的推送。RTP协议本身比较复杂，而且各厂商基本不提供基于RTP协议的sdk，大多数是基于RTMP和RTSP，但是后边两者实时性远不如RTP高。为了实现将安卓手机屏幕录屏取得H264流，并将之分片或者组合发送至电脑端播放器，延时低于1s，最后选择采用RTP协议发送。</p>
 <p>RTP报文由两部分组成：报头和有效载荷。RTP报头格式如图所示，其中：</p>
 <ol>
 <li>V：RTP协议的版本号，占2位，当前协议版本号为2。</li>
