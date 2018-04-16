@@ -1,0 +1,717 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="java," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="int转为byte[]和byte[]转为int最近在学习读取音频格式文件的时候碰到一个问题，因为音频文件中有四个字节的int型是以little-endian形式存储的，需要转换为java中的big-endian模式。int转byte[]相对简单，只需要做位移缩窄就行了，但是byte[]转int的时候涉及到负数的问题，负数在计算机内中是以补码的形式存在的，容易出现一些问题。 数据是以二进制(0，1)">
+<meta name="keywords" content="java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java中大小端问题研究">
+<meta property="og:url" content="https://rangaofei.github.io/2018/04/16/java中大小端问题研究/index.html">
+<meta property="og:site_name" content="SAKA&#39;S BLOG">
+<meta property="og:description" content="int转为byte[]和byte[]转为int最近在学习读取音频格式文件的时候碰到一个问题，因为音频文件中有四个字节的int型是以little-endian形式存储的，需要转换为java中的big-endian模式。int转byte[]相对简单，只需要做位移缩窄就行了，但是byte[]转int的时候涉及到负数的问题，负数在计算机内中是以补码的形式存在的，容易出现一些问题。 数据是以二进制(0，1)">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-04-16T12:58:10.222Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="java中大小端问题研究">
+<meta name="twitter:description" content="int转为byte[]和byte[]转为int最近在学习读取音频格式文件的时候碰到一个问题，因为音频文件中有四个字节的int型是以little-endian形式存储的，需要转换为java中的big-endian模式。int转byte[]相对简单，只需要做位移缩窄就行了，但是byte[]转int的时候涉及到负数的问题，负数在计算机内中是以补码的形式存在的，容易出现一些问题。 数据是以二进制(0，1)">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://rangaofei.github.io/2018/04/16/java中大小端问题研究/"/>
+
+
+
+
+
+  <title> java中大小端问题研究 | SAKA'S BLOG </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s4.cnzz.com/z_stat.php?id=1261177704&web_id=1261177704" language="JavaScript"></script>
+  <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1261177704'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1261177704%26online%3D1%26show%3Dline' type='text/javascript'%3E%3C/script%3E"));</script>
+  </div>
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">SAKA'S BLOG</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://rangaofei.github.io/2018/04/16/java中大小端问题研究/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="rangaofei">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="SAKA'S BLOG">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="SAKA'S BLOG" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                java中大小端问题研究
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-04-16T20:57:38+08:00">
+                2018-04-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="int转为byte-和byte-转为int"><a href="#int转为byte-和byte-转为int" class="headerlink" title="int转为byte[]和byte[]转为int"></a>int转为byte[]和byte[]转为int</h1><p>最近在学习读取音频格式文件的时候碰到一个问题，因为音频文件中有四个字节的int型是以<code>little-endian</code>形式存储的，需要转换为java中的<code>big-endian</code>模式。int转byte[]相对简单，只需要做位移缩窄就行了，但是byte[]转int的时候涉及到负数的问题，负数在计算机内中是以补码的形式存在的，容易出现一些问题。</p>
+<p>数据是以二进制(0，1)的形式存储在计算机中，每一个这样的数据被称为bit,bit只能是0或者1，将8个bit位定义为一个byte，这样一个byte就能表示2^8个数据。java中1个字节就是1byte，short类型占2byte，int类型占4byte，long类型占8byte，float类型占8byte，double类型占16byte。</p>
+<p>下面主要讲一下byte和int之间的转换。</p>
+<p>java中没有unsinged类型，也就是byte只能是有符号类型，为了表示正负号，一般使用最高位来表示正负。比如<code>byte i=6</code>,转为二进制码为<code>0000 0110</code>,,在内存中存储如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">+------------------------------+</span><br><span class="line">| 0 | 0 | 0 | 0 | 0 | 1 | 1| 0 |</span><br><span class="line">+------------------------------+</span><br><span class="line">  ^</span><br><span class="line">  |</span><br><span class="line">符号位</span><br></pre></td></tr></table></figure>
+<p>负数的存储相对比较麻烦，是以补码的形式存储的，补码就是对原有的正数所有的位取反码然后加1；<br>比如<code>byte i=-6</code>，则相当于对6取反码然后加1；</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">0000 0110 取反码为 1111 1001</span><br><span class="line"></span><br><span class="line">1111 1001 加1为    11111010</span><br></pre></td></tr></table></figure>
+<p>则可以得到最后的结果为<code>11111010</code>,在内存中存储如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">+------------------------------+</span><br><span class="line">| 1 | 1 | 1 | 1 | 1 | 0 | 1| 0 |</span><br><span class="line">+------------------------------+</span><br><span class="line">  ^</span><br><span class="line">  |</span><br><span class="line">符号位</span><br></pre></td></tr></table></figure>
+<p>此处可以有一个简单的验证方法，即原码+补码会越位进1。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">    0000 0110</span><br><span class="line">+   1111 1010</span><br><span class="line">--------------</span><br><span class="line">= 1 0000 0000</span><br></pre></td></tr></table></figure>
+<p>在内存中存储是以byte为单位的，在byte拼接的过程中就演化除了两种形式：<code>little-endian</code>,<code>big-endian</code><br><code>little-endian</code>适用于机器读懂的顺序，它是前边的地址存储低位的byte，后边的地址存储在高位的地址。<br>安卓的jni中全部采用<code>little-ednain</code>,<code>int i=6</code>,转换为2进制表示为<code>0000 0110 0000 0000 0000 0000 0000 0000</code><br>在内存中的表示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">+-----------------+---------------+---------------+---------------+</span><br><span class="line">|0|0|0|0|0|1|1|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0| 0 |0|0|0|0|0|0|</span><br><span class="line">+-----------------+---------------+---------------+---------------+</span><br><span class="line">                                                    ^</span><br><span class="line">                                                    |</span><br><span class="line">                                                  符号位</span><br></pre></td></tr></table></figure>
+<p><code>big-endian</code>适用于人类读的顺序，前边的地址存储高位的byte，后边的地址存储低位的地址。<br>java中int类型的存储方式是<code>big-endian</code>,<code>int i=6</code>,转换为2进制表示为<code>0000 0000 0000 0000 0000 0000 0000 0110</code>,<br>在内存中的表示：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">+-----------------+---------------+---------------+---------------+</span><br><span class="line">| 0 |0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|1|1|0|</span><br><span class="line">+-----------------+---------------+---------------+---------------+</span><br><span class="line">  ^</span><br><span class="line">  |</span><br><span class="line">符号位</span><br></pre></td></tr></table></figure>
+<p>同样对于<code>int i=-6</code>的计算也类似于byte的计算，先取反码再加1，然后排序：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">big-endian:</span><br><span class="line">+-----------------+---------------+---------------+---------------+</span><br><span class="line">| 1 |1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|0|1|0|</span><br><span class="line">+-----------------+---------------+---------------+---------------+</span><br><span class="line">  ^</span><br><span class="line">  |</span><br><span class="line">符号位</span><br><span class="line"></span><br><span class="line">little-endian:</span><br><span class="line">+-----------------+---------------+---------------+---------------+</span><br><span class="line">|1|1|1|1|1|0|0|1|0|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1| 1 |1|1|1|1|1|1|</span><br><span class="line">+-----------------+---------------+---------------+---------------+</span><br><span class="line">                                                    ^</span><br><span class="line">                                                    |</span><br><span class="line">                                                  符号位</span><br></pre></td></tr></table></figure>
+<p>接下来讲一下如何在byte[]和int之间转换</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> num=<span class="number">1505</span>;</span><br><span class="line"><span class="keyword">byte</span>[] result=<span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">4</span>];</span><br></pre></td></tr></table></figure>
+<p>这样的一个整数，在java内存以二进制形式表示为：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">+-----------------+---------------+---------------+---------------+</span><br><span class="line">|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|1|0|1|1|1|1|0|0|0|0|1|</span><br><span class="line">+-----------------+---------------+---------------+---------------+</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">byte</span>[<span class="number">0</span>]=<span class="number">00000000</span>=<span class="number">0</span>;</span><br><span class="line"><span class="keyword">byte</span>[<span class="number">1</span>]=<span class="number">00000000</span>=<span class="number">0</span>;</span><br><span class="line"><span class="keyword">byte</span>[<span class="number">2</span>]=<span class="number">00000101</span>=<span class="number">5</span>;</span><br><span class="line"><span class="keyword">byte</span>[<span class="number">3</span>]=<span class="number">11100001</span>=-<span class="number">31</span>;</span><br></pre></td></tr></table></figure>
+<p>这里只说一下最后一个字节是如何算出来的，11100001是一个负数，负数是原码取反加1，想获得源码需要先减1，得到11100000，再取反码得到00011111，计算可得是31，由于是负数所以取-31。</p>
+<p>这样就完成了int到byte[]的转换。</p>
+<p>想要byte[]转int只需将数组拼接起来即可。在操作的过程中要注意一点，byte执行位运算会自动转换为int型，并且补前边的位的时候是自动补上的符号位。<br>比如前边的result转换为int后如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">byte</span>[<span class="number">0</span>]=<span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span>;</span><br><span class="line"><span class="keyword">byte</span>[<span class="number">1</span>]=<span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span>;</span><br><span class="line"><span class="keyword">byte</span>[<span class="number">2</span>]=<span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000000</span> <span class="number">00000101</span>;</span><br><span class="line"><span class="keyword">byte</span>[<span class="number">3</span>]=<span class="number">11111111</span> <span class="number">11111111</span> <span class="number">11111111</span> <span class="number">11100001</span>;</span><br></pre></td></tr></table></figure>
+<p>这个时候我们就需要使用最常见的<code>&amp;0xff</code>来处理前边的符号位了。</p>
+<p>首先写一个简单的程序来将int转换为big-endian的byte：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">byte</span>[] intToByteBig(<span class="keyword">int</span> i) &#123;</span><br><span class="line">        <span class="keyword">byte</span>[] result = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">4</span>];</span><br><span class="line">        result[<span class="number">0</span>] = (<span class="keyword">byte</span>) (i &gt;&gt; <span class="number">24</span> &amp; <span class="number">0xff</span>);</span><br><span class="line">        result[<span class="number">1</span>] = (<span class="keyword">byte</span>) (i &gt;&gt; <span class="number">16</span> &amp; <span class="number">0xff</span>);</span><br><span class="line">        result[<span class="number">2</span>] = (<span class="keyword">byte</span>) (i &gt;&gt; <span class="number">8</span> &amp; <span class="number">0xff</span>);</span><br><span class="line">        result[<span class="number">3</span>] = (<span class="keyword">byte</span>) (i &gt;&gt; <span class="number">0</span> &amp; <span class="number">0xff</span>);</span><br><span class="line">        <span class="keyword">return</span> result;</span><br></pre></td></tr></table></figure>
+<p>假如要转换成little-endian,只需要调整字节排放顺序：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">byte</span>[] intToByteLittle(<span class="keyword">int</span> i) &#123;</span><br><span class="line">        <span class="keyword">byte</span>[] result = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">4</span>];</span><br><span class="line">        result[<span class="number">3</span>] = (<span class="keyword">byte</span>) (i &gt;&gt; <span class="number">24</span> &amp; <span class="number">0xff</span>);</span><br><span class="line">        result[<span class="number">2</span>] = (<span class="keyword">byte</span>) (i &gt;&gt; <span class="number">16</span> &amp; <span class="number">0xff</span>);</span><br><span class="line">        result[<span class="number">1</span>] = (<span class="keyword">byte</span>) (i &gt;&gt; <span class="number">8</span> &amp; <span class="number">0xff</span>);</span><br><span class="line">        result[<span class="number">0</span>] = (<span class="keyword">byte</span>) (i &gt;&gt; <span class="number">0</span> &amp; <span class="number">0xff</span>);</span><br><span class="line">        <span class="keyword">return</span> result;</span><br></pre></td></tr></table></figure>
+<p>同理我们可以得出一个方法来让byte转int：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">bigByteToInt</span><span class="params">(<span class="keyword">byte</span>[] b)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> one = ((<span class="keyword">int</span>) b[<span class="number">0</span>] &amp; <span class="number">0xff</span>) &lt;&lt; <span class="number">24</span>;</span><br><span class="line">        <span class="keyword">int</span> two = ((<span class="keyword">int</span>) b[<span class="number">1</span>] &amp; <span class="number">0xff</span>) &lt;&lt; <span class="number">16</span>;</span><br><span class="line">        <span class="keyword">int</span> three = ((<span class="keyword">int</span>) b[<span class="number">2</span>] &amp; <span class="number">0xff</span>) &lt;&lt; <span class="number">8</span>;</span><br><span class="line">        <span class="keyword">int</span> four = ((<span class="keyword">int</span>) b[<span class="number">3</span>] &amp; <span class="number">0xff</span>) &lt;&lt; <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">return</span> one + two + three + four;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">littleByteToInt</span><span class="params">(<span class="keyword">byte</span>[] b)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> one = ((<span class="keyword">int</span>) b[<span class="number">3</span>] &amp; <span class="number">0xff</span>) &lt;&lt; <span class="number">24</span>;</span><br><span class="line">        <span class="keyword">int</span> two = ((<span class="keyword">int</span>) b[<span class="number">2</span>] &amp; <span class="number">0xff</span>) &lt;&lt; <span class="number">16</span>;</span><br><span class="line">        <span class="keyword">int</span> three = ((<span class="keyword">int</span>) b[<span class="number">1</span>] &amp; <span class="number">0xff</span>) &lt;&lt; <span class="number">8</span>;</span><br><span class="line">        <span class="keyword">int</span> four = ((<span class="keyword">int</span>) b[<span class="number">0</span>] &amp; <span class="number">0xff</span>) &lt;&lt; <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">return</span> one + two + three + four;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>关于这个工具类我上传到了我的github，有需要的朋友可以直接复制粘贴。</p>
+<p><a href="https://github.com/rangaofei/AudioApplication/blob/master/app/src/main/java/com/rangaofei/audioapplication/ByteUtil.java" target="_blank" rel="noopener">github地址–ByteUtil</a></p>
+<h2 id="关于ByteBuffer的使用"><a href="#关于ByteBuffer的使用" class="headerlink" title="关于ByteBuffer的使用"></a>关于ByteBuffer的使用</h2><p>其实上边的内容理解了原理就可以了，在java中已经有封装好的类来实现真正的big-endian和little-endian的转换。<br>ByteBuffer中有一个方法是order(),这个方法接收一个参数，这个参数就可以来进行大小端转换：</p>
+<ul>
+<li>BIG-ENDIAN    在ByteBuffer中以big-endian形式存储</li>
+<li>LITTLE-ENDIAN 在ByteBuffer中以little-endian形式存储</li>
+</ul>
+<p>看一段示例代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">short</span> <span class="title">littleByteToShort</span><span class="params">(<span class="keyword">byte</span>[] data)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (data.length != <span class="number">2</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException(<span class="string">"the byte length is not 2"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ByteBuffer.allocate(data.length).order(ByteOrder.LITTLE_ENDIAN).put(data).getShort(<span class="number">0</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个方法是little-endian转换为short。<code>ByteBuffer.allocate(data.length)</code>分配了2个字节的byteffuer，<code>order(ByteOrder.LITTLE_ENDIAN)</code>,让bytebuffer以小端形式存储，<code>put(data)</code>将字节数组存入bytebuffer中，<code>getShort(0)</code>将bytebuffer读取为short类型，注意参数0必须传入，因为put()方法将指针移动了两个字节，所以传入0是从index为0的地方读取一个short。否则会报越界问题。<br>关于int和long类型的转换依然如此，如果是big-endian，则order()方法需传入参数BIG-ENDIAN。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">byte</span>[] shortToLittleByte(<span class="keyword">short</span> data) &#123;</span><br><span class="line">    <span class="keyword">return</span> ByteBuffer.allocate(<span class="number">2</span>).order(ByteOrder.LITTLE_ENDIAN).putShort(data).array();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个比较简单，类似于byte[]转short，只是putshort后要调用array来转换为byte[]。</p>
+<p>最后也附上这个简单的方法地址，欢迎赋值粘贴：（测试已通过）</p>
+<p><a href="https://github.com/rangaofei/AudioApplication/blob/master/app/src/main/java/com/rangaofei/audioapplication/ByteBufferUtil.java" target="_blank" rel="noopener">github地址–ByteBufferUtil</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/03/09/jrtplib实现局域网内推送手机桌面/" rel="next" title="jrtplib实现局域网内推送手机桌面">
+                <i class="fa fa-chevron-left"></i> jrtplib实现局域网内推送手机桌面
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg"
+               alt="rangaofei" />
+          <p class="site-author-name" itemprop="name">rangaofei</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">63</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#int转为byte-和byte-转为int"><span class="nav-number">1.</span> <span class="nav-text">int转为byte[]和byte[]转为int</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#关于ByteBuffer的使用"><span class="nav-number">1.1.</span> <span class="nav-text">关于ByteBuffer的使用</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">rangaofei</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
