@@ -84,18 +84,18 @@
 
 
 
-<meta name="description" content="int转为byte[]和byte[]转为int最近在学习读取音频格式文件的时候碰到一个问题，因为音频文件中有四个字节的int型是以little-endian形式存储的，需要转换为java中的big-endian模式。int转byte[]相对简单，只需要做位移缩窄就行了，但是byte[]转int的时候涉及到负数的问题，负数在计算机内中是以补码的形式存在的，容易出现一些问题。 数据是以二进制(0，1)">
+<meta name="description" content="java中大小端问题研究关于大小端在内存中的存储最近在学习读取音频格式文件的时候碰到一个问题，因为音频文件中有四个字节的int型是以little-endian形式存储的，需要转换为java中的big-endian模式。int转byte[]相对简单，只需要做位移缩窄就行了，但是byte[]转int的时候涉及到负数的问题，负数在计算机内中是以补码的形式存在的，容易出现一些问题。 数据是以二进制(0，1">
 <meta name="keywords" content="java">
 <meta property="og:type" content="article">
 <meta property="og:title" content="java中大小端问题研究">
 <meta property="og:url" content="https://rangaofei.github.io/2018/04/16/java中大小端问题研究/index.html">
 <meta property="og:site_name" content="SAKA&#39;S BLOG">
-<meta property="og:description" content="int转为byte[]和byte[]转为int最近在学习读取音频格式文件的时候碰到一个问题，因为音频文件中有四个字节的int型是以little-endian形式存储的，需要转换为java中的big-endian模式。int转byte[]相对简单，只需要做位移缩窄就行了，但是byte[]转int的时候涉及到负数的问题，负数在计算机内中是以补码的形式存在的，容易出现一些问题。 数据是以二进制(0，1)">
+<meta property="og:description" content="java中大小端问题研究关于大小端在内存中的存储最近在学习读取音频格式文件的时候碰到一个问题，因为音频文件中有四个字节的int型是以little-endian形式存储的，需要转换为java中的big-endian模式。int转byte[]相对简单，只需要做位移缩窄就行了，但是byte[]转int的时候涉及到负数的问题，负数在计算机内中是以补码的形式存在的，容易出现一些问题。 数据是以二进制(0，1">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:updated_time" content="2018-04-16T12:58:10.222Z">
+<meta property="og:updated_time" content="2018-04-16T13:02:12.058Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="java中大小端问题研究">
-<meta name="twitter:description" content="int转为byte[]和byte[]转为int最近在学习读取音频格式文件的时候碰到一个问题，因为音频文件中有四个字节的int型是以little-endian形式存储的，需要转换为java中的big-endian模式。int转byte[]相对简单，只需要做位移缩窄就行了，但是byte[]转int的时候涉及到负数的问题，负数在计算机内中是以补码的形式存在的，容易出现一些问题。 数据是以二进制(0，1)">
+<meta name="twitter:description" content="java中大小端问题研究关于大小端在内存中的存储最近在学习读取音频格式文件的时候碰到一个问题，因为音频文件中有四个字节的int型是以little-endian形式存储的，需要转换为java中的big-endian模式。int转byte[]相对简单，只需要做位移缩窄就行了，但是byte[]转int的时候涉及到负数的问题，负数在计算机内中是以补码的形式存在的，容易出现一些问题。 数据是以二进制(0，1">
 
 
 
@@ -334,7 +334,7 @@
       
 
       
-        <h1 id="int转为byte-和byte-转为int"><a href="#int转为byte-和byte-转为int" class="headerlink" title="int转为byte[]和byte[]转为int"></a>int转为byte[]和byte[]转为int</h1><p>最近在学习读取音频格式文件的时候碰到一个问题，因为音频文件中有四个字节的int型是以<code>little-endian</code>形式存储的，需要转换为java中的<code>big-endian</code>模式。int转byte[]相对简单，只需要做位移缩窄就行了，但是byte[]转int的时候涉及到负数的问题，负数在计算机内中是以补码的形式存在的，容易出现一些问题。</p>
+        <h1 id="java中大小端问题研究"><a href="#java中大小端问题研究" class="headerlink" title="java中大小端问题研究"></a>java中大小端问题研究</h1><h2 id="关于大小端在内存中的存储"><a href="#关于大小端在内存中的存储" class="headerlink" title="关于大小端在内存中的存储"></a>关于大小端在内存中的存储</h2><p>最近在学习读取音频格式文件的时候碰到一个问题，因为音频文件中有四个字节的int型是以<code>little-endian</code>形式存储的，需要转换为java中的<code>big-endian</code>模式。int转byte[]相对简单，只需要做位移缩窄就行了，但是byte[]转int的时候涉及到负数的问题，负数在计算机内中是以补码的形式存在的，容易出现一些问题。</p>
 <p>数据是以二进制(0，1)的形式存储在计算机中，每一个这样的数据被称为bit,bit只能是0或者1，将8个bit位定义为一个byte，这样一个byte就能表示2^8个数据。java中1个字节就是1byte，short类型占2byte，int类型占4byte，long类型占8byte，float类型占8byte，double类型占16byte。</p>
 <p>下面主要讲一下byte和int之间的转换。</p>
 <p>java中没有unsinged类型，也就是byte只能是有符号类型，为了表示正负号，一般使用最高位来表示正负。比如<code>byte i=6</code>,转为二进制码为<code>0000 0110</code>,,在内存中存储如下：</p>
@@ -351,7 +351,7 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">+-----------------+---------------+---------------+---------------+</span><br><span class="line">| 0 |0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|1|1|0|</span><br><span class="line">+-----------------+---------------+---------------+---------------+</span><br><span class="line">  ^</span><br><span class="line">  |</span><br><span class="line">符号位</span><br></pre></td></tr></table></figure>
 <p>同样对于<code>int i=-6</code>的计算也类似于byte的计算，先取反码再加1，然后排序：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">big-endian:</span><br><span class="line">+-----------------+---------------+---------------+---------------+</span><br><span class="line">| 1 |1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|0|1|0|</span><br><span class="line">+-----------------+---------------+---------------+---------------+</span><br><span class="line">  ^</span><br><span class="line">  |</span><br><span class="line">符号位</span><br><span class="line"></span><br><span class="line">little-endian:</span><br><span class="line">+-----------------+---------------+---------------+---------------+</span><br><span class="line">|1|1|1|1|1|0|0|1|0|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1|1| 1 |1|1|1|1|1|1|</span><br><span class="line">+-----------------+---------------+---------------+---------------+</span><br><span class="line">                                                    ^</span><br><span class="line">                                                    |</span><br><span class="line">                                                  符号位</span><br></pre></td></tr></table></figure>
-<p>接下来讲一下如何在byte[]和int之间转换</p>
+<h2 id="利用位运算来进行大小端转换"><a href="#利用位运算来进行大小端转换" class="headerlink" title="利用位运算来进行大小端转换"></a>利用位运算来进行大小端转换</h2><p>接下来讲一下如何在byte[]和int之间转换</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> num=<span class="number">1505</span>;</span><br><span class="line"><span class="keyword">byte</span>[] result=<span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">4</span>];</span><br></pre></td></tr></table></figure>
 <p>这样的一个整数，在java内存以二进制形式表示为：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">+-----------------+---------------+---------------+---------------+</span><br><span class="line">|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|0|1|0|1|1|1|1|0|0|0|0|1|</span><br><span class="line">+-----------------+---------------+---------------+---------------+</span><br></pre></td></tr></table></figure>
@@ -545,7 +545,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#int转为byte-和byte-转为int"><span class="nav-number">1.</span> <span class="nav-text">int转为byte[]和byte[]转为int</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#关于ByteBuffer的使用"><span class="nav-number">1.1.</span> <span class="nav-text">关于ByteBuffer的使用</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#java中大小端问题研究"><span class="nav-number">1.</span> <span class="nav-text">java中大小端问题研究</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#关于大小端在内存中的存储"><span class="nav-number">1.1.</span> <span class="nav-text">关于大小端在内存中的存储</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#利用位运算来进行大小端转换"><span class="nav-number">1.2.</span> <span class="nav-text">利用位运算来进行大小端转换</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#关于ByteBuffer的使用"><span class="nav-number">1.3.</span> <span class="nav-text">关于ByteBuffer的使用</span></a></li></ol></li></ol></div>
             
 
           </div>
