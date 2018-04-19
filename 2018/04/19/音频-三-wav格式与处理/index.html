@@ -1,0 +1,935 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="wav格式与处理pcm格式简介PCM(脉冲编码调制)就是把一个时间连续，取值连续的模拟信号变换成时间离散，取值离散的数字信号后在信道中传输。脉冲编码调制就是对模拟信号先抽样，再对样值幅度量化，编码的过程。也就是前边的说过的采样-量化过程，这个过程可以较好的存储原始的音频模拟信号，并真实还原。但是PCM并不是一种友好的存储格式，所以一些机构定制了一些准则来记录PCM信号，包括声道、采样率、位宽等信息">
+<meta name="keywords" content="Android">
+<meta property="og:type" content="article">
+<meta property="og:title" content="音频(三)-wav格式与处理">
+<meta property="og:url" content="https://rangaofei.github.io/2018/04/19/音频-三-wav格式与处理/index.html">
+<meta property="og:site_name" content="SAKA&#39;S BLOG">
+<meta property="og:description" content="wav格式与处理pcm格式简介PCM(脉冲编码调制)就是把一个时间连续，取值连续的模拟信号变换成时间离散，取值离散的数字信号后在信道中传输。脉冲编码调制就是对模拟信号先抽样，再对样值幅度量化，编码的过程。也就是前边的说过的采样-量化过程，这个过程可以较好的存储原始的音频模拟信号，并真实还原。但是PCM并不是一种友好的存储格式，所以一些机构定制了一些准则来记录PCM信号，包括声道、采样率、位宽等信息">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://p3lublj5c.bkt.clouddn.com/wav.png">
+<meta property="og:updated_time" content="2018-04-19T15:13:41.215Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="音频(三)-wav格式与处理">
+<meta name="twitter:description" content="wav格式与处理pcm格式简介PCM(脉冲编码调制)就是把一个时间连续，取值连续的模拟信号变换成时间离散，取值离散的数字信号后在信道中传输。脉冲编码调制就是对模拟信号先抽样，再对样值幅度量化，编码的过程。也就是前边的说过的采样-量化过程，这个过程可以较好的存储原始的音频模拟信号，并真实还原。但是PCM并不是一种友好的存储格式，所以一些机构定制了一些准则来记录PCM信号，包括声道、采样率、位宽等信息">
+<meta name="twitter:image" content="http://p3lublj5c.bkt.clouddn.com/wav.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://rangaofei.github.io/2018/04/19/音频-三-wav格式与处理/"/>
+
+
+
+
+
+  <title> 音频(三)-wav格式与处理 | SAKA'S BLOG </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s4.cnzz.com/z_stat.php?id=1261177704&web_id=1261177704" language="JavaScript"></script>
+  <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1261177704'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1261177704%26online%3D1%26show%3Dline' type='text/javascript'%3E%3C/script%3E"));</script>
+  </div>
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">SAKA'S BLOG</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://rangaofei.github.io/2018/04/19/音频-三-wav格式与处理/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="rangaofei">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="SAKA'S BLOG">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="SAKA'S BLOG" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                音频(三)-wav格式与处理
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-04-19T23:13:10+08:00">
+                2018-04-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="wav格式与处理"><a href="#wav格式与处理" class="headerlink" title="wav格式与处理"></a>wav格式与处理</h1><h2 id="pcm格式简介"><a href="#pcm格式简介" class="headerlink" title="pcm格式简介"></a>pcm格式简介</h2><p>PCM(脉冲编码调制)就是把一个时间连续，取值连续的模拟信号变换成时间离散，取值离散的数字信号后在信道中传输。脉冲编码调制就是对模拟信号先抽样，再对样值幅度量化，编码的过程。也就是前边的说过的采样-量化过程，这个过程可以较好的存储原始的音频模拟信号，并真实还原。但是PCM并不是一种友好的存储格式，所以一些机构定制了一些准则来记录PCM信号，包括声道、采样率、位宽等信息，比较通用的就是windows平台下的wav格式和osx平台下的aiff格式，这两种都可以以一种友好可读的方式保存PCM信息。</p>
+<h2 id="wav格式简介"><a href="#wav格式简介" class="headerlink" title="wav格式简介"></a>wav格式简介</h2><p>以下内容来源百度：<br><code>WAV</code>为微软公司（Microsoft)开发的一种声音文件格式，它符合<code>RIFF(Resource Interchange File Format)</code>文件规范，用于保存Windows平台的音频信息资源，被Windows平台及其应用程序所广泛支持，该格式也支持MSADPCM，CCITT A LAW等多种压缩运算法，支持多种音频数字，取样频率和声道，标准格式化的WAV文件和CD格式一样，也是44.1K的取样频率，16位量化数字，因此在声音文件质量和CD相差无几！ WAV打开工具是WINDOWS的媒体播放器。<br>通常使用三个参数来表示声音，量化位数，取样频率和采样点振幅。量化位数分为8位，16位，24位三种，声道有单声道和立体声之分，单声道振幅数据为n<em>1矩阵点，立体声为n</em>2矩阵点，取样频率一般有11025Hz(11kHz) ，22050Hz(22kHz)和44100Hz(44kHz) 三种，不过尽管音质出色，但在压缩后的文件体积过大！相对其他音频格式而言是一个缺点，其文件大小的计算方式为：WAV格式文件所占容量（B) = （取样频率 X量化位数X 声道） X 时间 / 8 (字节= 8bit) 每一分钟WAV格式的音频文件的大小为10MB，其大小不随音量大小及清晰度的变化而变化。<br>WAV是最接近无损的音乐格式，所以文件大小相对也比较大。</p>
+<p>一张经典的wav格式图来简单讲解一下：<br><img src="http://p3lublj5c.bkt.clouddn.com/wav.png" alt="wav格式"></p>
+<p>这张图表明了wav个基本结构和存储信息的格式：</p>
+<ol>
+<li>所有的字符采用big-endian存储，所有的数字采用little-endian存储。</li>
+<li>headerchunk下包含fmtchunk和datachunk</li>
+<li>每个chunk包含chunkId，chunkSize和chunkData</li>
+<li>headerchunk指明了RIFF格式的具体格式，wav格式必须是“WAVE”</li>
+<li>fmtchunk指明了pcm文件的一些基本格式，采样率、声道、位宽等</li>
+<li>datachunk是用来存储具体的PCM数据</li>
+</ol>
+<h3 id="1-headerchunk介绍"><a href="#1-headerchunk介绍" class="headerlink" title="1. headerchunk介绍"></a>1. headerchunk介绍</h3><p>headerchunk是一个总章，包含了最基本的wav格式的信息：</p>
+<table>
+<thead>
+<tr>
+<th>字段名称</th>
+<th>字段长度</th>
+<th>大小端</th>
+<th>表示信息</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>chunkId</td>
+<td>4byte</td>
+<td>big-endian</td>
+<td>这个地方必须是“RIFF”</td>
+</tr>
+<tr>
+<td>chunkSize</td>
+<td>4byte</td>
+<td>little-endian</td>
+<td>表示该文件除了chunkId和chunkSize以外的文件剩余大小</td>
+</tr>
+<tr>
+<td>Format</td>
+<td>4byte</td>
+<td>big-endian</td>
+<td>wav文件必须是“WAVE”</td>
+</tr>
+</tbody>
+</table>
+<p>上表可以看出来headerchunk总共占24byte</p>
+<h3 id="2-formatchunk介绍"><a href="#2-formatchunk介绍" class="headerlink" title="2.formatchunk介绍"></a>2.formatchunk介绍</h3><p>formatchunk是wav格式中最重要的信息，包含了该文件在读取时的所有信息。</p>
+<table>
+<thead>
+<tr>
+<th>字段名称</th>
+<th>字段长度</th>
+<th>大小端</th>
+<th>表示信息</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>chunkId</td>
+<td>4byte</td>
+<td>big-endian</td>
+<td>这个地方必须是“fmt ”(注意最后是空格补齐)</td>
+</tr>
+<tr>
+<td>chunkSize</td>
+<td>4byte</td>
+<td>little-endian</td>
+<td>表示该文件除了chunkId和chunkSize以外的文件剩余大小</td>
+</tr>
+<tr>
+<td>AudioFormat</td>
+<td>2byte</td>
+<td>little-endian</td>
+<td>表示音频的编码格式，一般pcm编码用1表示见表</td>
+</tr>
+<tr>
+<td>Num channels</td>
+<td>2byte</td>
+<td>little-endian</td>
+<td>表示音频的声道个数，1表示单声道(MONO)，2表示双声道(STEREO)</td>
+</tr>
+<tr>
+<td>SampleRate</td>
+<td>4byte</td>
+<td>little-endian</td>
+<td>表示音频的采样率，比如44100Hz</td>
+</tr>
+<tr>
+<td>ByteRate</td>
+<td>4byte</td>
+<td>little-endian</td>
+<td>表示音频的比特率</td>
+</tr>
+<tr>
+<td>BlockAlign</td>
+<td>2byte</td>
+<td>little-endian</td>
+<td>表示音频的块长度，也就是单元长度</td>
+</tr>
+<tr>
+<td>bitPerSample</td>
+<td>2byte</td>
+<td>little-endian</td>
+<td>表示位宽，一般是8或者16，或者更高</td>
+</tr>
+<tr>
+<td>extensionChunk</td>
+<td>长度不定</td>
+<td>由chunkSize决定</td>
+</tr>
+</tbody>
+</table>
+<p>chunksize一般是是16，表示出chunkid和chunksize以外的所有formatchunk的字节。假如是16的时候则不会有extensionchunk，大于16的时候则会产生这个字段，这个字段的长度就是chunksize-16，后边有介绍这个字段。</p>
+<p>ByteRate表示音频数据的比特率，也就是每秒的数据大小，这个值=Numchannels*SampleRate*BitPerSample/8.</p>
+<p>BlockAlign表示一个音频数据块的长度，取决于位宽(bitPerSample)和声道(NumChannels)，这个值=NumbleChannels*bitPerSample/8.</p>
+<p>下表表示AudioFormat的详细内容，注意写入的时候小端字节序</p>
+<table>
+<thead>
+<tr>
+<th>formatcode</th>
+<th>data</th>
+<th>fact</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0x0001</td>
+<td>PCM</td>
+</tr>
+<tr>
+<td>0x0003</td>
+<td>IEEE float</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>0x0006</td>
+<td>8-bitITU G.711 A-law</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>0x0007</td>
+<td>8-bitITU G.711 µ-law</td>
+<td>yes</td>
+</tr>
+<tr>
+<td>0xFFFE</td>
+<td>由extensionchunk中的subformat决定</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-datachunk介绍"><a href="#3-datachunk介绍" class="headerlink" title="3.datachunk介绍"></a>3.datachunk介绍</h3><p>datachunk记录了真实的pcm数据并将它简单封装</p>
+<table>
+<thead>
+<tr>
+<th>字段名称</th>
+<th>字段长度</th>
+<th>大小端</th>
+<th>表示信息</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>chunkId</td>
+<td>4byte</td>
+<td>big-endian</td>
+<td>这个地方必须是“data”</td>
+</tr>
+<tr>
+<td>chunkSize</td>
+<td>4byte</td>
+<td>little-endian</td>
+<td>表示data的数据长度</td>
+</tr>
+<tr>
+<td>data</td>
+</tr>
+</tbody>
+</table>
+<h3 id="4-extensionchunk介绍"><a href="#4-extensionchunk介绍" class="headerlink" title="4.extensionchunk介绍"></a>4.extensionchunk介绍</h3><p>该部分是可选部分，由formatchunk部分的chunksize决定，当chunksize大于16的时候，必然包含该块。它本身是属于formatchunk，但是我为了方便专门提取出来。</p>
+<table>
+<thead>
+<tr>
+<th>字段名称</th>
+<th>字段长度</th>
+<th>大小端</th>
+<th>表示信息</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>chunksize</td>
+<td>2byte</td>
+<td>little-endian</td>
+<td>可以是0或者22</td>
+</tr>
+<tr>
+<td>ValidBitsPerSample</td>
+<td>2byte</td>
+<td>little-endian</td>
+</tr>
+<tr>
+<td>ChannelMask</td>
+<td>4byte</td>
+<td>big-endian</td>
+<td>表示扬声器的位置</td>
+</tr>
+<tr>
+<td>SubFormat</td>
+<td>16byte</td>
+<td>GUID，包含数据的编码格式，最后14byte是固定的\x00\x00\x00\x00\x10\x00\x80\x00\x00\xAA\x00\x38\x9B\x71.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="5-factchunk介绍"><a href="#5-factchunk介绍" class="headerlink" title="5.factchunk介绍"></a>5.factchunk介绍</h3><p>在Rev.3之后，所有的非PCM压缩格式都必须包含factchunk。这个部分最少包含一个值，就是采样数量</p>
+<table>
+<thead>
+<tr>
+<th>字段名称</th>
+<th>字段长度</th>
+<th>大小端</th>
+<th>表示信息</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>chunkId</td>
+<td>4byte</td>
+<td>big-endian</td>
+<td>这个地方必须是“fact”</td>
+</tr>
+<tr>
+<td>chunkSize</td>
+<td>4byte</td>
+<td>little-endian</td>
+<td>最小值是4</td>
+</tr>
+<tr>
+<td>samplelength</td>
+<td>4byte</td>
+<td>big-endian</td>
+<td>每个声道的采样数量</td>
+</tr>
+</tbody>
+</table>
+<p>其实在Rev.3之后，所有的新wav文件建议有fac这个字段，IEEE float格式必须有这个字段，但PCM格式的编码并不一定必须有这个字段。</p>
+<h3 id="6-peakchunk介绍"><a href="#6-peakchunk介绍" class="headerlink" title="6.peakchunk介绍"></a>6.peakchunk介绍</h3><p>这个字段基本很少见了，<br>|字段名称|字段长度|大小端|表示信息<br>|—|—|—|—<br>|chunkId|4byte|big-endian|这个地方必须是“PEAK”<br>|chunkSize|4byte|little-endian|表示该文件除了chunkId和chunkSize以外的文件剩余大小<br>|data|不定|我也不知道啥意思</p>
+<h2 id="实例分析"><a href="#实例分析" class="headerlink" title="实例分析"></a>实例分析</h2><p>我现在从cd上考过来一首音乐-17.wav，这个文件总共有48627746字节，是wav格式编码的。具体内容如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">00000000: 5249 4646 1a00 e602 5741 5645 666d 7420  RIFF....WAVEfmt</span><br><span class="line">00000010: 1000 0000 0100 0200 44ac 0000 10b1 0200  ........D.......</span><br><span class="line">00000020: 0400 1000 6461 7461 90ff e502 0000 0000  ....data........</span><br><span class="line">00000030: 0000 0000 0000 0000 0000 0000 0000 0000  ................</span><br></pre></td></tr></table></figure>
+<p>这是通过vim打开并转换为16进制查看格式来表示的一段代码。<br>我们来详细分析这一段：</p>
+<p><code>5249 4646 1a00 e602 5741 5645</code>这段是headerchunk字段，前四个字节和后四个字节可以转换为asc码</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">52 - R 49 - I 46 -F  46 - F //这段表示RIFF</span><br><span class="line">1a 00 e6 02                 //转换int后为48627738，正好是文件大小减去8，8就是RIFF和这个长度的字节</span><br><span class="line">57 - W 41 - A 56 - V 45 - E //这段表示WAVE</span><br></pre></td></tr></table></figure>
+<p><code>666d 7420 1000 0000 0100 0200 44ac 0000 10b1 0200 0400 1000</code>这段表示fmt字段：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">666d 7420   //转换为asc为fmt </span><br><span class="line">1000 0000   //表示chunksize，转为大端后为16</span><br><span class="line">0100        //表示编码格式，此处为1,表示是PCM编码</span><br><span class="line">0200        //表示声道数量，此处为2,表示双声道</span><br><span class="line">44ac 0000   //表示采样率，转换后等于44100Hz</span><br><span class="line">10b1 0200   //表示比特率，每秒传送的字节数，此处为176400</span><br><span class="line">0040        //表示单元块长度，此处为4,双声道，位宽为16</span><br><span class="line">1000        //表示位宽，或者说是每次采样的bit，转换后为16</span><br></pre></td></tr></table></figure>
+<h2 id="PCM数据的单声道和双声道"><a href="#PCM数据的单声道和双声道" class="headerlink" title="PCM数据的单声道和双声道"></a>PCM数据的单声道和双声道</h2><p>音频在存储的时候可以根据mic的数量来决定录入的轨道是双声道还是单声道，但是现代技术也可以用1个mic录制双声道音频。<br>单声道PCM数据是按采样的时间顺序排列，双声道的PCM数据是按采样的时间交替存储两个声道的数据，在存储的时候是按下边的图排列的：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">单声道只包含声道0，双声道包含声道0(左)和声道1(右)</span><br><span class="line"></span><br><span class="line">MONO    8bitPCM----&gt;|声道0|声道0|...</span><br><span class="line">STEREO  8bitPCM----&gt;|声道0|声道1|声道0|声道1|...</span><br><span class="line">MONO    16bitPCM---&gt;|声道0(低字节)|声道0(高字节)|声道0(低字节)|声道0(高字节)|...</span><br><span class="line">STERO   16bitPCM---&gt;|声道0(低字节)|声道0(高字节)|声道1(低字节)|声道1(高字节)|声道0(低字节)|声道0(高字节)|声道1(低字节)|声道1(高字节)|...</span><br></pre></td></tr></table></figure>
+<p>在播放的时候回根据设置好的blockalign读取一块数据，这块数据会根据对应的声道数分发给扬声器。利用这个特性我们可以提取双声道的数据为单声道，也可以将单声道数据合并为双声道数据，同时也可以将双声道设置为只播放左耳和只播放右耳。<br>这里主要讲的是声音的采集，暂时不讲声音的播放。</p>
+<h2 id="安卓实现PCM录制并封装为wav格式"><a href="#安卓实现PCM录制并封装为wav格式" class="headerlink" title="安卓实现PCM录制并封装为wav格式"></a>安卓实现PCM录制并封装为wav格式</h2><p>上一篇中讲解的是利用MediaRecord来录制音频，但是这种录制方式得到的是最终的文件，假如我们需要录制无损音频，然后包装为wav格式，这种方式就不支持了。AudioRecorder是系统提供的一个api，这个api虽然不是很好用，但是用来录制音频还算可以。</p>
+<p>AudioRecord类是在sdk提供的java层的音频录制工具。在api21的时候这个类的方法还比较少。当我们使用这个类的时候，必须使用read方法来从缓冲区不断的拉出数据来，假如未能及时从缓冲区取出数据，则数据在缓冲区会积累并抛出异常。我曾经尝试在read的时候讲左声道的数值全部置为0，并且采用的是同步的处理方式，左声道置零的操作时间过长，导致数据溢出抛出异常，根本不能工作。<br>简单贴一下代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">startRecord</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        Log.e(<span class="string">"---"</span>, <span class="string">"start"</span>);</span><br><span class="line">        <span class="keyword">int</span> bufferSize = AudioRecord.getMinBufferSize(<span class="number">22050</span>,</span><br><span class="line">                AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT);</span><br><span class="line">        audioRecord = <span class="keyword">new</span> AudioRecord(MediaRecorder.AudioSource.MIC, <span class="number">22050</span>,</span><br><span class="line">                AudioFormat.CHANNEL_IN_STEREO, AudioFormat.ENCODING_PCM_16BIT, bufferSize);</span><br><span class="line">        <span class="keyword">byte</span>[] audio = <span class="keyword">new</span> <span class="keyword">byte</span>[bufferSize];</span><br><span class="line">        audioRecord.startRecording();</span><br><span class="line"></span><br><span class="line">        Log.e(<span class="string">"---"</span>, <span class="string">"samplerate="</span> + audioRecord.getSampleRate() + <span class="string">",channelcount"</span> + audioRecord.getChannelCount());</span><br><span class="line">        isRecording = <span class="keyword">true</span>;</span><br><span class="line">        fileName = <span class="string">""</span> + System.currentTimeMillis() + <span class="string">".wav"</span>;</span><br><span class="line">        File file = <span class="keyword">new</span> File(Environment.getExternalStorageDirectory(), fileName);</span><br><span class="line">        <span class="keyword">if</span> (!file.exists()) &#123;</span><br><span class="line">            file.createNewFile();</span><br><span class="line">        &#125;</span><br><span class="line">        BufferedOutputStream bos = <span class="keyword">new</span> BufferedOutputStream(<span class="keyword">new</span> FileOutputStream(file, <span class="keyword">true</span>));</span><br><span class="line">        pcmToWav(bos);</span><br><span class="line">        <span class="keyword">while</span> (isRecording) &#123;</span><br><span class="line">            audioRecord.read(audio, <span class="number">0</span>, bufferSize);</span><br><span class="line">            bos.write(audio);</span><br><span class="line">        &#125;</span><br><span class="line">        audioRecord.stop();</span><br><span class="line">        bos.flush();</span><br><span class="line">        bos.close();</span><br><span class="line">        <span class="keyword">long</span> length = file.length() - <span class="number">44</span>;</span><br><span class="line">        Log.e(<span class="string">"-----"</span>, <span class="string">""</span> + length);</span><br><span class="line">        RandomAccessFile raf = <span class="keyword">new</span> RandomAccessFile(file, <span class="string">"rwd"</span>);</span><br><span class="line">        raf.seek(<span class="number">4</span>);</span><br><span class="line">        raf.write(ByteUtil.intToLittleByte((<span class="keyword">int</span>) length + <span class="number">36</span>));</span><br><span class="line">        raf.seek(<span class="number">40</span>);</span><br><span class="line">        raf.write(ByteUtil.intToLittleByte((<span class="keyword">int</span>) length));</span><br><span class="line">        raf.close();</span><br><span class="line"></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>我是在最开始的时候将chunk写入文件，录制完成后计算差值来更改chunk部分的数值大小。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">pcmToWav</span><span class="params">(BufferedOutputStream fileOutputStream)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            fileOutputStream.write(HEADER_CHUNK.getBytes());</span><br><span class="line">            fileOutputStream.write(ByteUtil.intToLittleByte(<span class="number">36</span>));</span><br><span class="line">            fileOutputStream.write(FORMAT.getBytes());</span><br><span class="line"></span><br><span class="line">            fileOutputStream.write(FMT_CHUNK.getBytes());</span><br><span class="line">            fileOutputStream.write(ByteUtil.intToLittleByte(<span class="number">16</span>));</span><br><span class="line">            fileOutputStream.write(ByteUtil.shortToLittleByte((<span class="keyword">short</span>) <span class="number">1</span>));</span><br><span class="line">            fileOutputStream.write(ByteUtil.shortToLittleByte((<span class="keyword">short</span>) (audioRecord.getChannelCount())));</span><br><span class="line">            fileOutputStream.write(ByteUtil.intToLittleByte(audioRecord.getSampleRate()));</span><br><span class="line">            fileOutputStream.write(ByteUtil.intToLittleByte(<span class="number">2</span> * <span class="number">22050</span> * <span class="number">16</span> / <span class="number">8</span>));</span><br><span class="line">            fileOutputStream.write(ByteUtil.shortToLittleByte((<span class="keyword">short</span>) (<span class="number">2</span> * <span class="number">16</span> / <span class="number">8</span>)));</span><br><span class="line">            fileOutputStream.write(ByteUtil.shortToLittleByte((<span class="keyword">short</span>) <span class="number">16</span>));</span><br><span class="line"></span><br><span class="line">            fileOutputStream.write(DATA_CHUNK.getBytes());</span><br><span class="line">            fileOutputStream.write(<span class="number">0</span>);</span><br><span class="line">            fileOutputStream.write(<span class="number">0</span>);</span><br><span class="line">            fileOutputStream.write(<span class="number">0</span>);</span><br><span class="line">            fileOutputStream.write(<span class="number">0</span>);</span><br><span class="line">            fileOutputStream.flush();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>在上述的代码中主要是注意大小端的问题，关于这个问题可以参考我的另一篇文章：</p>
+<p><a href="https://rangaofei.github.io/2018/04/16/java中大小端问题研究/#more">java中大小端问题研究</a><br>参考资料</p>
+<ol>
+<li><a href="http://www-mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/WAVE.html" target="_blank" rel="noopener">Audio File Format Specifications</a>;</li>
+</ol>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Android/" rel="tag"># Android</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/04/16/java中大小端问题研究/" rel="next" title="java中大小端问题研究">
+                <i class="fa fa-chevron-left"></i> java中大小端问题研究
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg"
+               alt="rangaofei" />
+          <p class="site-author-name" itemprop="name">rangaofei</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">64</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/">
+                <span class="site-state-item-count">6</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#wav格式与处理"><span class="nav-number">1.</span> <span class="nav-text">wav格式与处理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#pcm格式简介"><span class="nav-number">1.1.</span> <span class="nav-text">pcm格式简介</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#wav格式简介"><span class="nav-number">1.2.</span> <span class="nav-text">wav格式简介</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-headerchunk介绍"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. headerchunk介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-formatchunk介绍"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.formatchunk介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-datachunk介绍"><span class="nav-number">1.2.3.</span> <span class="nav-text">3.datachunk介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-extensionchunk介绍"><span class="nav-number">1.2.4.</span> <span class="nav-text">4.extensionchunk介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-factchunk介绍"><span class="nav-number">1.2.5.</span> <span class="nav-text">5.factchunk介绍</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-peakchunk介绍"><span class="nav-number">1.2.6.</span> <span class="nav-text">6.peakchunk介绍</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实例分析"><span class="nav-number">1.3.</span> <span class="nav-text">实例分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#PCM数据的单声道和双声道"><span class="nav-number">1.4.</span> <span class="nav-text">PCM数据的单声道和双声道</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安卓实现PCM录制并封装为wav格式"><span class="nav-number">1.5.</span> <span class="nav-text">安卓实现PCM录制并封装为wav格式</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">rangaofei</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
