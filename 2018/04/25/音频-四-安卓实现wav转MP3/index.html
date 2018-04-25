@@ -1,0 +1,908 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Andorid," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="关于mp3Mp3曾经以它优秀的压缩率和较低的失真一横行音乐行业，在那个存储介质昂贵的时代大放光彩，随着技术的发展，存储已经不是瓶颈了，现在的音乐爱好者也开始追求音质，出现了高保真音乐，复古黑胶唱片等。但是作为一个音频开发者，基本的mp3知识还是需要掌握的。 MP3是一种有损压缩格式，对它进行解码不能还原PCM。一般CD品质的音频文件是1411.2kbps(16bitpersample、44100s">
+<meta name="keywords" content="Andorid">
+<meta property="og:type" content="article">
+<meta property="og:title" content="音频-四-安卓实现wav转MP3">
+<meta property="og:url" content="https://rangaofei.github.io/2018/04/25/音频-四-安卓实现wav转MP3/index.html">
+<meta property="og:site_name" content="SAKA&#39;S BLOG">
+<meta property="og:description" content="关于mp3Mp3曾经以它优秀的压缩率和较低的失真一横行音乐行业，在那个存储介质昂贵的时代大放光彩，随着技术的发展，存储已经不是瓶颈了，现在的音乐爱好者也开始追求音质，出现了高保真音乐，复古黑胶唱片等。但是作为一个音频开发者，基本的mp3知识还是需要掌握的。 MP3是一种有损压缩格式，对它进行解码不能还原PCM。一般CD品质的音频文件是1411.2kbps(16bitpersample、44100s">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://p3lublj5c.bkt.clouddn.com/MP3Structure.png">
+<meta property="og:updated_time" content="2018-04-25T09:01:10.784Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="音频-四-安卓实现wav转MP3">
+<meta name="twitter:description" content="关于mp3Mp3曾经以它优秀的压缩率和较低的失真一横行音乐行业，在那个存储介质昂贵的时代大放光彩，随着技术的发展，存储已经不是瓶颈了，现在的音乐爱好者也开始追求音质，出现了高保真音乐，复古黑胶唱片等。但是作为一个音频开发者，基本的mp3知识还是需要掌握的。 MP3是一种有损压缩格式，对它进行解码不能还原PCM。一般CD品质的音频文件是1411.2kbps(16bitpersample、44100s">
+<meta name="twitter:image" content="http://p3lublj5c.bkt.clouddn.com/MP3Structure.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://rangaofei.github.io/2018/04/25/音频-四-安卓实现wav转MP3/"/>
+
+
+
+
+
+  <title> 音频-四-安卓实现wav转MP3 | SAKA'S BLOG </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s4.cnzz.com/z_stat.php?id=1261177704&web_id=1261177704" language="JavaScript"></script>
+  <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1261177704'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1261177704%26online%3D1%26show%3Dline' type='text/javascript'%3E%3C/script%3E"));</script>
+  </div>
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">SAKA'S BLOG</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://rangaofei.github.io/2018/04/25/音频-四-安卓实现wav转MP3/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="rangaofei">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="SAKA'S BLOG">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="SAKA'S BLOG" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                音频-四-安卓实现wav转MP3
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-04-25T16:57:42+08:00">
+                2018-04-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="关于mp3"><a href="#关于mp3" class="headerlink" title="关于mp3"></a>关于mp3</h2><p>Mp3曾经以它优秀的压缩率和较低的失真一横行音乐行业，在那个存储介质昂贵的时代大放光彩，随着技术的发展，存储已经不是瓶颈了，现在的音乐爱好者也开始追求音质，出现了高保真音乐，复古黑胶唱片等。但是作为一个音频开发者，基本的mp3知识还是需要掌握的。</p>
+<p>MP3是一种有损压缩格式，对它进行解码不能还原PCM。一般CD品质的音频文件是1411.2kbps(16bitpersample、<em>44100samplerate、</em>2channels)，这个需要较高的带宽才能保证传输的稳定性，但是经过MP3编码后比特率基本结余128kbps~320kbps，压缩率为12:1-10:1，这样回放的质量低了，但是文件大小得到了控制。<br>本篇文章讨论的并非是音乐播放器，而是一种编码格式，并且以lame编码器来讲解文章格式，事实上lame编码器被认为是最好的MP3编码器。</p>
+<h2 id="MP3文件格式"><a href="#MP3文件格式" class="headerlink" title="MP3文件格式"></a>MP3文件格式</h2><p>MP3一般包含3个主要部分ID3v2、frame、ID3v1。其形式如下：</p>
+<table>
+<thead>
+<tr>
+<th>帧</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ID3v2</td>
+<td>包含了作者，作曲，专辑信息等，长度不固定，扩展了ID3v1的信息量</td>
+</tr>
+<tr>
+<td>Frame</td>
+<td>一些列的帧，个数由文件的大小和帧长度决定<br>每个frame包含帧头和实体数据两部分，帧头记录了mp3的位宽，采样率，版本信息等，每个帧之间相互独立，但是每个帧的长度不固定，由bitrate决定</td>
+</tr>
+<tr>
+<td>ID3v1</td>
+<td>包含了作者，作曲，专辑等信息，长度固定是123Byte</td>
+</tr>
+</tbody>
+</table>
+<p>下面分别说一下各个格式的信息</p>
+<h3 id="ID3v2结构图"><a href="#ID3v2结构图" class="headerlink" title="ID3v2结构图"></a>ID3v2结构图</h3><p><img src="http://p3lublj5c.bkt.clouddn.com/MP3Structure.png" alt=""></p>
+<p>ID3V2共有4个版本，但实际上用的最多的是ID3V2.3</p>
+<table>
+<thead>
+<tr>
+<th>数据块</th>
+<th>数据描述</th>
+<th>字节数(Byte)</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>标签头</td>
+<td>ID3V2标识</td>
+<td>3</td>
+<td>固定字符”ID3”,表示是ID3v2标签</td>
+</tr>
+<tr>
+<td></td>
+<td>ID3v2的子版本号</td>
+<td>2</td>
+<td>0x0300表示是主版本号为3，副版本号为0，也就是ID3v2.3</td>
+</tr>
+<tr>
+<td></td>
+<td>ID3v2标志位</td>
+<td>1</td>
+<td>abc00000，a-非同步编码，b-扩展标签头,c-测试指示位,当这三位置是1时表示有效，一般情况都是0</td>
+</tr>
+<tr>
+<td></td>
+<td>ID3v2大小</td>
+<td>4</td>
+<td>每个字节只有后七位有效，size=byte0:7<em>0x200000+byte1:7</em>0x4000+byte2:7*0x80+byte3:7</td>
+</tr>
+<tr>
+<td>扩展标签头</td>
+<td>扩展标签头大小</td>
+<td>4</td>
+<td>size=byte0<em>0x200000+byte1</em>0x4000+byte2*0x80+byte3</td>
+</tr>
+<tr>
+<td></td>
+<td>扩展标志位</td>
+<td>2</td>
+<td>xx</td>
+</tr>
+<tr>
+<td></td>
+<td>补空大小</td>
+<td>4</td>
+<td>可以在所有的标签帧后边添加补空的数据，也可以预留空间存放额外的帧，是的整个标签大小比标签头的大小更大，一般不用</td>
+</tr>
+<tr>
+<td>标签帧</td>
+<td>帧标识</td>
+<td>4</td>
+<td>固定四个字符，每个标签帧都有一个10个自己的固定的头和至少一个字节的不固定长度的内容组成，也就是下边的帧大小和帧标志必须有，而帧数据的内容不得小于1.</td>
+</tr>
+<tr>
+<td></td>
+<td>帧大小</td>
+<td>4</td>
+<td>出去帧头的所有长度，size=byte0<em>0x200000+byte1</em>0x4000+byte2*0x80+byte3</td>
+</tr>
+<tr>
+<td></td>
+<td>标志</td>
+<td>2</td>
+<td>标志位，只定义6bit，abc00000 ijk00000一般为0</td>
+</tr>
+<tr>
+<td></td>
+<td>帧数据</td>
+<td>size</td>
+<td>存放的数据</td>
+</tr>
+<tr>
+<td></td>
+<td>补空</td>
+<td>补空大小</td>
+</tr>
+</tbody>
+</table>
+<p>介绍一下常用的帧标识：</p>
+<table>
+<thead>
+<tr>
+<th>标识内容</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TIT2</td>
+<td>标题</td>
+</tr>
+<tr>
+<td>TPE1</td>
+<td>作者</td>
+</tr>
+<tr>
+<td>TALB</td>
+<td>专辑</td>
+</tr>
+<tr>
+<td>TRCK</td>
+<td>音轨N/M格式</td>
+</tr>
+<tr>
+<td>TYER</td>
+<td>年代</td>
+</tr>
+<tr>
+<td>TCON</td>
+<td>类型</td>
+</tr>
+<tr>
+<td>COMM</td>
+<td>备注</td>
+</tr>
+</tbody>
+</table>
+<h3 id="有效数据帧"><a href="#有效数据帧" class="headerlink" title="有效数据帧"></a>有效数据帧</h3><p>有效数据帧的编码在lame共有三种，CBR、VBR和ABR。</p>
+<ul>
+<li>CBR：帧长度固定，数据平均分配在各个帧，这种方式有利于计算播放时长，但是文件稍微大</li>
+<li>VBR：帧长度不固定，要获取真个播放时长必须知道帧的总数，文件较小</li>
+<li>ABR：帧长度不固定，介于CBR和VBR之间</li>
+</ul>
+<p>有效数据帧头为四个字节：<br>此处是1-32<br>|偏移地址|位数(bits)|内容<br>|—|—|—<br>|1|12|帧同步标识，一般标识数据帧的开始，全部为1<br>|13|1|MPEG音频版本号<br>|14|2|Layer版本<br>|16|1|保护位<br>|17|4|比特率<br>|21|2|采样率|<br>|23|1|补空位大小<br>|24|1|不知道啥<br>|25|2|模式<br>|27|2|模式拓展位<br>|29|1|版权位<br>|30|1|原始位<br>|31|2|强调位<br>这个地方的内容较多，此处我不一一列举，附上一个写的比较详细的博客：</p>
+<p>[MP3文件格式全解(<a href="https://blog.csdn.net/u013904227/article/details/52184038" target="_blank" rel="noopener">https://blog.csdn.net/u013904227/article/details/52184038</a>)</p>
+<h2 id="LAME的使用"><a href="#LAME的使用" class="headerlink" title="LAME的使用"></a>LAME的使用</h2><p>Lame是一个专门用编码MP3的开源库，它可以提供多种不同比特率的支持，并且提供了各个平台下的编译源码包，可以直接在<a href="https://sourceforge.net/projects/lame/files/lame/" target="_blank" rel="noopener">SourceForge</a>下载。</p>
+<h3 id="安卓平台编译"><a href="#安卓平台编译" class="headerlink" title="安卓平台编译"></a>安卓平台编译</h3><p>官方并没有提供专门的编译文件，不过我们可以自己采用多种方式编译：ndk-build和cmake,两种方式都非常简单。首先要下载源码，然后解压到一个文件夹内。</p>
+<h4 id="ndk-build方式构建lame"><a href="#ndk-build方式构建lame" class="headerlink" title="ndk-build方式构建lame"></a>ndk-build方式构建lame</h4><p>我们需要编写两个文件，Android.mk和Application.mk。一个参考网址可以少走一些坑(<a href="http://developer.samsung.com/technical-doc/view.do;jsessionid=32A9C99833A33F376D7DB8C787414B62?v=T000000090)[http://developer.samsung.com/technical-doc/view.do;jsessionid=32A9C99833A33F376D7DB8C787414B62?v=T000000090" target="_blank" rel="noopener">http://developer.samsung.com/technical-doc/view.do;jsessionid=32A9C99833A33F376D7DB8C787414B62?v=T000000090)[http://developer.samsung.com/technical-doc/view.do;jsessionid=32A9C99833A33F376D7DB8C787414B62?v=T000000090</a>]</p>
+<p>主要有四点：</p>
+<ol>
+<li><p>将libmp3lame文件夹下的所有内容拷贝到一个指定的地方，然后再讲lame.h文件考进来</p>
+</li>
+<li><p>找到<code>util.h</code>文件，将其中的<code>extern ieee754_float32_t fast_log2(ieee754_float32_t x);</code>替换为<br><code>extern float fast_log2(float x);</code></p>
+</li>
+<li><p>找到<code>set_get.h</code>文件。替换<br><code>#include &lt;lame.h&gt;</code>为<code>#include “lame.h”</code></p>
+</li>
+<li><p>假如出现bcopy unrefrence的错误，在Application.mk文件中添加一个flag,最后添加一行，内容为<code>APP_CFLAGS += -DSTDC_HEADERS</code></p>
+</li>
+</ol>
+<p>这样就可以直接编译生成so文件了。<br>假如配置好了ndk的全局变量，只需要运行<code>ndk-build NDK_PROJECT_PATH=. NDK_APPLICATION_MK=Application.mk</code>就生成了对应的so文件了</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">.</span><br><span class="line">├── arm64-v8a</span><br><span class="line">│   └── libmp3lame.so</span><br><span class="line">├── armeabi</span><br><span class="line">│   └── libmp3lame.so</span><br><span class="line">├── armeabi-v7a</span><br><span class="line">│   └── libmp3lame.so</span><br><span class="line">├── mips</span><br><span class="line">│   └── libmp3lame.so</span><br><span class="line">├── mips64</span><br><span class="line">│   └── libmp3lame.so</span><br><span class="line">├── x86</span><br><span class="line">│   └── libmp3lame.so</span><br><span class="line">└── x86_64</span><br><span class="line">    └── libmp3lame.so</span><br></pre></td></tr></table></figure>
+<p>下边是两个文件</p>
+<ol>
+<li>Application.mk</li>
+</ol>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">APP_PLATFORM := android-18</span><br><span class="line">APP_ABI := all</span><br><span class="line">APP_BUILD_SCRIPT := Android.mk</span><br><span class="line">APP_CFLAGS += -DSTDC_HEADERS</span><br></pre></td></tr></table></figure>
+<ol>
+<li>Android.mk</li>
+</ol>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">LOCAL_PATH := <span class="variable">$(<span class="built_in">call</span> my-<span class="built_in">dir</span>)</span></span><br><span class="line"> </span><br><span class="line">		<span class="keyword">include</span> <span class="variable">$(CLEAR_VARS)</span></span><br><span class="line">		 </span><br><span class="line">		LOCAL_MODULE    	:= libmp3lame</span><br><span class="line">		LOCAL_SRC_FILES 	:= \</span><br><span class="line">		./libmp3lame/bitstream.c \</span><br><span class="line">		./libmp3lame/encoder.c \</span><br><span class="line">		./libmp3lame/fft.c \</span><br><span class="line">		./libmp3lame/gain_analysis.c \</span><br><span class="line">		./libmp3lame/id3tag.c \</span><br><span class="line">		./libmp3lame/lame.c \</span><br><span class="line">		./libmp3lame/mpglib_interface.c \</span><br><span class="line">		./libmp3lame/newmdct.c \</span><br><span class="line">		./libmp3lame/presets.c \</span><br><span class="line">		./libmp3lame/psymodel.c \</span><br><span class="line">		./libmp3lame/quantize.c \</span><br><span class="line">		./libmp3lame/quantize_pvt.c \</span><br><span class="line">		./libmp3lame/reservoir.c \</span><br><span class="line">		./libmp3lame/set_get.c \</span><br><span class="line">		./libmp3lame/tables.c \</span><br><span class="line">		./libmp3lame/takehiro.c \</span><br><span class="line">		./libmp3lame/util.c \</span><br><span class="line">		./libmp3lame/vbrquantize.c \</span><br><span class="line">		./libmp3lame/VbrTag.c \</span><br><span class="line">		./libmp3lame/version.c</span><br><span class="line">		</span><br><span class="line">		LOCAL_LDLIBS := -llog</span><br><span class="line">		</span><br><span class="line">		<span class="keyword">include</span> <span class="variable">$(BUILD_SHARED_LIBRARY)</span></span><br></pre></td></tr></table></figure>
+<h4 id="cmake方式构建lame"><a href="#cmake方式构建lame" class="headerlink" title="cmake方式构建lame"></a>cmake方式构建lame</h4><p>cmake构建更加简单，只需要将刚才的libmp3lame文件夹和lame.h文件添加到src/main/cpp文件夹下，此处我和源文件夹保持一致，起名为libmp3lame，然后编写一个CMakeLists.txt文件如下：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">add_definitions</span>(<span class="string">"-DSTDC_HEADERS"</span>)</span><br><span class="line"><span class="keyword">add_library</span>(mp3lame bitstream.c</span><br><span class="line">                     encoder.c</span><br><span class="line">                     fft.c</span><br><span class="line">                     gain_analysis.c</span><br><span class="line">                     id3tag.c</span><br><span class="line">                     lame.c</span><br><span class="line">                     mpglib_interface.c</span><br><span class="line">                     newmdct.c</span><br><span class="line">                     presets.c</span><br><span class="line">                     psymodel.c</span><br><span class="line">                     quantize.c</span><br><span class="line">                     quantize_pvt.c</span><br><span class="line">                     reservoir.c</span><br><span class="line">                     set_get.c</span><br><span class="line">                     tables.c</span><br><span class="line">                     takehiro.c</span><br><span class="line">                     util.c</span><br><span class="line">                     vbrquantize.c</span><br><span class="line">                     VbrTag.c</span><br><span class="line">                     version.c)</span><br></pre></td></tr></table></figure>
+<p>然后在主文件夹下的CMakeList.txt中添加生成该库的代码：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">set</span>(LIB_MP3 Mp3Codec)</span><br><span class="line"></span><br><span class="line"><span class="keyword">include_directories</span>(</span><br><span class="line">             src/main/cpp/<span class="keyword">include</span> <span class="comment">#将lame.h文件复制到这个文件夹下，更加清晰一些，可以作为一个接口文件</span></span><br><span class="line">            )</span><br><span class="line"><span class="keyword">add_subdirectory</span>(src/main/cpp/libmp3lame)</span><br></pre></td></tr></table></figure>
+<p>假如要使用这个库的话只需要假如target_link命令来连接即可。</p>
+<h3 id="lame转码pcm格式为mp3"><a href="#lame转码pcm格式为mp3" class="headerlink" title="lame转码pcm格式为mp3"></a>lame转码pcm格式为mp3</h3><p>我做了一个非常简单的实例程序，首先是通过AudioRecorder录制PCM数据，然后封装为wav格式，这个格式在安卓手机上是可以直接播放的。然后在将wav文件通过jni层的lame调用转码为MP3。</p>
+<p>首先了解一下lame的api文档：</p>
+<ol>
+<li><p>获取版本信息（可选的）<br>const char * get_lame_version(void);</p>
+</li>
+<li><p>错误信息<br>默认情况下lame会输出错误信息到标准错误流中，但是我们需要获取错误信息的话，可以调用如下方法来设置：</p>
+</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">lame_set_errorf(gfp,error_handler_function);</span><br><span class="line">lame_set_debugf(gfp,error_handler_function);</span><br><span class="line">lame_set_msgf(gfp,error_handler_function);</span><br></pre></td></tr></table></figure>
+<p>通过这种方式，就可以将调试或者错误信息发送到我们自己的handler中。这个handler函数一般如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">my_debugf</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span> *format, va_list ap)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    (<span class="keyword">void</span>) <span class="built_in">vfprintf</span>(<span class="built_in">stdout</span>, format, ap);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>初始化编码器<br>初始化编码器并设置默认值：</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">"lame.h"</span></span></span><br><span class="line">   lame_global_flags *gfp;</span><br><span class="line">   gfp = lame_init();</span><br><span class="line"></span><br><span class="line"><span class="comment">/*The default (if you set nothing) is a  J-Stereo, 44.1khz</span></span><br><span class="line"><span class="comment">128kbps CBR mp3 file at quality 5.  */</span></span><br><span class="line"></span><br><span class="line">   lame_set_num_channels(gfp,<span class="number">2</span>);</span><br><span class="line">   lame_set_in_samplerate(gfp,<span class="number">44100</span>);</span><br><span class="line">   lame_set_brate(gfp,<span class="number">128</span>);</span><br><span class="line">   lame_set_mode(gfp,<span class="number">1</span>);</span><br><span class="line">   lame_set_quality(gfp,<span class="number">2</span>);   <span class="comment">/* 2=high  5 = medium  7=low */</span></span><br></pre></td></tr></table></figure>
+<p>在lame.h文件中定义了lame_glob_flags的一种简写形式：<code>typedef lame_global_flags *lame_t;</code>我们就可以使用lame_t。</p>
+<ol>
+<li>设置参数</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zret_code = lame_init_params(gfp);</span><br></pre></td></tr></table></figure>
+<p>这个需要检查错误，因为可能会有错误的参数。</p>
+<ol>
+<li>编码<br>输出源时PCM数据，输出时mp3的帧，我们需要先设置一个缓冲区，来存放编码后的mp3数据，这个数据的大小可以根据采样率和采样数来计算。一个公式如下：</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mp3buffer_size (in bytes) = <span class="number">1.25</span>*num_samples + <span class="number">7200.</span></span><br></pre></td></tr></table></figure>
+<p>接下来是将采样数据生成为mp3数据，存入上边分配的缓冲区：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">lame_encode_buffer</span><span class="params">(lame_global_flags *gfp,</span></span></span><br><span class="line"><span class="function"><span class="params">     <span class="keyword">short</span> <span class="keyword">int</span> leftpcm[], <span class="keyword">short</span> <span class="keyword">int</span> rightpcm[],</span></span></span><br><span class="line"><span class="function"><span class="params">     <span class="keyword">int</span> num_samples,<span class="keyword">char</span> *mp3buffer,<span class="keyword">int</span>  mp3buffer_size)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>编码成功的话会返回编码的数量，有可能为0.假如编码不成功就会返回一个负数。</p>
+<ol>
+<li>编码结束<br>编码器可能会持有最后几个数据，需要调用这个函数：</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">lame_encode_flush</span><span class="params">(lame_global_flags *,<span class="keyword">char</span> *mp3buffer, <span class="keyword">int</span> mp3buffer_size)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>函数的返回值是最后的数据，大多数情况下是0。</p>
+<ol>
+<li>写入tag</li>
+</ol>
+<p>这个地方主要是写入上边提到的一些ID3等帧信息</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">lame_mp3_tags_fid</span><span class="params">(lame_global_flags *,FILE* fid)</span></span>;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>释放资源<br>最后我们需要调用</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">lame_close</span><span class="params">(lame_global_flags *)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>最后附上demo的github地址：<br><a href="https://github.com/rangaofei/AudioApplication" target="_blank" rel="noopener">https://github.com/rangaofei/AudioApplication</a></p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>现代技术发展，MP3终究会被时代抛弃，流媒体格式一般不会采用MP3传输，这篇文章的目的是介绍一些基本的音频知识，而且AudioTrack本身有一定的局限性，不如OpenSLES灵活，所以算是抛砖引玉，后边将会介绍如何直接将PCM转码为mp3.<br>参考：</p>
+<ol>
+<li>音视频开发进阶指南</li>
+<li>维基百科-mp3</li>
+<li>(<a href="http://developer.samsung.com/technical-doc/view.do;jsessionid=32A9C99833A33F376D7DB8C787414B62?v=T000000090)[http://developer.samsung.com/technical-doc/view.do;jsessionid=32A9C99833A33F376D7DB8C787414B62?v=T000000090" target="_blank" rel="noopener">http://developer.samsung.com/technical-doc/view.do;jsessionid=32A9C99833A33F376D7DB8C787414B62?v=T000000090)[http://developer.samsung.com/technical-doc/view.do;jsessionid=32A9C99833A33F376D7DB8C787414B62?v=T000000090</a>]</li>
+</ol>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Andorid/" rel="tag"># Andorid</a>
+          
+        </div>
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/04/19/音频-三-wav格式与处理/" rel="next" title="音频(三)-wav格式与处理">
+                <i class="fa fa-chevron-left"></i> 音频(三)-wav格式与处理
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg"
+               alt="rangaofei" />
+          <p class="site-author-name" itemprop="name">rangaofei</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">65</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#关于mp3"><span class="nav-number">1.</span> <span class="nav-text">关于mp3</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MP3文件格式"><span class="nav-number">2.</span> <span class="nav-text">MP3文件格式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ID3v2结构图"><span class="nav-number">2.1.</span> <span class="nav-text">ID3v2结构图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#有效数据帧"><span class="nav-number">2.2.</span> <span class="nav-text">有效数据帧</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LAME的使用"><span class="nav-number">3.</span> <span class="nav-text">LAME的使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#安卓平台编译"><span class="nav-number">3.1.</span> <span class="nav-text">安卓平台编译</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#ndk-build方式构建lame"><span class="nav-number">3.1.1.</span> <span class="nav-text">ndk-build方式构建lame</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#cmake方式构建lame"><span class="nav-number">3.1.2.</span> <span class="nav-text">cmake方式构建lame</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#lame转码pcm格式为mp3"><span class="nav-number">3.2.</span> <span class="nav-text">lame转码pcm格式为mp3</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#写在最后"><span class="nav-number">4.</span> <span class="nav-text">写在最后</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">rangaofei</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
