@@ -1,0 +1,764 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="Room是安卓推出的一个官方框架，极大的简化了安卓开发者中间层的编写，仅仅需要编写三个主要的注解模块即可实现增删改查功能，前一篇文章简单翻译了一下Room支持的使用，拓展了一些SQLite的知识。 其实在使用中我们会发现Room仍然有很多不尽如人意的地方，这篇文章就一个简单的非空约束设置来探索一下。 非空约束用过SQL的人都知道用在表上的约束是一种强制规则，可以限制出入到表中的数据类型，为数据提供">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Room使用之如何为字段设置非空约束">
+<meta property="og:url" content="https://rangaofei.github.io/2018/05/14/Room使用之如何为字段设置非空约束/index.html">
+<meta property="og:site_name" content="SAKA&#39;S BLOG">
+<meta property="og:description" content="Room是安卓推出的一个官方框架，极大的简化了安卓开发者中间层的编写，仅仅需要编写三个主要的注解模块即可实现增删改查功能，前一篇文章简单翻译了一下Room支持的使用，拓展了一些SQLite的知识。 其实在使用中我们会发现Room仍然有很多不尽如人意的地方，这篇文章就一个简单的非空约束设置来探索一下。 非空约束用过SQL的人都知道用在表上的约束是一种强制规则，可以限制出入到表中的数据类型，为数据提供">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://p3lublj5c.bkt.clouddn.com/runtime.png">
+<meta property="og:image" content="http://p3lublj5c.bkt.clouddn.com/compiler.png">
+<meta property="og:updated_time" content="2018-05-14T03:04:52.833Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Room使用之如何为字段设置非空约束">
+<meta name="twitter:description" content="Room是安卓推出的一个官方框架，极大的简化了安卓开发者中间层的编写，仅仅需要编写三个主要的注解模块即可实现增删改查功能，前一篇文章简单翻译了一下Room支持的使用，拓展了一些SQLite的知识。 其实在使用中我们会发现Room仍然有很多不尽如人意的地方，这篇文章就一个简单的非空约束设置来探索一下。 非空约束用过SQL的人都知道用在表上的约束是一种强制规则，可以限制出入到表中的数据类型，为数据提供">
+<meta name="twitter:image" content="http://p3lublj5c.bkt.clouddn.com/runtime.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://rangaofei.github.io/2018/05/14/Room使用之如何为字段设置非空约束/"/>
+
+
+
+
+
+  <title> Room使用之如何为字段设置非空约束 | SAKA'S BLOG </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s4.cnzz.com/z_stat.php?id=1261177704&web_id=1261177704" language="JavaScript"></script>
+  <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1261177704'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1261177704%26online%3D1%26show%3Dline' type='text/javascript'%3E%3C/script%3E"));</script>
+  </div>
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">SAKA'S BLOG</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://rangaofei.github.io/2018/05/14/Room使用之如何为字段设置非空约束/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="rangaofei">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="SAKA'S BLOG">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="SAKA'S BLOG" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Room使用之如何为字段设置非空约束
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-05-14T10:57:35+08:00">
+                2018-05-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Room是安卓推出的一个官方框架，极大的简化了安卓开发者中间层的编写，仅仅需要编写三个主要的注解模块即可实现增删改查功能，前一篇文章简单翻译了一下Room支持的使用，拓展了一些SQLite的知识。</p>
+<p>其实在使用中我们会发现Room仍然有很多不尽如人意的地方，这篇文章就一个简单的非空约束设置来探索一下。</p>
+<h2 id="非空约束"><a href="#非空约束" class="headerlink" title="非空约束"></a>非空约束</h2><p>用过SQL的人都知道用在表上的约束是一种强制规则，可以限制出入到表中的数据类型，为数据提供准确性和可靠性。SQLite中的约束主要有以下几种：</p>
+<table>
+<thead>
+<tr>
+<th>name</th>
+<th>intruduction</th>
+<th>RoomAnnotation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NOT NULL</td>
+<td>确保列中没有NULL值</td>
+<td>暂无</td>
+</tr>
+<tr>
+<td>DEFAULT</td>
+<td>没有指定时提供默认值</td>
+<td>暂无</td>
+</tr>
+<tr>
+<td>UNIQUEUE</td>
+<td>列中所有的值不同</td>
+<td>index</td>
+</tr>
+<tr>
+<td>PRIMARY KEY</td>
+<td>主键</td>
+<td>PrimaryKey</td>
+</tr>
+<tr>
+<td>CHECK</td>
+<td>确保列中的值满足一定条件</td>
+<td>暂无</td>
+</tr>
+</tbody>
+</table>
+<p>这篇文章主要是研究如何设置NOT NULL约束。</p>
+<p>在SQLite语句中可以直接设置非空约束：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE IF NOT EXISTS `user` </span><br><span class="line">    (`uid`      INTEGER NOT NULL, </span><br><span class="line">    `user_name` TEXT NOT NULL, </span><br><span class="line">    `password`  TEXT, </span><br><span class="line">    `age`       INTEGER NOT NULL, </span><br><span class="line">    PRIMARY KEY(`uid`))</span><br></pre></td></tr></table></figure>
+<p>这样我们就设置了uid、username和age字段不为空。</p>
+<h2 id="Room原理"><a href="#Room原理" class="headerlink" title="Room原理"></a>Room原理</h2><p>Room算是一个庞大的库，但我们在gradle文件中最少的情况下只需要设置两个库就可以：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">implementation <span class="string">"android.arch.persistence.room:runtime:$project.ext.room_version"</span></span><br><span class="line">annotationProcessor <span class="string">"android.arch.persistence.room:compiler:$project.ext.room_version"</span></span><br></pre></td></tr></table></figure>
+<p>打开mvn我们可以看到他们两个所依赖的库到底有多少：</p>
+<p><img src="http://p3lublj5c.bkt.clouddn.com/runtime.png" alt="runtime"></p>
+<p><img src="http://p3lublj5c.bkt.clouddn.com/compiler.png" alt="compiler"></p>
+<p>关于非空约束的设置在这里要将的主要是Compiler库，它是apt解析注解生成文件的主要库。</p>
+<p>Room中大量使用了注解来标识数据存储信息和查询信息，这些注解的元注解全部使用了<code>@Retention(RetentionPolicy.CLASS)</code>,也就是这些注解只保存到编译期，运行期就会消除（这里简单说一下其实在Room运行的过程中还是用到了反射，在获取DAO和Database实现类的时候）。它通过使用apt来获取注解信息并通过javapoet来生成实现类的代码，然后由Runtime来调用这些实现类。</p>
+<p>这里我做一个简单的例子来说明：</p>
+<p>首先实现一个Entity类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Entity</span>(tableName = <span class="string">"user"</span>, indices = &#123;<span class="meta">@Index</span>(name = <span class="string">"name"</span>, value = &#123;<span class="string">"user_name"</span>&#125;, unique = <span class="keyword">true</span>)&#125;)</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@PrimaryKey</span>(autoGenerate = <span class="keyword">false</span>)</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> uid;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ColumnInfo</span>(name = <span class="string">"user_name"</span>)</span><br><span class="line">    <span class="keyword">private</span> String userName;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ColumnInfo</span>(name = <span class="string">"password"</span>)</span><br><span class="line">    <span class="keyword">private</span> String password = <span class="string">"123456"</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Integer age;</span><br><span class="line">    <span class="comment">//省略getter和setter方法</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个非常简单，只有四个字段，uid是int类型，设置为了主键，username是String类型，重命名为user_name，password是String类型，age是Integet类型。</p>
+<p>然后继续实现一个Database类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Database</span>(entities = &#123;User.class&#125;)</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">AppDatabase</span> <span class="keyword">extends</span> <span class="title">RoomDatabase</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> UserDao <span class="title">userDao</span><span class="params">()</span></span>;<span class="comment">//一个简单的接口，读者可以自行实现，与本文无关</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里将User实体类加入到了APPDatabase数据库中了，UserDao是的一个Dao层接口，需要在这里引入为抽象域。这样我们就完成了我们自己的编码工作，<br>这个类在编译期间将会生成一个名称为<code>AppDatabase_Impl</code>的实现类(位置在<code>./app/build/generated/source/apt/debug/debug/package/AppDatabase_Impl</code>)，该文件完成了数据库的创建，打开连接，删除，增删改查的实现类的初始化等工作。RoomDatabase是这个实现类的父类的父类，这是一个抽象类，共有三个抽象方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">//创建数据库，打开连接</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">abstract</span> SupportSQLiteOpenHelper <span class="title">createOpenHelper</span><span class="params">(DatabaseConfiguration config)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//同步内存中的数据和数据库的数据</span></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">abstract</span> InvalidationTracker <span class="title">createInvalidationTracker</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">//清空所有数据</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">clearAllTables</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
+<p>同时加上AppDatabase中的UserDao抽象方法，共有四个方法需要在<code>AppDatabase_Impl</code>中实现，关于表的常见主要是第一个方法，该方法返回的示意<code>SupportSQLiteOpenHelper</code>类型，该类型是由<code>SupportSQLiteOpenHelper.Configuration</code>中的工厂方法创建，configuration本身是一个构造者模式，需要配置一个<code>SupportSQLiteOpenHelper.Callback</code>，通过代理需要实现四个主要方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">dropAllTables</span><span class="params">(SupportSQLiteDatabase database)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">createAllTables</span><span class="params">(SupportSQLiteDatabase database)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">onOpen</span><span class="params">(SupportSQLiteDatabase database)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">onCreate</span><span class="params">(SupportSQLiteDatabase database)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>创建表的方法就在<code>createAllTables</code>，主要看一下这个方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">createAllTables</span><span class="params">(SupportSQLiteDatabase _db)</span> </span>&#123;</span><br><span class="line">       _db.execSQL(<span class="string">"CREATE TABLE IF NOT EXISTS `user` (`uid` INTEGER NOT NULL, `user_name` TEXT, `password` TEXT, `age` INTEGER, PRIMARY KEY(`uid`))"</span>);</span><br><span class="line">       _db.execSQL(<span class="string">"CREATE UNIQUE INDEX `name` ON `user` (`user_name`)"</span>);</span><br><span class="line">       _db.execSQL(<span class="string">"CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)"</span>);</span><br><span class="line">       _db.execSQL(<span class="string">"INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"1099dac99d3db917b94721c51358fa94\")"</span>);</span><br><span class="line">     &#125;</span><br></pre></td></tr></table></figure>
+<p>只需要关注第一个执行语句，可以看到，只有uid字段被设置为了NOT NULL，其他字段都没有默认这个属性，假如多写几个变量可以很轻松的知道，所有的基本类型都会设置默认非空，除此之外都不会有这个约束，同样为非基本类型设置了PrimaryKey属性，也不会生成这个约束。</p>
+<h2 id="源码探索"><a href="#源码探索" class="headerlink" title="源码探索"></a>源码探索</h2><p>Room本身是一个庞大的库，这里只会分析用到的一些东西，同时代码生成库COmpiler官方用的是kotlin语言，鉴于我的kotlin停留在不入门级别，有错误希望读者指正。</p>
+<p>代码生成库用到的是compiler和common库(源码位置：<code>asop/framewirks/support/room</code>)</p>
+<p>compiler库是生成代码的主要库，所有的实现类都是在这个库中由系统自动生成，找到<code>RoomDatabase</code>,这个是入口类。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">override fun <span class="title">initSteps</span><span class="params">()</span>: MutableIterable&lt;ProcessingStep&gt;? </span>&#123;</span><br><span class="line">       val context = Context(processingEnv)</span><br><span class="line">       <span class="keyword">return</span> arrayListOf(DatabaseProcessingStep(context))</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>这个方法是apt的主要方法,compiler提供了一个contex(非activity的context),context是运行apt时的上下文,提供了许多有用的工具类和方法,包括日志输出,控制镇检查,注解缓存等.<code>class DatabaseProcessingStep(context: Context) : ContextBoundProcessingStep(context)</code>类里边定义了生成代码的规则.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//主要方法</span></span><br><span class="line"> <span class="function">override fun <span class="title">process</span><span class="params">(elementsByAnnotation: SetMultimap&lt;Class&lt;out Annotation&gt;, Element&gt;)</span></span></span><br><span class="line"><span class="function">                : MutableSet&lt;Element&gt; </span>&#123;</span><br><span class="line">            <span class="comment">//获取Database注解的所有信息</span></span><br><span class="line">            val databases = elementsByAnnotation[Database::class.java]</span><br><span class="line">                    ?.map &#123;</span><br><span class="line">                        DatabaseProcessor(context, MoreElements.asType(it)).process()</span><br><span class="line">                    &#125;</span><br><span class="line">            <span class="comment">//获取Dao注解的所有信息</span></span><br><span class="line">            val allDaoMethods = databases?.flatMap &#123; it.daoMethods &#125;</span><br><span class="line">            allDaoMethods?.let &#123;</span><br><span class="line">                prepareDaosForWriting(databases, it)</span><br><span class="line">                it.forEach &#123;</span><br><span class="line">                    DaoWriter(it.dao, context.processingEnv).write(context.processingEnv)</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//将Database注解信息收集类转转为系统生成的实现类</span></span><br><span class="line">            databases?.forEach &#123; db -&gt;</span><br><span class="line">                DatabaseWriter(db).write(context.processingEnv)</span><br><span class="line">                <span class="comment">//输出数据库信息</span></span><br><span class="line">                <span class="keyword">if</span> (db.exportSchema) &#123;</span><br><span class="line">                    val schemaOutFolder = context.schemaOutFolder</span><br><span class="line">                    <span class="keyword">if</span> (schemaOutFolder == <span class="keyword">null</span>) &#123;</span><br><span class="line">                        context.logger.w(Warning.MISSING_SCHEMA_LOCATION, db.element,</span><br><span class="line">                                ProcessorErrors.MISSING_SCHEMA_EXPORT_DIRECTORY)</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        <span class="keyword">if</span> (!schemaOutFolder.exists()) &#123;</span><br><span class="line">                            schemaOutFolder.mkdirs()</span><br><span class="line">                        &#125;</span><br><span class="line">                        val qName = db.element.qualifiedName.toString()</span><br><span class="line">                        val dbSchemaFolder = File(schemaOutFolder, qName)</span><br><span class="line">                        <span class="keyword">if</span> (!dbSchemaFolder.exists()) &#123;</span><br><span class="line">                            dbSchemaFolder.mkdirs()</span><br><span class="line">                        &#125;</span><br><span class="line">                        db.exportSchema(File(dbSchemaFolder, <span class="string">"$&#123;db.version&#125;.json"</span>))</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> mutableSetOf()</span><br></pre></td></tr></table></figure>
+<p>根据上边代码的注解,看到了dataBases是由Element经过处理生成为<code>Database</code>类的集合,该类的所有元素经过<code>DatabaseWriter(db).write(context.processingEnv)</code>方法写入文件.而<code>DatabaseWriter</code>继承自<code>ClassWriter</code>,write()方法就是这个父类的方法.</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">abstract</span> fun <span class="title">createTypeSpecBuilder</span><span class="params">()</span>: TypeSpec.Builder</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">   fun <span class="title">write</span><span class="params">(processingEnv: ProcessingEnvironment)</span> </span>&#123;</span><br><span class="line">       val builder = createTypeSpecBuilder()</span><br><span class="line">       sharedFieldSpecs.values.forEach &#123; builder.addField(it) &#125;</span><br><span class="line">       sharedMethodSpecs.values.forEach &#123; builder.addMethod(it) &#125;</span><br><span class="line">       addGeneratedAnnotationIfAvailable(builder, processingEnv)</span><br><span class="line">       JavaFile.builder(className.packageName(), builder.build())</span><br><span class="line">               .build()</span><br><span class="line">               .writeTo(processingEnv.filer)</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>让子类实现<code>abstract fun createTypeSpecBuilder(): TypeSpec.Builder</code>,通过builder模式将信息引入进来,在子类(DatabseWrite)中实现中有这个方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">addMethod(createCreateOpenHelper())</span><br></pre></td></tr></table></figure>
+<p>这个方法是加入OpenHelper方法的语句</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> fun <span class="title">createCreateOpenHelper</span><span class="params">()</span> : MethodSpec </span>&#123;</span><br><span class="line">        val scope = CodeGenScope(<span class="keyword">this</span>)</span><br><span class="line">        <span class="keyword">return</span> MethodSpec.methodBuilder(<span class="string">"createOpenHelper"</span>).apply &#123;</span><br><span class="line">            addModifiers(Modifier.PROTECTED)</span><br><span class="line">            returns(SupportDbTypeNames.SQLITE_OPEN_HELPER)</span><br><span class="line"></span><br><span class="line">            val configParam = ParameterSpec.builder(RoomTypeNames.ROOM_DB_CONFIG,</span><br><span class="line">                    <span class="string">"configuration"</span>).build()</span><br><span class="line">            addParameter(configParam)</span><br><span class="line"></span><br><span class="line">            val openHelperVar = scope.getTmpVar(<span class="string">"_helper"</span>)</span><br><span class="line">            val openHelperCode = scope.fork()</span><br><span class="line">            SQLiteOpenHelperWriter(database)</span><br><span class="line">                    .write(openHelperVar, configParam, openHelperCode)</span><br><span class="line">            addCode(openHelperCode.builder().build())</span><br><span class="line">            addStatement(<span class="string">"return $L"</span>, openHelperVar)</span><br><span class="line">        &#125;.build()</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>找到生成方法的语句<code>SQLiteOpenHelperWriter(database).write(openHelperVar, configParam, openHelperCode)</code>,SQLiteOpenHelperWriter类实现了编写该方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> fun <span class="title">createCreateAllTables</span><span class="params">()</span> : MethodSpec </span>&#123;</span><br><span class="line">       <span class="keyword">return</span> MethodSpec.methodBuilder(<span class="string">"createAllTables"</span>).apply &#123;</span><br><span class="line">           addModifiers(PUBLIC)</span><br><span class="line">           addParameter(SupportDbTypeNames.DB, <span class="string">"_db"</span>)</span><br><span class="line">           database.bundle.buildCreateQueries().forEach &#123;</span><br><span class="line">               addStatement(<span class="string">"_db.execSQL($S)"</span>, it)</span><br><span class="line">           &#125;</span><br><span class="line">       &#125;.build()</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>这此我们基本算是找到根源了,<code>addStatement(&quot;_db.execSQL($S)&quot;, it)</code>中的参数it就是我们需要的东西,它是Database类委托给DatabseBundle(migration库)类来执行某些功能,也就是<code>List&lt;String&gt; buildCreateQueries()</code>集合中的元素</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> List&lt;String&gt; <span class="title">buildCreateQueries</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        List&lt;String&gt; result = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        <span class="keyword">for</span> (EntityBundle entityBundle : mEntities) &#123;</span><br><span class="line">            result.addAll(entityBundle.buildCreateQueries());</span><br><span class="line">        &#125;</span><br><span class="line">        result.addAll(mSetupQueries);</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>Entity同时也是委托来给了EntityBudle来执行某些功能,我们要找的约束也时再EntityBundle中生成的,看一下构造方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">EntityBundle</span><span class="params">(String tableName, String createSql,</span></span></span><br><span class="line"><span class="function"><span class="params">            List&lt;FieldBundle&gt; fields,</span></span></span><br><span class="line"><span class="function"><span class="params">            PrimaryKeyBundle primaryKey,</span></span></span><br><span class="line"><span class="function"><span class="params">            List&lt;IndexBundle&gt; indices,</span></span></span><br><span class="line"><span class="function"><span class="params">            List&lt;ForeignKeyBundle&gt; foreignKeys)</span> </span>&#123;</span><br><span class="line">        mTableName = tableName;</span><br><span class="line">        mCreateSql = createSql;</span><br><span class="line">        mFields = fields;</span><br><span class="line">        mPrimaryKey = primaryKey;</span><br><span class="line">        mIndices = indices;</span><br><span class="line">        mForeignKeys = foreignKeys;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>其中的mCreateSql就是系统生成的创建表中变量的语句.而这个是经过一系列的Processor来生成的,包括EntityProcessor,PojoProcessor,FiledProcessor,而FiledProcessor就是用来生成Filed对象,Filed类中一个方法:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">fun <span class="title">databaseDefinition</span><span class="params">(autoIncrementPKey : Boolean)</span> : String </span>&#123;</span><br><span class="line">        val columnSpec = StringBuilder(<span class="string">""</span>)</span><br><span class="line">        <span class="keyword">if</span> (autoIncrementPKey) &#123;</span><br><span class="line">            columnSpec.append(<span class="string">" PRIMARY KEY AUTOINCREMENT"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (nonNull) &#123;</span><br><span class="line">            columnSpec.append(<span class="string">" NOT NULL"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (collate != <span class="keyword">null</span>) &#123;</span><br><span class="line">            columnSpec.append(<span class="string">" COLLATE $&#123;collate.name&#125;"</span>)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"`$columnName` $&#123;(affinity ?: SQLTypeAffinity.TEXT).name&#125;$columnSpec"</span></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>假如noNull为真则会添加约束,这个方法最终会被Entity的实例方法调用</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">fun <span class="title">createTableQuery</span><span class="params">(tableName : String)</span> : String </span>&#123;</span><br><span class="line">        val definitions = (fields.map &#123;</span><br><span class="line">            val autoIncrement = primaryKey.autoGenerateId &amp;&amp; primaryKey.fields.contains(it)</span><br><span class="line">            it.databaseDefinition(autoIncrement)</span><br><span class="line">        &#125; + createPrimaryKeyDefinition() + createForeignKeyDefinitions()).filterNotNull()</span><br><span class="line">        <span class="keyword">return</span> <span class="string">"CREATE TABLE IF NOT EXISTS `$tableName` ($&#123;definitions.joinToString("</span>, <span class="string">")&#125;)"</span></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>看到这里应该都明白这个NOT NULL约束是如何生成的,它就是根据<code>Filed</code>中变量<code>noNull</code>而来:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">val nonNull = element.isNonNull() &amp;&amp; (parent == <span class="keyword">null</span> || parent.isNonNullRecursively())</span><br></pre></td></tr></table></figure>
+<p>后边的parent我们可以不用管,算是一个递归,但是最终都是判断<code>element.isNonNull()</code>.这是room的扩展函数,扩展了Element的java方法</p>
+<p>找到ext包下的element_ext文件,其中具体定义了该方法:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">fun Element.isNonNull() =</span><br><span class="line">        asType().kind.isPrimitive</span><br><span class="line">                || hasAnnotation(android.support.annotation.NonNull::<span class="class"><span class="keyword">class</span>)</span></span><br><span class="line">                || hasAnnotation(org.jetbrains.annotations.NotNull::class)</span><br></pre></td></tr></table></figure>
+<p>基本找到真凶了,这里共有三个条件，判断TypeKind是否primitive,是否包含NonNull注解,是否包含kotlin中的NotNull注解.<br>而primitive方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isPrimitive</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       <span class="keyword">switch</span>(<span class="keyword">this</span>) &#123;</span><br><span class="line">       <span class="keyword">case</span> BOOLEAN:</span><br><span class="line">       <span class="keyword">case</span> BYTE:</span><br><span class="line">       <span class="keyword">case</span> SHORT:</span><br><span class="line">       <span class="keyword">case</span> INT:</span><br><span class="line">       <span class="keyword">case</span> LONG:</span><br><span class="line">       <span class="keyword">case</span> CHAR:</span><br><span class="line">       <span class="keyword">case</span> FLOAT:</span><br><span class="line">       <span class="keyword">case</span> DOUBLE:</span><br><span class="line">           <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line"></span><br><span class="line">       <span class="keyword">default</span>:</span><br><span class="line">           <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>这样我们就知道了,所有的基本类型都是primitive的,必然会生成NOT NUll约束,而非空注解也会生成NOT NULL约束,所以我们只要给非基本类型加上这两个约束中的一种就可以了.</p>
+<p>修改User中的age代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">@NonNull</span><br><span class="line">private Integer age ;</span><br></pre></td></tr></table></figure>
+<p>看一下AppDatabase_Impl的实现类中的sql语句：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">_db.execSQL(</span><br><span class="line"><span class="string">"CREATE TABLE IF NOT EXISTS `user` (</span></span><br><span class="line"><span class="string">`uid` INTEGER NOT NULL, </span></span><br><span class="line"><span class="string">`user_name` TEXT, </span></span><br><span class="line"><span class="string">`password` TEXT, </span></span><br><span class="line"><span class="string">`age` INTEGER NOT NULL, </span></span><br><span class="line"><span class="string">PRIMARY KEY(`uid`))"</span></span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+<p>验证成功了。</p>
+<h2 id="其他方式"><a href="#其他方式" class="headerlink" title="其他方式"></a>其他方式</h2><p>上面讲的方法是最简单的方法，在我们创建好表以后基本很难更改这些约束。<br>除了重命名表和在已有的表中添加列，ALTER TABLE 命令不支持其他操作。我们就可以利用migration来执行原生SQL语句生成表，这样约束就可以写在SQL语句中。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/11/安卓持久化数据存储框架Room的使用/" rel="next" title="安卓持久化数据存储框架Room的使用">
+                <i class="fa fa-chevron-left"></i> 安卓持久化数据存储框架Room的使用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg"
+               alt="rangaofei" />
+          <p class="site-author-name" itemprop="name">rangaofei</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">67</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#非空约束"><span class="nav-number">1.</span> <span class="nav-text">非空约束</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Room原理"><span class="nav-number">2.</span> <span class="nav-text">Room原理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#源码探索"><span class="nav-number">3.</span> <span class="nav-text">源码探索</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他方式"><span class="nav-number">4.</span> <span class="nav-text">其他方式</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">rangaofei</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
