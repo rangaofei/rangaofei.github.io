@@ -1,0 +1,711 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="FFmpeg算是音视频学习中不可能不接触的一个航空母舰,这系列文章算是翻译的一系列的文章An ffmpeg and SDL TutorialorHow to Write a Video Player inLess Than 1000 Lines,只是他使用的api较老,我的教程基于最新的FFmpeg4.0版本,开发环境时clion,默认使用cmake构建工具. 下载地址:http://ffmpeg">
+<meta property="og:type" content="article">
+<meta property="og:title" content="FFmpeg学习一--截取视频为图片">
+<meta property="og:url" content="https://rangaofei.github.io/2018/05/17/FFmpeg学习一-截取视频为图片/index.html">
+<meta property="og:site_name" content="SAKA&#39;S BLOG">
+<meta property="og:description" content="FFmpeg算是音视频学习中不可能不接触的一个航空母舰,这系列文章算是翻译的一系列的文章An ffmpeg and SDL TutorialorHow to Write a Video Player inLess Than 1000 Lines,只是他使用的api较老,我的教程基于最新的FFmpeg4.0版本,开发环境时clion,默认使用cmake构建工具. 下载地址:http://ffmpeg">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://p3lublj5c.bkt.clouddn.com/FFMpeg.png">
+<meta property="og:updated_time" content="2018-05-17T11:46:38.313Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="FFmpeg学习一--截取视频为图片">
+<meta name="twitter:description" content="FFmpeg算是音视频学习中不可能不接触的一个航空母舰,这系列文章算是翻译的一系列的文章An ffmpeg and SDL TutorialorHow to Write a Video Player inLess Than 1000 Lines,只是他使用的api较老,我的教程基于最新的FFmpeg4.0版本,开发环境时clion,默认使用cmake构建工具. 下载地址:http://ffmpeg">
+<meta name="twitter:image" content="http://p3lublj5c.bkt.clouddn.com/FFMpeg.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://rangaofei.github.io/2018/05/17/FFmpeg学习一-截取视频为图片/"/>
+
+
+
+
+
+  <title> FFmpeg学习一--截取视频为图片 | SAKA'S BLOG </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s4.cnzz.com/z_stat.php?id=1261177704&web_id=1261177704" language="JavaScript"></script>
+  <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1261177704'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1261177704%26online%3D1%26show%3Dline' type='text/javascript'%3E%3C/script%3E"));</script>
+  </div>
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">SAKA'S BLOG</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://rangaofei.github.io/2018/05/17/FFmpeg学习一-截取视频为图片/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="rangaofei">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="SAKA'S BLOG">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="SAKA'S BLOG" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                FFmpeg学习一--截取视频为图片
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-05-17T19:46:26+08:00">
+                2018-05-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>FFmpeg算是音视频学习中不可能不接触的一个航空母舰,这系列文章算是翻译的一系列的文章<a href="http://dranger.com/ffmpeg/ffmpeg.html" target="_blank" rel="noopener">An ffmpeg and SDL Tutorial<br>or<br>How to Write a Video Player in<br>Less Than 1000 Lines</a>,只是他使用的api较老,我的教程基于最新的FFmpeg4.0版本,开发环境时clion,默认使用cmake构建工具.</p>
+<p>下载地址:<a href="http://ffmpeg.org/download.html" target="_blank" rel="noopener">http://ffmpeg.org/download.html</a></p>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>视频文件有几个基本组件。 首先，文件本身称为容器，容器的类型决定了文件中信息的位置。 比如AVI和Quicktime。 是一系列的streams, 通常有一个音频流和一个视频流。流中的数据元素称为帧。 每个流由不同种类的编解码器编码。 编解码器定义了数据是如何编码和解码的 - 因此称为CODEC。比如DivX和MP3. 数据包是可以包含数据的数据片段，这些数据可以被解码为原始帧，每个数据包包含完整的帧，在音频流下可能包含多个帧。</p>
+<p>处理音视频数据不比较简单,主要分为以下几个步骤:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">10 打开视频文件,获取streams</span><br><span class="line">20 从video_stram中获取数据包,转换为帧</span><br><span class="line">30 帧未读取完继续执行20</span><br><span class="line">40 处理帧</span><br><span class="line">50 跳转20</span><br></pre></td></tr></table></figure>
+<p>使用FFmpeg处理视频非常简单,本文介绍如何将一个视频文件的帧数据保存为一张ppm格式图片(ppm是一种非常简单的原始RGB数据文件,它包含一个非常简单的头信息,其余的数据全部是RGB数据).</p>
+<h2 id="打开文件"><a href="#打开文件" class="headerlink" title="打开文件"></a>打开文件</h2><p>首先我们要将用到的库引入进来,编写一个错误输出函数:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;libavcodec/avcodec.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;libavutil/imgutils.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;libswscale/swscale.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;libavformat/avformat.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;libavutil/error.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">showErrMsg</span><span class="params">(<span class="keyword">int</span> errNum, <span class="keyword">char</span> *msg, <span class="keyword">size_t</span> msgSize)</span> </span>&#123;</span><br><span class="line">    <span class="built_in">memset</span>(msg, <span class="number">0</span>, msgSize);</span><br><span class="line">    av_strerror(errNum, msg, msgSize);</span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, msg);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该函数将FFmpeg内部的错误代码转换为了字符串,提高可读性.下面编写主函数,要求传入至少一个参数,并将该参数作为文件路径来打开.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">fileName = argv[<span class="number">1</span>];</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (argc &lt; <span class="number">2</span>) &#123;</span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">"Please use FFmpegDemo1 &lt;file&gt; to open a video file"</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> ((errNum = avformat_open_input(&amp;pFormatCtx, fileName, <span class="literal">NULL</span>, <span class="literal">NULL</span>)) != <span class="number">0</span>) &#123;</span><br><span class="line">    showErrMsg(errNum, errMsg, <span class="number">400</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在4版本中av_aregister_all()函数已经被废弃,不需要再编写任何信息.</p>
+<p><code>int avformat_open_input(AVFormatContext **ps, const char *url, AVInputFormat *fmt, AVDictionary **options)</code>函数的作用是打开url指向的文件.</p>
+<p><code>AVFormatContext</code>是FFmepg非常重要的一个结构体,相当于安卓中的contex,它为FFmpeg的avformat提供了一个上下文,让,开发者可以非常简单的获取这些信息.但是要注意这里传如的是<code>AVFormatContext</code>的指针的指针,所以我们的pFromatCtx是一个指针,而传入参数时需要传入该指针的指针.</p>
+<p>fmt是该文件的格式,这里传入NULL后FFmpeg会自动判断文件的编码格式.</p>
+<p>然后读取头信息,将信息显示出来:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (avformat_find_stream_info(pFormatCtx, <span class="literal">NULL</span>) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">      showErrMsg(errNum, errMsg, <span class="number">400</span>);</span><br><span class="line">      <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  av_dump_format(pFormatCtx, <span class="number">0</span>, fileName, <span class="number">0</span>);</span><br></pre></td></tr></table></figure>
+<p><code>avformat_find_stream_info</code>该函数将文件的streams的信息读入<code>pFormatCtx-&gt;streams</code>,然后通过<code>av_dump_format</code>函数打印出这些详细信息.</p>
+<p>测试文件输出的详细信息如下:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">Input #0, matroska,webm, from '../in.mkv':</span><br><span class="line">  Metadata:</span><br><span class="line">    title           : 灵感工作室 www.lggzs.com</span><br><span class="line">    encoder         : libebml v1.2.3 + libmatroska v1.3.0</span><br><span class="line">    creation_time   : 2012-06-30T02:28:33.000000Z</span><br><span class="line">  Duration: 00:25:43.08, start: 0.000000, bitrate: 1311 kb/s</span><br><span class="line">    Chapter #0:0: start 0.105000, end 1543.082000</span><br><span class="line">    Metadata:</span><br><span class="line">      title           : 00:00:00.105</span><br><span class="line">    Stream #0:0: Video: h264 (High), yuv420p(progressive), 1440x1080 [SAR 1:1 DAR 4:3], 23.98 fps, 23.98 tbr, 1k tbn, 47.95 tbc (default)</span><br><span class="line">    Stream #0:1(jpn): Audio: aac (LC), 48000 Hz, stereo, fltp</span><br><span class="line">    Metadata:</span><br><span class="line">      title           : 日语</span><br><span class="line">    Stream #0:2(chi): Audio: aac (HE-AAC), 44100 Hz, stereo, fltp (default)</span><br><span class="line">    Metadata:</span><br><span class="line">      title           : 国语</span><br><span class="line">    Stream #0:3: Subtitle: subrip (default)</span><br></pre></td></tr></table></figure>
+<p>在视频文件中包含许多的流,比如视频流,音频流,而音频流可能又包含多种音频,比如上边的输出信息中,视频流时stream0,音频流包含两个,分别是stream1日语和stream2国语.该篇文章的目的是将视频流分解为帧,保存前50帧信息,那么需要找出对应的视频流,代码如下:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; pFormatCtx-&gt;nb_streams; i++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (pFormatCtx-&gt;streams[i]-&gt;codecpar-&gt;codec_type == AVMEDIA_TYPE_VIDEO) &#123;</span><br><span class="line">            codecPar = pFormatCtx-&gt;streams[i]-&gt;codecpar;</span><br><span class="line">            videoStream = i;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="keyword">if</span> (videoStream == <span class="number">-1</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">pCodec = avcodec_find_decoder(codecPar-&gt;codec_id);</span><br><span class="line"><span class="keyword">if</span> (pCodec == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">"Unsupported codec!"</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">pCodecCtx = avcodec_alloc_context3(pCodec);</span><br><span class="line">avcodec_parameters_to_context(pCodecCtx, codecPar);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (avcodec_open2(pCodecCtx, pCodec, <span class="literal">NULL</span>) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>pFormatCtx的streams</code>中保存了所有的流信息,<code>AVCodecParameters</code>,这个结构体中保存了<code>AVMediaType</code>,这个枚举类就是流的类型:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">AVMEDIA_TYPE_UNKNOWN = <span class="number">-1</span>,  <span class="comment">///&lt; Usually treated as AVMEDIA_TYPE_DATA</span></span><br><span class="line">AVMEDIA_TYPE_VIDEO,</span><br><span class="line">AVMEDIA_TYPE_AUDIO,</span><br><span class="line">AVMEDIA_TYPE_DATA,          <span class="comment">///&lt; Opaque data information usually continuous</span></span><br><span class="line">AVMEDIA_TYPE_SUBTITLE,</span><br><span class="line">AVMEDIA_TYPE_ATTACHMENT,    <span class="comment">///&lt; Opaque data information usually sparse</span></span><br><span class="line">AVMEDIA_TYPE_NB</span><br></pre></td></tr></table></figure>
+<p>我们只需要遍历找出视频流即可,并保存<code>AVCodecParameters</code>和索引,<code>AVCodecParameters</code>除了有<code>AVMediaType</code>外,还有一个<code>AVCodecID</code>,这个枚举类保存了该视频文件的编码方法,我们需要根据这个ID来寻找对应的解码器:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"> pCodec = avcodec_find_decoder(codecPar-&gt;codec_id);</span><br><span class="line"><span class="keyword">if</span> (pCodec == <span class="literal">NULL</span>) &#123;</span><br><span class="line">    <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">"Unsupported codec!"</span>);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>寻找解码器后旧需要来初始化解码器的相关内容了,这个主要是liaavcodec库完成,同样它需要一个上下文环境:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"> pCodecCtx = avcodec_alloc_context3(pCodec);</span><br><span class="line">avcodec_parameters_to_context(pCodecCtx, codecPar);</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (avcodec_open2(pCodecCtx, pCodec, <span class="literal">NULL</span>) &lt; <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的代码中首先为<code>pCodecCtx</code>分配了一块区域,然后将我们之前的codecPar参数传给它,使<code>pCodecCtx</code>设置为相对应的参数.然后<code>avcodec_open2</code>初始化pCodecCtx,这样打开解码器的工作旧完成了.</p>
+<h2 id="数据处理"><a href="#数据处理" class="headerlink" title="数据处理"></a>数据处理</h2><p>做了一个最简单的分析图:<br><img src="http://p3lublj5c.bkt.clouddn.com/FFMpeg.png" alt=""></p>
+<p>首先需要初始化一些数据结构体</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">pFrame = av_frame_alloc();</span><br><span class="line">AVFrame *pFrameRGB = av_frame_alloc();</span><br><span class="line"><span class="keyword">if</span> (pFrameRGB == <span class="literal">NULL</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">unsigned</span> <span class="keyword">char</span> *buffer = <span class="literal">NULL</span>;</span><br><span class="line"><span class="keyword">int</span> numBytes = av_image_get_buffer_size(AV_PIX_FMT_RGB24, pCodecCtx-&gt;width, pCodecCtx-&gt;height,AV_INPUT_BUFFER_PADDING_SIZE);</span><br><span class="line">buffer = (<span class="keyword">unsigned</span> <span class="keyword">char</span> *) av_malloc(numBytes * <span class="keyword">sizeof</span>(<span class="keyword">unsigned</span> <span class="keyword">char</span>));</span><br><span class="line"></span><br><span class="line">av_image_fill_arrays(pFrameRGB-&gt;data, pFrameRGB-&gt;linesize, buffer, AV_PIX_FMT_RGB24, pCodecCtx-&gt;width,pCodecCtx-&gt;height, AV_INPUT_BUFFER_PADDING_SIZE);</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">SwsContext</span> *<span class="title">sws_ctx</span> = <span class="title">NULL</span>;</span></span><br><span class="line">AVPacket packet;</span><br><span class="line"></span><br><span class="line">sws_ctx = sws_getContext(pCodecCtx-&gt;width,</span><br><span class="line">                             pCodecCtx-&gt;height,</span><br><span class="line">                             pCodecCtx-&gt;pix_fmt,</span><br><span class="line">                             pCodecCtx-&gt;width,</span><br><span class="line">                             pCodecCtx-&gt;height,</span><br><span class="line">                             AV_PIX_FMT_RGB24,</span><br><span class="line">                             SWS_BILINEAR,</span><br><span class="line">                             <span class="literal">NULL</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line">i = <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+<p>pFrame是用来存储解码后原始数据的一个结构体,对应于途图中的pFrame(empty)和pFrame(full),pFrameRGB是经过SwsContext变换后的数据,对应于图中的pFrame(tosave),我们可以直接存储pFrameRGB为图片.buffer是指向数组的一个指针,它是用来提供给pFrameRGB的一块数据区域.SwsContex是libswscale的上下文环境,用来简单的缩放图片.</p>
+<p>下面我们需要来处理数据了:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> (av_read_frame(pFormatCtx, &amp;packet) &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (packet.stream_index == videoStream) &#123;</span><br><span class="line">            <span class="keyword">if</span> (avcodec_send_packet(pCodecCtx, &amp;packet) != <span class="number">0</span>) &#123;</span><br><span class="line">                <span class="built_in">fprintf</span>(<span class="built_in">stderr</span>, <span class="string">"there is something wrong with avcodec_send_packet\n"</span>);</span><br><span class="line">                av_packet_unref(&amp;packet);</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> (avcodec_receive_frame(pCodecCtx, pFrame) == <span class="number">0</span>) &#123;</span><br><span class="line">                sws_scale(sws_ctx, (<span class="keyword">uint8_t</span></span><br><span class="line">                          <span class="keyword">const</span> *<span class="keyword">const</span> *) pFrame-&gt;data,</span><br><span class="line">                          pFrame-&gt;linesize, <span class="number">0</span>, pCodecCtx-&gt;height,</span><br><span class="line">                          pFrameRGB-&gt;data,</span><br><span class="line">                          pFrameRGB-&gt;linesize);</span><br><span class="line">                <span class="keyword">if</span> (++i &lt;= <span class="number">50</span>) &#123;</span><br><span class="line">                    SavaFrame(pFrameRGB, pCodecCtx-&gt;width, pCodecCtx-&gt;height, i);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        av_packet_unref(&amp;packet);</span><br><span class="line">        <span class="keyword">if</span> (i == <span class="number">50</span>) &#123;</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>首先是通过<code>av_read_frame</code>来将video_stream中的数据读入packet,然后将这个packet通过<code>avcodec_send_packet</code>发送给AVCodecContext,AVCodecContext将这些数据解码为原始图像数据帧,我们可以通过<code>avcodec_receive_frame</code>来获取解码后的帧,然后经过SWScaleContext来将图像数据格式化为rgb格式,最后我们需要不断的释放packet.这里注意一点,<code>avcodec_send_packet</code>和<code>avcodec_receive_frame</code>并不是一一对应的关系,也就是输入数据后并不一定都必须要输出数据,这是因为<code>AVCodecContext</code>可能会缓存几帧数据.</p>
+<h2 id="保存数据"><a href="#保存数据" class="headerlink" title="保存数据"></a>保存数据</h2><p>保存数据较简单,直接看代码:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">SavaFrame</span><span class="params">(AVFrame *pFrame, <span class="keyword">int</span> width, <span class="keyword">int</span> height, <span class="keyword">int</span> frame)</span> </span>&#123;</span><br><span class="line">    FILE *pFile;</span><br><span class="line">    <span class="keyword">char</span> szFilename[<span class="number">32</span>];</span><br><span class="line">    <span class="keyword">int</span> y;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//生成文件名称</span></span><br><span class="line">    <span class="built_in">sprintf</span>(szFilename, <span class="string">"frame%d.ppm"</span>, frame);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//创建或打开文件</span></span><br><span class="line">    pFile = fopen(szFilename, <span class="string">"wb"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (pFile == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//写入头信息</span></span><br><span class="line">    <span class="built_in">fprintf</span>(pFile, <span class="string">"P6\n%d %d\n225\n"</span>, width, height);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//写入数据</span></span><br><span class="line">    <span class="keyword">for</span> (y = <span class="number">0</span>; y &lt; height; y++)</span><br><span class="line">        fwrite(pFrame-&gt;data[<span class="number">0</span>] + y * pFrame-&gt;linesize[<span class="number">0</span>], <span class="number">1</span>, width * <span class="number">3</span>, pFile);</span><br><span class="line">    fclose(pFile);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="释放资源"><a href="#释放资源" class="headerlink" title="释放资源"></a>释放资源</h2><p>FFMpeg中的大部分分配资源都提供了一个简单的释放方法,我们逐个调用即可:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">av_free(buffer);</span><br><span class="line">   av_frame_unref(pFrameRGB);</span><br><span class="line">   av_frame_unref(pFrame);</span><br><span class="line">   av_free(pFrame);</span><br><span class="line">   avcodec_free_context(&amp;pCodecCtx);</span><br><span class="line">   avformat_close_input(&amp;pFormatCtx);</span><br></pre></td></tr></table></figure>
+<h2 id="运行项目"><a href="#运行项目" class="headerlink" title="运行项目"></a>运行项目</h2><p>首先配置以下cmake文件:</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">cmake_minimum_required</span>(VERSION <span class="number">3.10</span>)</span><br><span class="line"><span class="keyword">project</span>(FFmpegDemo C)</span><br><span class="line"></span><br><span class="line"><span class="keyword">set</span>(CMAKE_C_STANDARD <span class="number">99</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">add_executable</span>(FFmpegDemo1 main.c)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">target_link_libraries</span>(FFmpegDemo1</span><br><span class="line">        avformat</span><br><span class="line">        z</span><br><span class="line">        m</span><br><span class="line">        pthread</span><br><span class="line">        avdevice</span><br><span class="line">        avfilter</span><br><span class="line">        avcodec</span><br><span class="line">        avutil</span><br><span class="line"><span class="comment">#        postproc</span></span><br><span class="line">        swresample</span><br><span class="line">        swscale</span><br><span class="line">        dl</span><br><span class="line">       )</span><br></pre></td></tr></table></figure>
+<p>假如没有安装pthread,首先要装好pthread,要不然程序不能运行,还要注意库的链接顺序.</p>
+<p>下面是pthread的安装代码:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get install glibc-doc</span><br><span class="line"></span><br><span class="line">sudo apt-get install manpages-posix-dev</span><br></pre></td></tr></table></figure>
+<p>可以直接使用clion的运行功能来运行程序,但是首先要添加视频文件路径作为参数.我们也可以在命令行直接生成文件文件运行</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">mkdir build;cd build/    \\执行外部构建</span><br><span class="line">cmake ..</span><br><span class="line">make</span><br><span class="line">FFmpegDemo1 ../in.mkv</span><br></pre></td></tr></table></figure>
+<p>执行完成后我们即可看到生成的ppm文件,再clion直接打开即可.</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/14/Room使用之如何为字段设置非空约束/" rel="next" title="Room使用之如何为字段设置非空约束">
+                <i class="fa fa-chevron-left"></i> Room使用之如何为字段设置非空约束
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg"
+               alt="rangaofei" />
+          <p class="site-author-name" itemprop="name">rangaofei</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">68</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#概述"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#打开文件"><span class="nav-number">2.</span> <span class="nav-text">打开文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据处理"><span class="nav-number">3.</span> <span class="nav-text">数据处理</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#保存数据"><span class="nav-number">4.</span> <span class="nav-text">保存数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#释放资源"><span class="nav-number">5.</span> <span class="nav-text">释放资源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#运行项目"><span class="nav-number">6.</span> <span class="nav-text">运行项目</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">rangaofei</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
