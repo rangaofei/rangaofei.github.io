@@ -84,18 +84,18 @@
 
 
 
-<meta name="description" content="FFmpeg算是音视频学习中不可能不接触的一个航空母舰,这系列文章算是翻译的一系列的文章An ffmpeg and SDL TutorialorHow to Write a Video Player inLess Than 1000 Lines,只是他使用的api较老,我的教程基于最新的FFmpeg4.0版本,开发环境时clion,默认使用cmake构建工具. 下载地址:http://ffmpeg">
+<meta name="description" content="FFmpeg算是音视频学习中不可能不接触的一个航空母舰,这系列文章算是翻译的一系列的文章An ffmpeg and SDL Tutorial or How to Write a Video Player in Less Than 1000 Lines,只是他使用的api较老,我的教程基于最新的FFmpeg4.0版本,开发环境时clion,默认使用cmake构建工具. 下载地址:http://ffm">
 <meta property="og:type" content="article">
 <meta property="og:title" content="FFmpeg学习一--截取视频为图片">
 <meta property="og:url" content="https://rangaofei.github.io/2018/05/17/FFmpeg学习一-截取视频为图片/index.html">
 <meta property="og:site_name" content="SAKA&#39;S BLOG">
-<meta property="og:description" content="FFmpeg算是音视频学习中不可能不接触的一个航空母舰,这系列文章算是翻译的一系列的文章An ffmpeg and SDL TutorialorHow to Write a Video Player inLess Than 1000 Lines,只是他使用的api较老,我的教程基于最新的FFmpeg4.0版本,开发环境时clion,默认使用cmake构建工具. 下载地址:http://ffmpeg">
+<meta property="og:description" content="FFmpeg算是音视频学习中不可能不接触的一个航空母舰,这系列文章算是翻译的一系列的文章An ffmpeg and SDL Tutorial or How to Write a Video Player in Less Than 1000 Lines,只是他使用的api较老,我的教程基于最新的FFmpeg4.0版本,开发环境时clion,默认使用cmake构建工具. 下载地址:http://ffm">
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://p3lublj5c.bkt.clouddn.com/FFMpeg.png">
-<meta property="og:updated_time" content="2018-05-17T11:46:38.313Z">
+<meta property="og:updated_time" content="2018-05-17T11:49:12.920Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="FFmpeg学习一--截取视频为图片">
-<meta name="twitter:description" content="FFmpeg算是音视频学习中不可能不接触的一个航空母舰,这系列文章算是翻译的一系列的文章An ffmpeg and SDL TutorialorHow to Write a Video Player inLess Than 1000 Lines,只是他使用的api较老,我的教程基于最新的FFmpeg4.0版本,开发环境时clion,默认使用cmake构建工具. 下载地址:http://ffmpeg">
+<meta name="twitter:description" content="FFmpeg算是音视频学习中不可能不接触的一个航空母舰,这系列文章算是翻译的一系列的文章An ffmpeg and SDL Tutorial or How to Write a Video Player in Less Than 1000 Lines,只是他使用的api较老,我的教程基于最新的FFmpeg4.0版本,开发环境时clion,默认使用cmake构建工具. 下载地址:http://ffm">
 <meta name="twitter:image" content="http://p3lublj5c.bkt.clouddn.com/FFMpeg.png">
 
 
@@ -335,7 +335,7 @@
       
 
       
-        <p>FFmpeg算是音视频学习中不可能不接触的一个航空母舰,这系列文章算是翻译的一系列的文章<a href="http://dranger.com/ffmpeg/ffmpeg.html" target="_blank" rel="noopener">An ffmpeg and SDL Tutorial<br>or<br>How to Write a Video Player in<br>Less Than 1000 Lines</a>,只是他使用的api较老,我的教程基于最新的FFmpeg4.0版本,开发环境时clion,默认使用cmake构建工具.</p>
+        <p>FFmpeg算是音视频学习中不可能不接触的一个航空母舰,这系列文章算是翻译的一系列的文章<a href="http://dranger.com/ffmpeg/ffmpeg.html" target="_blank" rel="noopener">An ffmpeg and SDL Tutorial or How to Write a Video Player in Less Than 1000 Lines</a>,只是他使用的api较老,我的教程基于最新的FFmpeg4.0版本,开发环境时clion,默认使用cmake构建工具.</p>
 <p>下载地址:<a href="http://ffmpeg.org/download.html" target="_blank" rel="noopener">http://ffmpeg.org/download.html</a></p>
 <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>视频文件有几个基本组件。 首先，文件本身称为容器，容器的类型决定了文件中信息的位置。 比如AVI和Quicktime。 是一系列的streams, 通常有一个音频流和一个视频流。流中的数据元素称为帧。 每个流由不同种类的编解码器编码。 编解码器定义了数据是如何编码和解码的 - 因此称为CODEC。比如DivX和MP3. 数据包是可以包含数据的数据片段，这些数据可以被解码为原始帧，每个数据包包含完整的帧，在音频流下可能包含多个帧。</p>
 <p>处理音视频数据不比较简单,主要分为以下几个步骤:</p>
