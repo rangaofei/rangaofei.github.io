@@ -1,0 +1,720 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Android" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0" />
+
+
+
+
+
+
+<meta name="description" content="这个算是安卓音视频学习中必学的一块内容，并没有偏离安卓音视频学习的主线。我也是现学现卖，这个系列的文章讲解的就是如何使用安卓端的OPENGLES，本系列文章参考自《OpenGL-ES 3。0 Programming Guide》，讲解的比较基础，望高手海涵。 《OpenGL-ES 3。0 Programming Guide》全书以C语言api实现，所以我们使用的是native层环境开发，并且使用的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="EGL创建OPENGLes环境">
+<meta property="og:url" content="https://rangaofei.github.io/2018/06/04/EGL创建OPENGLes环境/index.html">
+<meta property="og:site_name" content="SAKA&#39;S BLOG">
+<meta property="og:description" content="这个算是安卓音视频学习中必学的一块内容，并没有偏离安卓音视频学习的主线。我也是现学现卖，这个系列的文章讲解的就是如何使用安卓端的OPENGLES，本系列文章参考自《OpenGL-ES 3。0 Programming Guide》，讲解的比较基础，望高手海涵。 《OpenGL-ES 3。0 Programming Guide》全书以C语言api实现，所以我们使用的是native层环境开发，并且使用的">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2018-06-04T12:54:12.561Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="EGL创建OPENGLes环境">
+<meta name="twitter:description" content="这个算是安卓音视频学习中必学的一块内容，并没有偏离安卓音视频学习的主线。我也是现学现卖，这个系列的文章讲解的就是如何使用安卓端的OPENGLES，本系列文章参考自《OpenGL-ES 3。0 Programming Guide》，讲解的比较基础，望高手海涵。 《OpenGL-ES 3。0 Programming Guide》全书以C语言api实现，所以我们使用的是native层环境开发，并且使用的">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post"},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://rangaofei.github.io/2018/06/04/EGL创建OPENGLes环境/"/>
+
+
+
+
+
+  <title> EGL创建OPENGLes环境 | SAKA'S BLOG </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+
+
+
+  <div style="display: none;">
+    <script src="https://s4.cnzz.com/z_stat.php?id=1261177704&web_id=1261177704" language="JavaScript"></script>
+  <script type="text/javascript">var cnzz_protocol = (("https:" == document.location.protocol) ? " https://" : " http://");document.write(unescape("%3Cspan id='cnzz_stat_icon_1261177704'%3E%3C/span%3E%3Cscript src='" + cnzz_protocol + "s4.cnzz.com/z_stat.php%3Fid%3D1261177704%26online%3D1%26show%3Dline' type='text/javascript'%3E%3C/script%3E"));</script>
+  </div>
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container one-collumn sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-meta ">
+  
+
+  <div class="custom-logo-site-title">
+    <a href="/"  class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <span class="site-title">SAKA'S BLOG</span>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+    
+      <p class="site-subtitle"></p>
+    
+</div>
+
+<div class="site-nav-toggle">
+  <button>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+    <span class="btn-bar"></span>
+  </button>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+  <link itemprop="mainEntityOfPage" href="https://rangaofei.github.io/2018/06/04/EGL创建OPENGLes环境/">
+
+  <span style="display:none" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <meta itemprop="name" content="rangaofei">
+    <meta itemprop="description" content="">
+    <meta itemprop="image" content="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg">
+  </span>
+
+  <span style="display:none" itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+    <meta itemprop="name" content="SAKA'S BLOG">
+    <span style="display:none" itemprop="logo" itemscope itemtype="http://schema.org/ImageObject">
+      <img style="display:none;" itemprop="url image" alt="SAKA'S BLOG" src="">
+    </span>
+  </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                EGL创建OPENGLes环境
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="Post created" itemprop="dateCreated datePublished" datetime="2018-06-04T20:53:31+08:00">
+                2018-06-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+
+          
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>这个算是安卓音视频学习中必学的一块内容，并没有偏离安卓音视频学习的主线。我也是现学现卖，这个系列的文章讲解的就是如何使用安卓端的OPENGLES，本系列文章参考自《OpenGL-ES 3。0 Programming Guide》，讲解的比较基础，望高手海涵。</p>
+<p>《OpenGL-ES 3。0 Programming Guide》全书以C语言api实现，所以我们使用的是native层环境开发，并且使用的OPENGLES3.0版本，所以需要简单的CMake基础，C/C++基础。</p>
+<p>EGL是一系列跨平台的接口，主要提供了以下三个功能：</p>
+<ol>
+<li>可以和设备的本地窗口进行交互</li>
+<li>查询surface可用的类型和配置参数</li>
+<li>管理渲染源</li>
+</ol>
+<p>EGL为OPENGLES创建了上下文环境，可以方便的进行各种操作，本质上仍然是一系列的接口。</p>
+<h3 id="检查错误"><a href="#检查错误" class="headerlink" title="检查错误"></a>检查错误</h3><p>EGL中大多数函数执行成功后返回EGL_TRUE，失败返回EGL_FALSE。除了这些，EGL环境还记录了错误码来指示错误原因，开发者必须查询这些错误码：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">EGLint <span class="title">eglGetError</span><span class="params">()</span></span></span><br></pre></td></tr></table></figure>
+<p>这个函数返回的是最近一次发生错误时的错误码，假如一直没有错误，则会返回EGL_SUCCESS。这个地方算是EGL设计的时候比较谨慎的一个设计，它没有为每个函数设置一个返回值，假如那样的话每个函数执行必须检查错误，包括开发者自认为没有错误的代码。采用这种查询错误码设计后，开发者可以不用检查一定不会错误的函数返回值，只在一些特定的代码执行后来查询错误码即可，减少工作量。<br>这里我在EGLManager中汇总了一些错误码的信息：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">logError</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    EGLint error = eglGetError();</span><br><span class="line">    <span class="keyword">switch</span> (error) &#123;</span><br><span class="line">        <span class="keyword">case</span> EGL_SUCCESS:</span><br><span class="line">            SAKA_LOG_INFO(<span class="string">"SUCCESS"</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> EGL_BAD_DISPLAY:</span><br><span class="line">            SAKA_LOG_ERROR(<span class="string">"the EGLDisplay is not invalidate\n"</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> EGL_NOT_INITIALIZED:</span><br><span class="line">            SAKA_LOG_ERROR(<span class="string">"the EGL can not initialize\n"</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> EGL_BAD_ATTRIBUTE:</span><br><span class="line">            SAKA_LOG_ERROR(<span class="string">"the attribList contains an undefined EGL attribute or an"</span></span><br><span class="line">                                   <span class="string">"attribute value is unrecognized or out of range"</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> EGL_BAD_MATCH:</span><br><span class="line">            SAKA_LOG_ERROR(<span class="string">"check window and EGLCOnfig attributes to determine compatibility,"</span></span><br><span class="line">                                   <span class="string">"or erify the EGLConfig supports rendering to a window"</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> EGL_BAD_CONFIG:</span><br><span class="line">            SAKA_LOG_ERROR(<span class="string">"verify that provided EGLConfig is valid"</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> EGL_BAD_NATIVE_WINDOW:</span><br><span class="line">            SAKA_LOG_ERROR(<span class="string">"verify that provided EGLNativeWindow is valid"</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">case</span> EGL_BAD_ALLOC:</span><br><span class="line">            SAKA_LOG_ERROR(<span class="string">"not enough resources available;handle and recover"</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        <span class="keyword">default</span>:</span><br><span class="line">            SAKA_LOG_ERROR(<span class="string">"unknown error"</span>);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在后边的代码编写中将会用到这些错误码。</p>
+<h3 id="与本地窗口交互"><a href="#与本地窗口交互" class="headerlink" title="与本地窗口交互"></a>与本地窗口交互</h3><p>EGL为本地窗口和OpenGL环境创建了一个胶水层，首先EGL需要打开和本地窗口的驾六通道，然后决定使用哪个surface来绘制图形。不同的操作系统提供的窗口操作语法不同，E所有GL提供了一个包装类–EGLDisplay–来包装系统的窗口接口，方便开发者调用。建立本地窗口连接总共需要两步：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">EGLint majorVersion;</span><br><span class="line">EGLint minorVersion;</span><br><span class="line"></span><br><span class="line">display = eglGetDisplay(EGL_DEFAULT_DISPLAY);</span><br><span class="line"><span class="keyword">if</span> (display == EGL_NO_DISPLAY) &#123;</span><br><span class="line">    SAKA_LOG_ERROR(<span class="string">"can not get egl display"</span>);</span><br><span class="line">    <span class="keyword">return</span> EGL_FALSE;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (!eglInitialize(display, &amp;majorVersion, &amp;minorVersion)) &#123;</span><br><span class="line">    logError();</span><br><span class="line">    <span class="keyword">return</span> EGL_FALSE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="eglGetDisplay"><a href="#eglGetDisplay" class="headerlink" title="eglGetDisplay"></a>eglGetDisplay</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">EGLDisplay <span class="title">eglGetDisplay</span><span class="params">(EGLNativeDisplayType displayEd)</span></span></span><br></pre></td></tr></table></figure>
+<p>该函数打开了一个和EGL display的连接，其中的参数EGLNativeDisplayType用来指定连接类型，使用EGL_DEFAULT_DISPLAY来创建一个系统的默认连接，通常情况下这个一定会成功。</p>
+<p>假如连接不成功，该函数将返回EGL_NO_DISPLAY，表明OPEGL不可用。</p>
+<h4 id="eglInitialize"><a href="#eglInitialize" class="headerlink" title="eglInitialize"></a>eglInitialize</h4><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">EGLBoolean <span class="title">eglInitialize</span><span class="params">(EGLDisplay display,EGLint *majorVersion,EGLint *minorVersion)</span></span></span><br></pre></td></tr></table></figure>
+<p>EGLdisplay打开成功后，需要初始化EGL，上面的函数就是为刚才打开的display初始化EGL内部的数据，传入的参数将会写入EGL的主要版本号和次要版本号。返回值是一个boolean值，成功是EGLTRUE，错误时EGL_FALSE。假如失败可以查询错误码(logerror())：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">EGL_BAD_DIAPLAY --display不可用</span><br><span class="line">EGL_NOT_INItiALIZED --EGL不能初始化</span><br></pre></td></tr></table></figure>
+<h4 id="配置EGL的surface"><a href="#配置EGL的surface" class="headerlink" title="配置EGL的surface"></a>配置EGL的surface</h4><p>初始化EGL后，接下来就是选取开发者需要的类型和配置，EGL提供了两种方式：</p>
+<ol>
+<li>查询所有的surface配置，找出合适的一个</li>
+<li>提供一系列的要求参数给EGL来找出最合适的一个</li>
+</ol>
+<p>通常情况下推荐使用第二种。以上两种方式都会范湖第一个EGLconfig，这个结构体包含了一个surface和他的所有特征值。开发者可以通过<code>eglGetConfigAttrib</code>函数来查询这些特征值对应的值。</p>
+<h5 id="查询所有支持的配置"><a href="#查询所有支持的配置" class="headerlink" title="查询所有支持的配置"></a>查询所有支持的配置</h5><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">EGLBooean <span class="title">eglGetConfigs</span><span class="params">(EGLDisplay display,EGLConfig *configs,EGLint maxReturnConfigs,EGLint *numConfigs)</span></span></span><br></pre></td></tr></table></figure>
+<p>这里有两种使用eglGetConfigs的方法：</p>
+<p>第一种，直接传入configs参数为NULL，这样函数返回值为EGL_TRUE，并且设置numConfigs为EGL所有可用的EGLConfigs的数量，这样就可以根据numConfigs来初始化configs的大小，确保能分配到足够的内存来装载所有的EGLConfig。</p>
+<p>第二种，直接创建一个eglConfig数组，将它作为参数传递给函数，设置maxReturnConfigs为你想要的配置数量，最后一个参数将会被函数设置为返回的配置数量。</p>
+<h5 id="查询配置的参数"><a href="#查询配置的参数" class="headerlink" title="查询配置的参数"></a>查询配置的参数</h5><p>选择好EGLCinfig后，可以查询配置中的任何属性的值，可能我们并不关心这些值，但我们需要知道查询这些值的方法：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">EGLBoolean <span class="title">eglGetConfigAttrib</span><span class="params">(EGLDisplay display,EGLConfig config,EGLint attribute,EGLint *value)</span></span></span><br></pre></td></tr></table></figure>
+<p>display是刚才创建的EGLDisplay，config是上边选出的EGLConfig，attribute是我们要查询的属性，函数会把value设置为属性对应的值。返回值EGL_TRUE表示查询成功，EGL_FALSE表示查询错误，这是可以调用lgoerr()方法来查询错误信息，一般错误码是EGL_BAD_ATTRIBUTE，表示属性没有。</p>
+<h5 id="让EGL选取配置文件"><a href="#让EGL选取配置文件" class="headerlink" title="让EGL选取配置文件"></a>让EGL选取配置文件</h5><p>上面介绍的方法是比较繁琐的，假如开发者已经确定一些属性，那就可以用这些属性来让EGL选取出最合适的配置，开发者指定的属性越多，最后返回的EGLConfig越准确。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">EGLBoolean <span class="title">eglChooseConfig</span><span class="params">( EGLDisplay display,</span></span></span><br><span class="line"><span class="function"><span class="params">                            <span class="keyword">const</span> EGLint *attribList,</span></span></span><br><span class="line"><span class="function"><span class="params">                            EGLConfig *configs,</span></span></span><br><span class="line"><span class="function"><span class="params">                            EGLint maxReturnConfigs,</span></span></span><br><span class="line"><span class="function"><span class="params">                            EGLint *numConfigs)</span></span></span><br><span class="line"><span class="function"></span></span><br><span class="line">第一个参数display是刚才创建的display。</span><br><span class="line"></span><br><span class="line">第二个参数是开发者提供的一个数组，这个数组类似于<span class="built_in">map</span>的形式,最后必须以EGL_NONE结尾：</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">```c</span><br><span class="line"> EGLint attribList[] = &#123;</span><br><span class="line">            EGL_BUFFER_SIZE,<span class="number">32</span>,</span><br><span class="line">            EGL_SURFACE_TYPE, EGL_WINDOW_BIT,</span><br><span class="line">            EGL_RED_SIZE, <span class="number">8</span>,</span><br><span class="line">            EGL_GREEN_SIZE, <span class="number">8</span>,</span><br><span class="line">            EGL_BLUE_SIZE, <span class="number">8</span>,</span><br><span class="line">            EGL_ALPHA_SIZE,<span class="number">8</span>,</span><br><span class="line">            EGL_DEPTH_SIZE, <span class="number">16</span>,</span><br><span class="line">            EGL_RENDERABLE_TYPE,<span class="number">4</span>,</span><br><span class="line">            EGL_NONE</span><br><span class="line">    &#125;;</span><br></pre></td></tr></table></figure>
+<p>第三个参数是开发者提供的限制返回EGLConfig的数量，最后一个参数是函数设置的实际返回的数量。</p>
+<p>函数执行成功则返回EGL_TRUE，执行失败则返回EGL_FALSE，这时候可以lgoerr()来查询错误码，一般是EGL_BAD_ATTRIBUTE。</p>
+<p>假如返回的结果个数很多的话，是有一个排序的，不过按照上面的写的属性来选择EGLConig，最后选取第一个来使用没问题。</p>
+<h4 id="创建屏幕渲染"><a href="#创建屏幕渲染" class="headerlink" title="创建屏幕渲染"></a>创建屏幕渲染</h4><p>关键函数是:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">EGLSurface <span class="title">gleCreateWindowSurface</span><span class="params">(  EGLDisplay display,</span></span></span><br><span class="line"><span class="function"><span class="params">                                    EGLConfig config,</span></span></span><br><span class="line"><span class="function"><span class="params">                                    EGLNativeWindowType window,</span></span></span><br><span class="line"><span class="function"><span class="params">                                    <span class="keyword">const</span> EGLint *attribList)</span></span></span><br></pre></td></tr></table></figure>
+<p>display和config都是前边介绍过的需要传入的参数。</p>
+<p>window在安卓中是需要传入的一个参数，类型是ANativeWindow类型，这个window可以是java层的任何surface，包GLSurfaceView，TextureView或者SurfaceView。以TextureView的创建介绍一下：</p>
+<p>给一个TextureView设置TextureView.SurfaceTextureListener后，在第一个回调方法中设置给jni一个surface作为参数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//java层</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onSurfaceTextureAvailable</span><span class="params">(SurfaceTexture surface, <span class="keyword">int</span> width, <span class="keyword">int</span> height)</span> </span>&#123;</span><br><span class="line">    window = <span class="keyword">new</span> Surface(surface);</span><br><span class="line">    OpenGLUtils.initEGL(window, width, height);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//native层</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">extern</span> <span class="string">"C"</span></span><br><span class="line">JNIEXPORT <span class="keyword">void</span> JNICALL</span><br><span class="line">Java_com_saka_ndk_OpenGLUtils_initEGL(JNIEnv *env, jclass type, jobject surface, jint w, jint h) &#123;</span><br><span class="line"></span><br><span class="line">    EglManager eglManager(ANativeWindow_fromSurface(env, surface));</span><br><span class="line">    <span class="keyword">if</span> (!eglManager.initEGL()) &#123;</span><br><span class="line">        SAKA_LOG_ERROR(<span class="string">"error occured"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    GLuint programObject;</span><br><span class="line">    init(&amp;programObject);</span><br><span class="line">    draw(w, h, programObject);</span><br><span class="line">    eglManager.swapBuffer();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>EGLManager的构造函数：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">EglManager::EglManager(ANativeWindow *sur) : nativeWindow(sur) &#123;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>attriblist假如设置为NULL，则会选择默认参数。</p>
+<h4 id="创建渲染上下文环境"><a href="#创建渲染上下文环境" class="headerlink" title="创建渲染上下文环境"></a>创建渲染上下文环境</h4><p>到了这一步就比较简单了：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">EGLContext <span class="title">eglCreateContext</span><span class="params">(    EGLDisplay display,</span></span></span><br><span class="line"><span class="function"><span class="params">                                EGLConfig config,</span></span></span><br><span class="line"><span class="function"><span class="params">                                EGLContext shareContext,</span></span></span><br><span class="line"><span class="function"><span class="params">                                <span class="keyword">const</span> EGLint *attribList)</span></span></span><br></pre></td></tr></table></figure>
+<p>前两个参数是我们前边讲解过如何获取的，第三个可以设置EGL_NO_CONTEXT，这样就不和其他EGL共享这个环境，最后一个参数是我们需要管理的OPENGL的版本：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> EGLint attrList[] = &#123;</span><br><span class="line">            EGL_CONTEXT_CLIENT_VERSION, <span class="number">3</span>, EGL_NONE</span><br><span class="line">    &#125;;</span><br></pre></td></tr></table></figure>
+<p>函数调用后我们需要检查错误码，来获取函数是否执行成功了。</p>
+<h5 id="绑定当前上下文环境"><a href="#绑定当前上下文环境" class="headerlink" title="绑定当前上下文环境"></a>绑定当前上下文环境</h5><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">EGLBoolean <span class="title">eglMakeCurrent</span><span class="params">(  EGLDisplay display,</span></span></span><br><span class="line"><span class="function"><span class="params">                            EGLSurface draw,</span></span></span><br><span class="line"><span class="function"><span class="params">                            EGLSurface read,</span></span></span><br><span class="line"><span class="function"><span class="params">                            EGLContext context)</span></span></span><br></pre></td></tr></table></figure>
+<p>EGL环境是一个双缓冲环境，包含一个前台区域和后台区域，每次绘制的时候先将后台区域绘制完成，再讲后台数据交换到前台，这就是双缓冲，所有第二个和第三个参数都是EGLSurface。为了在创建多个EGLContext的情况下都能是OPENGL正常工作，必须调用elgMakeCurrent方法来绑定这个环境，即使只有单个EGLContex，也必须调用这个方法。</p>
+<p>走到这一步EGLContext环境就创建好了，接下来我们就可以直接使用OPENGL了。</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+
+    <footer class="post-footer">
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2018/05/17/FFmpeg学习一-截取视频为图片/" rel="next" title="FFmpeg学习一--截取视频为图片">
+                <i class="fa fa-chevron-left"></i> FFmpeg学习一--截取视频为图片
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+          
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="http://ok7v12rvl.bkt.clouddn.com/01b18.jpg"
+               alt="rangaofei" />
+          <p class="site-author-name" itemprop="name">rangaofei</p>
+          <p class="site-description motion-element" itemprop="description"></p>
+        </div>
+        <nav class="site-state motion-element">
+        
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">69</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/">
+                <span class="site-state-item-count">7</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#检查错误"><span class="nav-number">1.</span> <span class="nav-text">检查错误</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#与本地窗口交互"><span class="nav-number">2.</span> <span class="nav-text">与本地窗口交互</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#eglGetDisplay"><span class="nav-number">2.1.</span> <span class="nav-text">eglGetDisplay</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#eglInitialize"><span class="nav-number">2.2.</span> <span class="nav-text">eglInitialize</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#配置EGL的surface"><span class="nav-number">2.3.</span> <span class="nav-text">配置EGL的surface</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#查询所有支持的配置"><span class="nav-number">2.3.1.</span> <span class="nav-text">查询所有支持的配置</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#查询配置的参数"><span class="nav-number">2.3.2.</span> <span class="nav-text">查询配置的参数</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#让EGL选取配置文件"><span class="nav-number">2.3.3.</span> <span class="nav-text">让EGL选取配置文件</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#创建屏幕渲染"><span class="nav-number">2.4.</span> <span class="nav-text">创建屏幕渲染</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#创建渲染上下文环境"><span class="nav-number">2.5.</span> <span class="nav-text">创建渲染上下文环境</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#绑定当前上下文环境"><span class="nav-number">2.5.1.</span> <span class="nav-text">绑定当前上下文环境</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2018</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">rangaofei</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+    </div>
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+      <!-- UY BEGIN -->
+      <script type="text/javascript" src="http://v2.uyan.cc/code/uyan.js?uid="></script>
+      <!-- UY END -->
+  
+
+
+
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+
+</body>
+</html>
