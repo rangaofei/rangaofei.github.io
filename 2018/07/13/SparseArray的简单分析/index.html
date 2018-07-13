@@ -94,7 +94,7 @@
 <meta property="og:locale" content="zh-Hans">
 <meta property="og:image" content="http://p3lublj5c.bkt.clouddn.com/5791cb437c1ff.jpg">
 <meta property="og:image" content="https://raw.githubusercontent.com/rangaofei/TimeLine/master/Pics/eight.png">
-<meta property="og:updated_time" content="2018-07-13T12:39:08.269Z">
+<meta property="og:updated_time" content="2018-07-13T12:41:17.336Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SparseArray的简单分析">
 <meta name="twitter:description" content="SparseArray是谷歌为安卓专门推出的一种数据结构，它没有自动装箱机制，在特定情况下比HashMap的效率要高。当然这些只是官方的说法，这篇文章主要探讨一下这种数据结构的实现，至于效率问题不做研究。 简要介绍SparseArray底层采用两个相同容量的数组实现，key和value，其中key必须是int型，value则是指定的泛型，这样也就解释了为什么没有自动装箱，因为key数组就是int数">
@@ -359,7 +359,7 @@
 <p>除了SparseArray以外，安卓还提供了一些特定类型的数据结构，SparseBooleanArray，SaprseIntArray和SparseLongArray，这三个类用于存储boolean、int和long类型，理论上是比SparseArray要快一些，因为它的value省去了自动装箱，使用的基本类型数组。</p>
 <p>最后分享一个我自己正在维护的基于编译期注解实现时间轴效果的控件：</p>
 <p><img src="https://raw.githubusercontent.com/rangaofei/TimeLine/master/Pics/eight.png" alt=""></p>
-<p>只需要添加一些注解就可以生成adapter</p>
+<p>只需要添加一些注解就可以生成adapter,目前还在雏形，需要平衡易用性与复杂度的关系。</p>
 <p>github:<a href="https://github.com/rangaofei/TimeLine" target="_blank" rel="noopener">https://github.com/rangaofei/TimeLine</a></p>
 
       
