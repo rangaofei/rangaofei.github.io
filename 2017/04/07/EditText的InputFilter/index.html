@@ -92,14 +92,14 @@
 <meta property="og:site_name" content="SAKA&#39;S BLOG">
 <meta property="og:description" content="在安卓中我们会经常使用EditText,这个控件允许我们输入字符并获取字符.有时我们需要对输入的字符内容进行过滤,通常情况下是自定义正则表达式,这样定制性更高.但是本节将要讲的是哈斯用InputFilter来过滤输入的文本,同样可以达到正则表达式的部分功能. InputFilter有两个直接子类,AllCaps和LengthFilter. InputFilter.AllCaps这个过滤器将会将输入">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://dn-mhke0kuv.qbox.me/33a9ce0cdf51d4610781.jpg">
-<meta property="og:image" content="https://dn-mhke0kuv.qbox.me/0fcdf5408523a7e70d3f.jpg">
-<meta property="og:image" content="https://dn-mhke0kuv.qbox.me/ef583b53e78d1616c4b4.gif">
-<meta property="og:updated_time" content="2017-04-07T05:28:48.000Z">
+<meta property="og:image" content="http://img.rangaofie.cn/33a9ce0cdf51d4610781.jpg">
+<meta property="og:image" content="http://img.rangaofie.cn/0fcdf5408523a7e70d3f.jpg">
+<meta property="og:image" content="http://img.rangaofie.cn/ef583b53e78d1616c4b4.gif">
+<meta property="og:updated_time" content="2018-11-29T14:58:40.817Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="EditText的InputFilter">
 <meta name="twitter:description" content="在安卓中我们会经常使用EditText,这个控件允许我们输入字符并获取字符.有时我们需要对输入的字符内容进行过滤,通常情况下是自定义正则表达式,这样定制性更高.但是本节将要讲的是哈斯用InputFilter来过滤输入的文本,同样可以达到正则表达式的部分功能. InputFilter有两个直接子类,AllCaps和LengthFilter. InputFilter.AllCaps这个过滤器将会将输入">
-<meta name="twitter:image" content="https://dn-mhke0kuv.qbox.me/33a9ce0cdf51d4610781.jpg">
+<meta name="twitter:image" content="http://img.rangaofie.cn/33a9ce0cdf51d4610781.jpg">
 
 
 
@@ -350,17 +350,17 @@
 <p>首先看一下接口文档的方法说明:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">CharSequence filter (CharSequence source, </span><br><span class="line">                int start, </span><br><span class="line">                int end, </span><br><span class="line">                Spanned dest, </span><br><span class="line">                int dstart, </span><br><span class="line">                int dend)</span><br></pre></td></tr></table></figure></p>
 <p>当缓冲区的字符要使用从source字符串的start到end位置的字符替换dest的字符串的从dstart到dend的字符时会调用这个方法,其实就是输入或者删除字符串的时候.返回的是你替换好的字符串,包括空字符串(如果对此适用),或者null来接受替换操作.注意,当删除字符串时不要忽略对0长度的字符串的替换.同样需要注意的是不要试图更改dest的内容,你只能在上下文中检查dest.如果soruce是Spanned或者Spannable的实例,source应该被复制到过滤后的结果中,使用<code>copySpansFrom(Spanned, int, int, Class, Spannable, int)</code>方法会更简单.</p>
 <p>画一个简单的模型:</p>
-<p><img src="https://dn-mhke0kuv.qbox.me/33a9ce0cdf51d4610781.jpg" alt=""></p>
+<p><img src="http://img.rangaofie.cn/33a9ce0cdf51d4610781.jpg" alt=""></p>
 <p>我们数据流从键盘接收,然后经过一个缓冲区,最后由缓冲区进入EditText显示.</p>
 <p>加上filter以后相当于加上了一个拦截器,此时模型变为:</p>
-<p><img src="https://dn-mhke0kuv.qbox.me/0fcdf5408523a7e70d3f.jpg" alt=""></p>
+<p><img src="http://img.rangaofie.cn/0fcdf5408523a7e70d3f.jpg" alt=""></p>
 <p>输入的字符要经过filter转换以后才显示到EditText上.</p>
 <p>source相当于缓冲区给filter的字符,dest相当于未更改前的EditText上显示的字符串,当经过我们的filter后会立即转变为输入后filter转换的字符串.</p>
 <p>理解了这个原理后我们就可以定义自己的过滤器了.</p>
 <h2 id="实现大写转小写的过滤器"><a href="#实现大写转小写的过滤器" class="headerlink" title="实现大写转小写的过滤器"></a>实现大写转小写的过滤器</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">ublic class Alllower implements InputFilter &#123;</span><br><span class="line">    @Override</span><br><span class="line">    public CharSequence filter(CharSequence source, int start, int end, Spanned dest, int dstart, int dend) &#123;</span><br><span class="line">        Log.d(&quot;inputfilter&quot;, &quot;source=&quot; + source + &quot;,start=&quot; + start + &quot;,end=&quot; + end +</span><br><span class="line">                &quot;,dest=&quot; + dest + &quot;,dstart=&quot; + dstart + &quot;,dend=&quot; + dend);</span><br><span class="line">        for (int i = start; i &lt; end; i++) &#123;</span><br><span class="line">            if (Character.isUpperCase(source.charAt(i))) &#123;//是否大写的字符</span><br><span class="line">                char[] v = new char[end - start];//是大写的字符则新建一个等长的数组</span><br><span class="line">                TextUtils.getChars(source, start, end, v, 0);//将source中的字符复制到我们新建的数组v中</span><br><span class="line">                String s = new String(v).toLowerCase();//将我们新建的数组中的字符全部转换为小写</span><br><span class="line">                if (source instanceof Spanned) &#123;//如果是Spanble的情况下要保持原样返回</span><br><span class="line">                    SpannableString sp = new SpannableString(s);</span><br><span class="line">                    TextUtils.copySpansFrom((Spanned) source, start, end, null, sp, 0);</span><br><span class="line">                    Log.d(&quot;inputfiler&quot;, &quot;sp=&quot; + sp);</span><br><span class="line">                    return sp;</span><br><span class="line">                &#125; else &#123;</span><br><span class="line">                    Log.d(&quot;inputfilter&quot;, &quot;s=&quot; + s);</span><br><span class="line">                    return s;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        return null;//未发生转换或者删除字符的时候我们要保持不变</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>此时我们可以测试一下这个过滤器是否有用:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">private InputFilter[] filters=&#123;new Alllower(),new InputFilter.LengthFilter(5)&#125;;editText.setFilters(filters);</span><br></pre></td></tr></table></figure></p>
 <p>看一下结果:</p>
-<p><img src="https://dn-mhke0kuv.qbox.me/ef583b53e78d1616c4b4.gif" alt=""></p>
+<p><img src="http://img.rangaofie.cn/ef583b53e78d1616c4b4.gif" alt=""></p>
 <p>可以看到只是将大写字母转换为了小写字母,并没有影响其他.</p>
 <h2 id="其他实现接口的类"><a href="#其他实现接口的类" class="headerlink" title="其他实现接口的类"></a>其他实现接口的类</h2><p>DateKeyListener,DateTimeKeyListener,DialerKeyListener, DigitsKeyListener,TimeKeyListener均继承自NumberKeyListener,而NumberKeyListener实现了InputFilter接口.但是这些都是用来监听硬件输入设备的,暂不研究.<br>LoginFilter, LoginFilter.PasswordFilterGMail, LoginFilter.UsernameFilterGMail, LoginFilter.UsernameFilterGeneric是实现的一个专门为Gmail登录的过滤器.</p>
 
@@ -477,7 +477,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">59</span>
+                <span class="site-state-item-count">58</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -486,7 +486,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories/">
-                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-count">8</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>

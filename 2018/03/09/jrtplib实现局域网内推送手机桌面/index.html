@@ -92,12 +92,12 @@
 <meta property="og:site_name" content="SAKA&#39;S BLOG">
 <meta property="og:description" content="涉及的内容较多，碰到不熟悉的请自行谷歌，基本问题都能解决，并且不提供任何技术支持与demo，主要介绍一下思路。  mediacodec编码与解码h264流 h264流的基本知识 rtp协议的基本知识 jni编程的基础知识  主要功能是实现安卓局域网内桌面推送。 简单看一下效果： 视频中上方的是发送程序，下方是接收程序，操作上方的屏幕可以投影到下方，延迟基本保证小于0.5s，满足实时投影的需求。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://ohy9exujk.bkt.clouddn.com/rtp%E7%BC%96%E8%A7%A3%E7%A0%81-2.png">
-<meta property="og:updated_time" content="2018-03-10T05:01:51.103Z">
+<meta property="og:image" content="http://img.rangaofie.cn/rtp%E7%BC%96%E8%A7%A3%E7%A0%81-2.png">
+<meta property="og:updated_time" content="2018-11-29T14:59:05.957Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="jrtplib实现局域网内推送手机桌面">
 <meta name="twitter:description" content="涉及的内容较多，碰到不熟悉的请自行谷歌，基本问题都能解决，并且不提供任何技术支持与demo，主要介绍一下思路。  mediacodec编码与解码h264流 h264流的基本知识 rtp协议的基本知识 jni编程的基础知识  主要功能是实现安卓局域网内桌面推送。 简单看一下效果： 视频中上方的是发送程序，下方是接收程序，操作上方的屏幕可以投影到下方，延迟基本保证小于0.5s，满足实时投影的需求。">
-<meta name="twitter:image" content="http://ohy9exujk.bkt.clouddn.com/rtp%E7%BC%96%E8%A7%A3%E7%A0%81-2.png">
+<meta name="twitter:image" content="http://img.rangaofie.cn/rtp%E7%BC%96%E8%A7%A3%E7%A0%81-2.png">
 
 
 
@@ -353,7 +353,7 @@
 
 <p>对比可以看到，ffplay在播放白色动画时处理并不好，会在缓冲区卡住一些帧，不能立即刷新。没研究过sdl，不知道什么原因。</p>
 <h3 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h3><p>关于这个项目有讲不完的东西，挑主要的讲一下：</p>
-<p><img src="http://ohy9exujk.bkt.clouddn.com/rtp%E7%BC%96%E8%A7%A3%E7%A0%81-2.png" alt="server_client"></p>
+<p><img src="http://img.rangaofie.cn/rtp%E7%BC%96%E8%A7%A3%E7%A0%81-2.png" alt="server_client"></p>
 <p>大致流程基本如上图所示。</p>
 <p>首先要向系统申请屏幕录制权限，系统授予权限后将录制的屏幕创建到一个virtualdisplay来接收数据，virtualdisplay接收一个由 mediacodec创建的surface作为参数，将所有的数据传递给surface。mediacodec不断获取surface的数据作为输入，编码后输出数据，将数据保存在一个阻塞队列中，然后启动线程不断的从队列中取出数据，经过rtp包装发送出去。</p>
 <p>接收端在线程中不断接收rtp数据，组装成为单帧的h264数据，然后回调java方法放入阻塞队列中，mediacodec不断的从队列中取出数据作为输入，解码输出给由surfaceview创建的surface，即可显示数据。</p>
@@ -539,7 +539,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">59</span>
+                <span class="site-state-item-count">58</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -548,7 +548,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories/">
-                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-count">8</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>

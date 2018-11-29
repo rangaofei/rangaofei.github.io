@@ -92,15 +92,15 @@
 <meta property="og:site_name" content="SAKA&#39;S BLOG">
 <meta property="og:description" content="这篇算是自定义viewgroup的第一篇文章 PagerTitleStrip ViewPager有一个功能是添加标签,也就是PagerTitleStrip.先来看一下官方文档:1234java.lang.Object   ↳ 	android.view.View  	   ↳ 	android.view.ViewGroup  	  	   ↳ 	android.support.v4.view.Pa">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="https://dn-mhke0kuv.qbox.me/d3baa29791828e817b47.png">
-<meta property="og:image" content="https://dn-mhke0kuv.qbox.me/88a4b4516ab5fdab0b46.gif">
-<meta property="og:image" content="https://dn-mhke0kuv.qbox.me/e694524dc52b47f16989.jpg">
-<meta property="og:image" content="https://dn-mhke0kuv.qbox.me/381d1b1fee57c8c77d4a.gif">
-<meta property="og:updated_time" content="2017-04-07T02:08:50.000Z">
+<meta property="og:image" content="http://img.rangaofie.cn/d3baa29791828e817b47.png">
+<meta property="og:image" content="http://img.rangaofie.cn/88a4b4516ab5fdab0b46.gif">
+<meta property="og:image" content="http://img.rangaofie.cn/e694524dc52b47f16989.jpg">
+<meta property="og:image" content="http://img.rangaofie.cn/381d1b1fee57c8c77d4a.gif">
+<meta property="og:updated_time" content="2018-11-29T15:01:28.767Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ViewPager之自定义标签的使用">
 <meta name="twitter:description" content="这篇算是自定义viewgroup的第一篇文章 PagerTitleStrip ViewPager有一个功能是添加标签,也就是PagerTitleStrip.先来看一下官方文档:1234java.lang.Object   ↳ 	android.view.View  	   ↳ 	android.view.ViewGroup  	  	   ↳ 	android.support.v4.view.Pa">
-<meta name="twitter:image" content="https://dn-mhke0kuv.qbox.me/d3baa29791828e817b47.png">
+<meta name="twitter:image" content="http://img.rangaofie.cn/d3baa29791828e817b47.png">
 
 
 
@@ -373,7 +373,7 @@
 
       
         <p>这篇算是自定义viewgroup的第一篇文章</p>
-<h1 id="PagerTitleStrip"><a href="#PagerTitleStrip" class="headerlink" title="PagerTitleStrip"></a>PagerTitleStrip</h1><p><img src="https://dn-mhke0kuv.qbox.me/d3baa29791828e817b47.png" alt=""></p>
+<h1 id="PagerTitleStrip"><a href="#PagerTitleStrip" class="headerlink" title="PagerTitleStrip"></a>PagerTitleStrip</h1><p><img src="http://img.rangaofie.cn/d3baa29791828e817b47.png" alt=""></p>
 <p>ViewPager有一个功能是添加标签,也就是<code>PagerTitleStrip</code>.先来看一下官方文档:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">java.lang.Object</span><br><span class="line">   ↳ 	android.view.View</span><br><span class="line">  	   ↳ 	android.view.ViewGroup</span><br><span class="line">  	  	   ↳ 	android.support.v4.view.PagerTitleStrip</span><br></pre></td></tr></table></figure></p>
 <p><code>PagerTitleStrip</code>是ViewPager的当前页面，下一个页面和前一页面的非交互式指示器。它在XML布局中作为ViewPager的子视图。Android：layout_gravity设置为TOP或BOTTOM，可以将标签固定到ViewPager的顶部或底部。 每个页面的标题由提供给ViewPager的adapter中的getPageTitle（int）方法提供。</p>
 <p><code>PagerTabStrip</code>是<code>PagerTitleStrip</code>的一个子类,它可以为用户提供交互式的体验。</p>
@@ -397,7 +397,7 @@
 <h2 id="boolean-getDrawFullUnderline-和void-setDrawFullUnderline-boolean-drawFull-和void-setTabIndicatorColorResource-int-resId"><a href="#boolean-getDrawFullUnderline-和void-setDrawFullUnderline-boolean-drawFull-和void-setTabIndicatorColorResource-int-resId" class="headerlink" title="boolean getDrawFullUnderline ()和void setDrawFullUnderline (boolean drawFull)和void setTabIndicatorColorResource (int resId)"></a>boolean getDrawFullUnderline ()和void setDrawFullUnderline (boolean drawFull)和void setTabIndicatorColorResource (int resId)</h2><p>前边方法返回后边方法的设置值.为设置的情况下默认返回true,会绘制这个下划线.</p>
 <h2 id="int-getTabIndicatorColor-和void-setTabIndicatorColor-int-color"><a href="#int-getTabIndicatorColor-和void-setTabIndicatorColor-int-color" class="headerlink" title="int getTabIndicatorColor ()和void setTabIndicatorColor (int color)"></a>int getTabIndicatorColor ()和void setTabIndicatorColor (int color)</h2><p>设置当前显示标签的指示器的颜色,是一个16进制数字.这个颜色UnderLine时一个颜色.</p>
 <h2 id="void-setBackgroundColor-int-color-和void-setBackgroundResource-int-resId"><a href="#void-setBackgroundColor-int-color-和void-setBackgroundResource-int-resId" class="headerlink" title="void setBackgroundColor (int color)和void setBackgroundResource (int resId)"></a>void setBackgroundColor (int color)和void setBackgroundResource (int resId)</h2><p>设置整个标签的背景颜色.</p>
-<p>看一下结果:<br><img src="https://dn-mhke0kuv.qbox.me/88a4b4516ab5fdab0b46.gif" alt=""></p>
+<p>看一下结果:<br><img src="http://img.rangaofie.cn/88a4b4516ab5fdab0b46.gif" alt=""></p>
 <p>这些方法都相对简单,但是官方提供的都只是入门的方法,现在我们需要为它定制实现两个最简单那的功能:</p>
 <ol>
 <li>设置当前选中页面的tab颜色高亮</li>
@@ -405,7 +405,7 @@
 </ol>
 <p>这两个功能并没有改变PagerTabStrip的结构,只是增加了一些特殊的设定.那我们可以继续使用原来的一些属性,增加自己设置的属性来达到实现上述两个要求.</p>
 <p>首先要分析PagerTitleStrip的结构.</p>
-<p><img src="https://dn-mhke0kuv.qbox.me/e694524dc52b47f16989.jpg" alt=""></p>
+<p><img src="http://img.rangaofie.cn/e694524dc52b47f16989.jpg" alt=""></p>
 <p>一个PagerTitleStrip的显示部分被平均分为三个部分(不设置textspace的情况下),第一个指示前一页的页面(假如当前页时第一页,则显示为空),中间的一个指示当前页面(当前页面始终处在这个位置),最后一个显示为下一个页面(若没有下一个页面的时候则显示为空).</p>
 <p>实际上我们需要的是改变当前的标签的设置,而不需要改变其他,那么我们就可以自定义一个类继承自PagerTabStrip,目的时增加交互效果,然后设置两个属性:<code>currentColor</code>和<code>currentSize</code>,就基本完成了我们的项目.</p>
 <h2 id="新增自定义属性"><a href="#新增自定义属性" class="headerlink" title="新增自定义属性"></a>新增自定义属性</h2><p>在values文件下新增自定义属性,让用户可以通过xml布局文件来控制新的属性:<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&lt;declare-styleable name=&quot;TabView&quot;&gt;</span><br><span class="line">    &lt;attr name=&quot;currentColor&quot; format=&quot;color|reference&quot; /&gt;</span><br><span class="line">    &lt;attr name=&quot;currentSize&quot; format=&quot;dimension|reference&quot; /&gt;</span><br><span class="line">&lt;/declare-styleable&gt;</span><br></pre></td></tr></table></figure></p>
@@ -417,7 +417,7 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">private void setCurrentTab() &#123;</span><br><span class="line">        viewPager = (ViewPager) getParent();</span><br><span class="line">        Log.d(&quot;tag&quot;, &quot;currentIndex&quot; + viewPager.getCurrentItem());</span><br><span class="line">        currentTab = (TextView) getChildAt(1);</span><br><span class="line">        currentTab.setTextSize(currentTabSize);</span><br><span class="line">        currentTab.setTextColor(currentTabColor);</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 <h2 id="暴露接口"><a href="#暴露接口" class="headerlink" title="暴露接口"></a>暴露接口</h2><p>更多的时候我们既想能从XML布局文件设置,又想能在java代码中设置属性,我们就可以暴露出这两个接口.<br><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">public void setCurrentTabColor(int currentTabColor) &#123;</span><br><span class="line">        this.currentTabColor = currentTabColor;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setCurrentTabSize(float size) &#123;</span><br><span class="line">        this.currentTabSize = size;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></p>
 <p>代码中的属性会覆盖XML布局文件中的属性.</p>
-<p>下面看一下效果:<br><img src="https://dn-mhke0kuv.qbox.me/381d1b1fee57c8c77d4a.gif" alt=""></p>
+<p>下面看一下效果:<br><img src="http://img.rangaofie.cn/381d1b1fee57c8c77d4a.gif" alt=""></p>
 
       
     </div>
@@ -532,7 +532,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">59</span>
+                <span class="site-state-item-count">58</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -541,7 +541,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories/">
-                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-count">8</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>

@@ -92,13 +92,13 @@
 <meta property="og:site_name" content="SAKA&#39;S BLOG">
 <meta property="og:description" content="本文是翻译的谷歌官方文档，整合了一些零散的知识  module级别gradleapp/build.gradleAndrodi Studio 使用gradle来编译构建你的app。你的工程中每一个module中都有一个build.gradle文件，同样有一个build.gradle属于整个工程.通常情况下，你只需要关注module下的build.gradle文件。这是你的app构建的依赖的设置地方">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://ohy9exujk.bkt.clouddn.com/build-process_2x.png">
-<meta property="og:image" content="http://ohy9exujk.bkt.clouddn.com/buildtype.png">
-<meta property="og:updated_time" content="2017-01-24T00:28:22.000Z">
+<meta property="og:image" content="http://img.rangaofie.cn/build-process_2x.png">
+<meta property="og:image" content="http://img.rangaofie.cn/buildtype.png">
+<meta property="og:updated_time" content="2018-11-29T15:03:10.360Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="(译)构建安卓工程">
 <meta name="twitter:description" content="本文是翻译的谷歌官方文档，整合了一些零散的知识  module级别gradleapp/build.gradleAndrodi Studio 使用gradle来编译构建你的app。你的工程中每一个module中都有一个build.gradle文件，同样有一个build.gradle属于整个工程.通常情况下，你只需要关注module下的build.gradle文件。这是你的app构建的依赖的设置地方">
-<meta name="twitter:image" content="http://ohy9exujk.bkt.clouddn.com/build-process_2x.png">
+<meta name="twitter:image" content="http://img.rangaofie.cn/build-process_2x.png">
 
 
 
@@ -385,7 +385,7 @@
 </ul>
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;application android:theme=&quot;@style/CustomTheme&quot;&gt;</span><br></pre></td></tr></table></figure>
 <hr>
-<h2 id="构建流程"><a href="#构建流程" class="headerlink" title="构建流程"></a>构建流程</h2><p><img src="http://ohy9exujk.bkt.clouddn.com/build-process_2x.png" alt="image"><br>一张图清晰表明了安卓构建的流程</p>
+<h2 id="构建流程"><a href="#构建流程" class="headerlink" title="构建流程"></a>构建流程</h2><p><img src="http://img.rangaofie.cn/build-process_2x.png" alt="image"><br>一张图清晰表明了安卓构建的流程</p>
 <ol>
 <li>编译器将你的源代码转换成DEX，将所有内容换成已编译资源</li>
 <li>apk打包器将DEX文件和已编译资源合并成单个APK（必须要签名）.</li>
@@ -403,7 +403,7 @@
 </blockquote>
 </li>
 </ul>
-<h5 id="常用的buildtype属性"><a href="#常用的buildtype属性" class="headerlink" title="常用的buildtype属性"></a>常用的buildtype属性</h5><p><img src="http://ohy9exujk.bkt.clouddn.com/buildtype.png" alt="image"></p>
+<h5 id="常用的buildtype属性"><a href="#常用的buildtype属性" class="headerlink" title="常用的buildtype属性"></a>常用的buildtype属性</h5><p><img src="http://img.rangaofie.cn/buildtype.png" alt="image"></p>
 <h5 id="配置产品风味（官方真是奇怪）"><a href="#配置产品风味（官方真是奇怪）" class="headerlink" title="配置产品风味（官方真是奇怪）"></a>配置产品风味（官方真是奇怪）</h5><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">android &#123;</span><br><span class="line">    ...</span><br><span class="line">    defaultConfig &#123;...&#125;</span><br><span class="line">    buildTypes &#123;...&#125;</span><br><span class="line">    productFlavors &#123;</span><br><span class="line">        demo &#123;</span><br><span class="line">            applicationId &quot;com.example.myapp.demo&quot;</span><br><span class="line">            versionName &quot;1.0-demo&quot;</span><br><span class="line">        &#125;</span><br><span class="line">        full &#123;</span><br><span class="line">            applicationId &quot;com.example.myapp.full&quot;</span><br><span class="line">            versionName &quot;1.0-full&quot;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>将各种喜好添加到productFlavors{}代码块中。实际上defaultConfig属于ProductFlavor的类。通常这个用来配置渠道，替换manifest中的占位符。</p>
 <h5 id="创建用于buildtype的源集（其实就是不同的文件）"><a href="#创建用于buildtype的源集（其实就是不同的文件）" class="headerlink" title="创建用于buildtype的源集（其实就是不同的文件）"></a>创建用于buildtype的源集（其实就是不同的文件）</h5><p>默认情况下AndrodiStudio会创建目录如下：E:Project/myapp//main文件夹，用于存储你想要的一切共享资源。你自己可以创建新的源集来确切控制gradle为特定类型包含的文件。<br>例如要求你的“调试”构建类型多特定的java文件位于src/debug/java/目录中，则代码如下</p>
@@ -531,7 +531,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">59</span>
+                <span class="site-state-item-count">58</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -540,7 +540,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories/">
-                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-count">8</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>

@@ -92,16 +92,16 @@
 <meta property="og:site_name" content="SAKA&#39;S BLOG">
 <meta property="og:description" content="首先要推荐一篇关于mediacodec的国外博客bigflake，这篇博客对mediacodec的官方文档一些坑做了较好的说明，配合起来看更有效率。 mediacodec可以用来获得安卓底层的多媒体编码，可以用来编码和解码，它是安卓low-level多媒体基础框架的重要组成部分。它经常和 MediaExtractor, MediaSync, MediaMuxer, MediaCrypto, Med">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://ohy9exujk.bkt.clouddn.com/media_codec_1.png">
-<meta property="og:image" content="http://ohy9exujk.bkt.clouddn.com/media_codec_2.png">
-<meta property="og:image" content="http://ohy9exujk.bkt.clouddn.com/media_codec_3.png">
-<meta property="og:image" content="http://ohy9exujk.bkt.clouddn.com/media_codec_4.png">
-<meta property="og:image" content="http://ohy9exujk.bkt.clouddn.com/media_codec_5.png">
-<meta property="og:updated_time" content="2018-03-09T07:14:14.335Z">
+<meta property="og:image" content="http://img.rangaofie.cn/media_codec_1.png">
+<meta property="og:image" content="http://img.rangaofie.cn/media_codec_2.png">
+<meta property="og:image" content="http://img.rangaofie.cn/media_codec_3.png">
+<meta property="og:image" content="http://img.rangaofie.cn/media_codec_4.png">
+<meta property="og:image" content="http://img.rangaofie.cn/media_codec_5.png">
+<meta property="og:updated_time" content="2018-11-29T15:02:30.479Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="安卓解码器MediaCodec解析">
 <meta name="twitter:description" content="首先要推荐一篇关于mediacodec的国外博客bigflake，这篇博客对mediacodec的官方文档一些坑做了较好的说明，配合起来看更有效率。 mediacodec可以用来获得安卓底层的多媒体编码，可以用来编码和解码，它是安卓low-level多媒体基础框架的重要组成部分。它经常和 MediaExtractor, MediaSync, MediaMuxer, MediaCrypto, Med">
-<meta name="twitter:image" content="http://ohy9exujk.bkt.clouddn.com/media_codec_1.png">
+<meta name="twitter:image" content="http://img.rangaofie.cn/media_codec_1.png">
 
 
 
@@ -342,7 +342,7 @@
       
         <p>首先要推荐一篇关于mediacodec的国外博客<a href="https://www.bigflake.com/mediacodec/" target="_blank" rel="noopener">bigflake</a>，这篇博客对mediacodec的官方文档一些坑做了较好的说明，配合起来看更有效率。</p>
 <p>mediacodec可以用来获得安卓底层的多媒体编码，可以用来编码和解码，它是安卓low-level多媒体基础框架的重要组成部分。它经常和 <code>MediaExtractor, MediaSync, MediaMuxer, MediaCrypto, MediaDrm, Image, Surface,  AudioTrack</code>一起使用。</p>
-<p><img src="http://ohy9exujk.bkt.clouddn.com/media_codec_1.png" alt="mediacodec"></p>
+<p><img src="http://img.rangaofie.cn/media_codec_1.png" alt="mediacodec"></p>
 <p>通过上图可以看出，mediacodec的作用是处理输入的数据生成输出数据。首先生成一个输入数据缓冲区，将数据填入缓冲区提供给codec，codec会采用异步的方式处理这些输入的数据，然后将填满输出缓冲区提供给消费者，消费者消费完后将缓冲区返还给codec。</p>
 <p>首先明确一下下边将会提到的两种输入输出模式：<br>|模式名称|含义<br>|—|—<br>|surface模式|输入/输出以surface作为源<br>|ByteBuffer模式|输入/输出时以ByteBuffer作为源</p>
 <h2 id="数据格式"><a href="#数据格式" class="headerlink" title="数据格式"></a>数据格式</h2><p>mediacodec接受三种数据格式：压缩数据，原始音频数据和原始视频数据。</p>
@@ -364,7 +364,7 @@
 </ul>
 <p>从<code>LOLLIPOP_MR1(api22)</code>以后，mediacodec支持所有的flexible YUV 4:2:0格式。</p>
 <h2 id="生命周期中的状态"><a href="#生命周期中的状态" class="headerlink" title="生命周期中的状态"></a>生命周期中的状态</h2><p>mediacodec分为三种状态，Stopped, Executing和Released。一张图表示：</p>
-<p><img src="http://ohy9exujk.bkt.clouddn.com/media_codec_2.png" alt="mediacodec state"></p>
+<p><img src="http://img.rangaofie.cn/media_codec_2.png" alt="mediacodec state"></p>
 <p>Stopped状态包含三个子状态：Uninitialized, Configured和Error，Executing同样包含三个状态：Flushed, Running 和End-of-Stream。</p>
 <p>在mediacodec的使用过程中必须遵守图里标出的流程，否则会发生错误。</p>
 <p>以解码器为例，讲解一下使用流程。当使用工厂方法创建mediacodec并且指定为解码后，进入Uninitialized状态，调用<code>configure</code>方法后，进入Configured状态，然后调用<code>start</code>方法进入Executing状态。</p>
@@ -377,7 +377,7 @@
 <p>前两个方法相似，传入字符串类型的创建种类，即可创建编码/解码器。参数一定不能为空，否则抛出<code>NullPointerException</code>。假如传入的参数不是系统指定的某中类型，同样会抛出<code>IllegalArgumentException</code>。看一下支持的类型：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"video/x-vnd.on2.vp8"</span> - <span class="function">VP8 <span class="title">video</span> <span class="params">(i.e. video in .webm)</span></span></span><br><span class="line"><span class="function">"video/x-vnd.on2.vp9" - VP9 <span class="title">video</span> <span class="params">(i.e. video in .webm)</span></span></span><br><span class="line"><span class="function">"video/avc" - H.264/AVC video</span></span><br><span class="line"><span class="function">"video/hevc" - H.265/HEVC video</span></span><br><span class="line"><span class="function">"video/mp4v-es" - MPEG4 video</span></span><br><span class="line"><span class="function">"video/3gpp" - H.263 video</span></span><br><span class="line"><span class="function">"audio/3gpp" - AMR narrowband audio</span></span><br><span class="line"><span class="function">"audio/amr-wb" - AMR wideband audio</span></span><br><span class="line"><span class="function">"audio/mpeg" - MPEG1/2 audio layer III</span></span><br><span class="line"><span class="function">"audio/mp4a-latm" - AAC <span class="title">audio</span> <span class="params">(note, <span class="keyword">this</span> is raw AAC packets, not packaged in LATM!)</span></span></span><br><span class="line"><span class="function">"audio/vorbis" - vorbis audio</span></span><br><span class="line"><span class="function">"audio/g711-alaw" - G.711 alaw audio</span></span><br><span class="line"><span class="function">"audio/g711-mlaw" - G.711 ulaw audio</span></span><br></pre></td></tr></table></figure>
 <p>这些参数可以直接传给前两个方法用来创建mediacodec。<br>但是官方推荐的是使用第三个方法，避免用户传入不正确的媒体类型。重点介绍一下。<br>首先是创建MediaFormat。这个玩意在初始化的时候需要指定一系列的键值对，这些设置的值都是mediacodec在编码/解码过程中用到的值。<br>上一张恶心的图来说明一下：</p>
-<p><img src="http://ohy9exujk.bkt.clouddn.com/media_codec_3.png" alt="mediacodec"></p>
+<p><img src="http://img.rangaofie.cn/media_codec_3.png" alt="mediacodec"></p>
 <p>假如是本地文件或者网络流，可以用<code>MediaExtractor.getTrackFormat</code>这个方法来提取MediaFormat信息。写一个简单的方法来测试这个玩意：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">getMediaFormatFrom</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    MediaExtractor extractor = <span class="keyword">new</span> MediaExtractor();</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        File file=<span class="keyword">new</span> File(Environment.getExternalStorageDirectory(),<span class="string">"ddmsrec.mp4"</span>);</span><br><span class="line">        Log.d(TAG,file.getAbsolutePath());</span><br><span class="line">        extractor.setDataSource(file.getAbsolutePath());</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">        e.printStackTrace();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> numTracks = extractor.getTrackCount();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; numTracks; ++i) &#123;</span><br><span class="line">        MediaFormat format = extractor.getTrackFormat(i);</span><br><span class="line">        String mime = format.getString(MediaFormat.KEY_MIME);</span><br><span class="line">        Log.d(TAG, <span class="string">"mime="</span>+mime);</span><br><span class="line">    &#125;</span><br><span class="line">    extractor.release();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这段代码的作用提取该文件的MediaFormat的信息。输出结果如下</p>
@@ -400,7 +400,7 @@
 <h4 id="指定的特殊数据"><a href="#指定的特殊数据" class="headerlink" title="指定的特殊数据"></a>指定的特殊数据</h4><p> AAC audio， MPEG4, H.264， H.265 video格式的数据作为输入源解码的时候，需要指定一个特殊的前缀设置信息，这个信息通常包含在数据中，但是需要自己提取出来，在mediacodec执行start之后提交这些数据，比如h264的sps和pps，在queueinputbuffer的时候flag设置为<code>BUFFER_FLAG_CODEC_CONFIG</code>提交给解码器。同样这些数据可以在configure的时候提交给mediacodec，效果和前边的一样:</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mediaFormat.setByteBuffer(<span class="string">"csd-0"</span>, ByteBuffer.wrap(sps));<span class="comment">//sps是一个包含sps信息的byte数组</span></span><br><span class="line">mediaFormat.setByteBuffer(<span class="string">"csd-1"</span>, ByteBuffer.wrap(pps));<span class="comment">//pps是一个包含pps信息的byte数组</span></span><br></pre></td></tr></table></figure>
 <p>当调用start方法启动时这些信息同样会传给mediacodec。你绝不能直接提交这些数据。 如果格式不包含编解码器特定数据，则可以根据格式要求，选择使用指定数量的缓冲区以正确的顺序提交它。 在H.264 AVC的情况下，还可以连接所有编解码器专用数据并将其作为单个编解码器配置缓冲区提交。</p>
-<p>再来一张恶心的图:(所有带*的值必须加上前缀”\x00\x00\x00\x01”)<br><img src="http://ohy9exujk.bkt.clouddn.com/media_codec_4.png" alt="codec"></p>
+<p>再来一张恶心的图:(所有带*的值必须加上前缀”\x00\x00\x00\x01”)<br><img src="http://img.rangaofie.cn/media_codec_4.png" alt="codec"></p>
 <blockquote>
 <p>注意当提交配置信息后可能flush的时候丢失信息，必须重新提交这个信息。提交信息是时间戳将被忽略。</p>
 </blockquote>
@@ -410,7 +410,7 @@
 <p>当获得outputbuffer(输出方法执行)后，用户可访问一个只读的缓冲区，当使用完毕后，请调用<code>releaseOutputBuffer</code>方法来将缓冲区返回给codec。</p>
 <p>我们可以不立即<code>queueinputbuffer/releaseOutputBuffer</code>到编解码器，但用户持有input/outputbuffer可能会使编解码器停止工作，并且此行为取决于设备。 编解码器有可能在产生输出缓冲区之前暂停，直到所有未完成的缓冲区<code>queueinputbuffer/releaseOutputBuffer</code>。 因此，用户最好每次获得缓冲区后执行释放操作。</p>
 <h3 id="异步模式"><a href="#异步模式" class="headerlink" title="异步模式"></a>异步模式</h3><p>从LOLLIPOP开始，首选方法是在调用configure方法之前通过设置回调来异步处理数据。 异步模式会稍微改变状态转换步骤，在running状态时必须在调用flush（）之后调用start（）方法，将编解码器转换为Running子状态并开始接收输入缓冲区。 同样，在初始调用开始时，codec将直接移至Running子状态，并通过回调开始传递可用的输入缓冲区。来一张蛋疼的图示意：</p>
-<p><img src="http://ohy9exujk.bkt.clouddn.com/media_codec_5.png" alt="codec"></p>
+<p><img src="http://img.rangaofie.cn/media_codec_5.png" alt="codec"></p>
 <p>官方给出的一段典型代码：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line">MediaCodec codec = MediaCodec.createByCodecName(name);</span><br><span class="line">MediaFormat mOutputFormat; <span class="comment">// member variable</span></span><br><span class="line">codec.setCallback(<span class="keyword">new</span> MediaCodec.Callback() &#123;</span><br><span class="line">   <span class="meta">@Override</span></span><br><span class="line">   <span class="function"><span class="keyword">void</span> <span class="title">onInputBufferAvailable</span><span class="params">(MediaCodec mc, <span class="keyword">int</span> inputBufferId)</span> </span>&#123;</span><br><span class="line">     ByteBuffer inputBuffer = codec.getInputBuffer(inputBufferId);</span><br><span class="line">     <span class="comment">// fill inputBuffer with valid data</span></span><br><span class="line">     …</span><br><span class="line">     codec.queueInputBuffer(inputBufferId, …);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="meta">@Override</span></span><br><span class="line">   <span class="function"><span class="keyword">void</span> <span class="title">onOutputBufferAvailable</span><span class="params">(MediaCodec mc, <span class="keyword">int</span> outputBufferId, …)</span> </span>&#123;</span><br><span class="line">     ByteBuffer outputBuffer = codec.getOutputBuffer(outputBufferId);</span><br><span class="line">     MediaFormat bufferFormat = codec.getOutputFormat(outputBufferId); <span class="comment">// option A</span></span><br><span class="line">     <span class="comment">// bufferFormat is equivalent to mOutputFormat</span></span><br><span class="line">     <span class="comment">// outputBuffer is ready to be processed or rendered.</span></span><br><span class="line">     …</span><br><span class="line">     codec.releaseOutputBuffer(outputBufferId, …);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="meta">@Override</span></span><br><span class="line">   <span class="function"><span class="keyword">void</span> <span class="title">onOutputFormatChanged</span><span class="params">(MediaCodec mc, MediaFormat format)</span> </span>&#123;</span><br><span class="line">     <span class="comment">// Subsequent data will conform to new format.</span></span><br><span class="line">     <span class="comment">// Can ignore if using getOutputFormat(outputBufferId)</span></span><br><span class="line">     mOutputFormat = format; <span class="comment">// option B</span></span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="meta">@Override</span></span><br><span class="line">   <span class="function"><span class="keyword">void</span> <span class="title">onError</span><span class="params">(…)</span> </span>&#123;</span><br><span class="line">     …</span><br><span class="line">   &#125;</span><br><span class="line"> &#125;);</span><br><span class="line"> codec.configure(format, …);</span><br><span class="line"> mOutputFormat = codec.getOutputFormat(); <span class="comment">// option B</span></span><br><span class="line"> codec.start();</span><br><span class="line"> <span class="comment">// wait for processing to complete</span></span><br><span class="line"> codec.stop();</span><br><span class="line"> codec.release();</span><br></pre></td></tr></table></figure>
 <p> 设置回调方法必须在mediacodec创建之后，并且在configure方法之前。mediacodec共有四个方法：</p>
@@ -552,7 +552,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">59</span>
+                <span class="site-state-item-count">58</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -561,7 +561,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories/">
-                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-count">8</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>

@@ -91,13 +91,13 @@
 <meta property="og:site_name" content="SAKA&#39;S BLOG">
 <meta property="og:description" content="Room是安卓推出的一个官方框架，极大的简化了安卓开发者中间层的编写，仅仅需要编写三个主要的注解模块即可实现增删改查功能，前一篇文章简单翻译了一下Room支持的使用，拓展了一些SQLite的知识。 其实在使用中我们会发现Room仍然有很多不尽如人意的地方，这篇文章就一个简单的非空约束设置来探索一下。 非空约束用过SQL的人都知道用在表上的约束是一种强制规则，可以限制出入到表中的数据类型，为数据提供">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://p3lublj5c.bkt.clouddn.com/runtime.png">
-<meta property="og:image" content="http://p3lublj5c.bkt.clouddn.com/compiler.png">
-<meta property="og:updated_time" content="2018-05-14T03:04:52.833Z">
+<meta property="og:image" content="http://img.rangaofei.cn/runtime.png">
+<meta property="og:image" content="http://img.rangaofei.cn/compiler.png">
+<meta property="og:updated_time" content="2018-11-29T14:52:46.685Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Room使用之如何为字段设置非空约束">
 <meta name="twitter:description" content="Room是安卓推出的一个官方框架，极大的简化了安卓开发者中间层的编写，仅仅需要编写三个主要的注解模块即可实现增删改查功能，前一篇文章简单翻译了一下Room支持的使用，拓展了一些SQLite的知识。 其实在使用中我们会发现Room仍然有很多不尽如人意的地方，这篇文章就一个简单的非空约束设置来探索一下。 非空约束用过SQL的人都知道用在表上的约束是一种强制规则，可以限制出入到表中的数据类型，为数据提供">
-<meta name="twitter:image" content="http://p3lublj5c.bkt.clouddn.com/runtime.png">
+<meta name="twitter:image" content="http://img.rangaofei.cn/runtime.png">
 
 
 
@@ -382,8 +382,8 @@
 <h2 id="Room原理"><a href="#Room原理" class="headerlink" title="Room原理"></a>Room原理</h2><p>Room算是一个庞大的库，但我们在gradle文件中最少的情况下只需要设置两个库就可以：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">implementation <span class="string">"android.arch.persistence.room:runtime:$project.ext.room_version"</span></span><br><span class="line">annotationProcessor <span class="string">"android.arch.persistence.room:compiler:$project.ext.room_version"</span></span><br></pre></td></tr></table></figure>
 <p>打开mvn我们可以看到他们两个所依赖的库到底有多少：</p>
-<p><img src="http://p3lublj5c.bkt.clouddn.com/runtime.png" alt="runtime"></p>
-<p><img src="http://p3lublj5c.bkt.clouddn.com/compiler.png" alt="compiler"></p>
+<p><img src="http://img.rangaofei.cn/runtime.png" alt="runtime"></p>
+<p><img src="http://img.rangaofei.cn/compiler.png" alt="compiler"></p>
 <p>关于非空约束的设置在这里要将的主要是Compiler库，它是apt解析注解生成文件的主要库。</p>
 <p>Room中大量使用了注解来标识数据存储信息和查询信息，这些注解的元注解全部使用了<code>@Retention(RetentionPolicy.CLASS)</code>,也就是这些注解只保存到编译期，运行期就会消除（这里简单说一下其实在Room运行的过程中还是用到了反射，在获取DAO和Database实现类的时候）。它通过使用apt来获取注解信息并通过javapoet来生成实现类的代码，然后由Runtime来调用这些实现类。</p>
 <p>这里我做一个简单的例子来说明：</p>
@@ -543,7 +543,7 @@
           
             <div class="site-state-item site-state-posts">
               <a href="/archives/">
-                <span class="site-state-item-count">59</span>
+                <span class="site-state-item-count">58</span>
                 <span class="site-state-item-name">日志</span>
               </a>
             </div>
@@ -552,7 +552,7 @@
           
             <div class="site-state-item site-state-categories">
               <a href="/categories/">
-                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-count">8</span>
                 <span class="site-state-item-name">分类</span>
               </a>
             </div>
