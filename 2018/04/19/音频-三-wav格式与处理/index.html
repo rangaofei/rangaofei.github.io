@@ -92,12 +92,12 @@
 <meta property="og:site_name" content="SAKA&#39;S BLOG">
 <meta property="og:description" content="wav格式与处理pcm格式简介PCM(脉冲编码调制)就是把一个时间连续，取值连续的模拟信号变换成时间离散，取值离散的数字信号后在信道中传输。脉冲编码调制就是对模拟信号先抽样，再对样值幅度量化，编码的过程。也就是前边的说过的采样-量化过程，这个过程可以较好的存储原始的音频模拟信号，并真实还原。但是PCM并不是一种友好的存储格式，所以一些机构定制了一些准则来记录PCM信号，包括声道、采样率、位宽等信息">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://img.rangaofie.cn/wav.png">
-<meta property="og:updated_time" content="2018-11-29T15:03:23.901Z">
+<meta property="og:image" content="http://img.rangaofei.cn/wav.png">
+<meta property="og:updated_time" content="2018-11-29T15:41:00.869Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="音频(三)-wav格式与处理">
 <meta name="twitter:description" content="wav格式与处理pcm格式简介PCM(脉冲编码调制)就是把一个时间连续，取值连续的模拟信号变换成时间离散，取值离散的数字信号后在信道中传输。脉冲编码调制就是对模拟信号先抽样，再对样值幅度量化，编码的过程。也就是前边的说过的采样-量化过程，这个过程可以较好的存储原始的音频模拟信号，并真实还原。但是PCM并不是一种友好的存储格式，所以一些机构定制了一些准则来记录PCM信号，包括声道、采样率、位宽等信息">
-<meta name="twitter:image" content="http://img.rangaofie.cn/wav.png">
+<meta name="twitter:image" content="http://img.rangaofei.cn/wav.png">
 
 
 
@@ -338,7 +338,7 @@
       
         <h1 id="wav格式与处理"><a href="#wav格式与处理" class="headerlink" title="wav格式与处理"></a>wav格式与处理</h1><h2 id="pcm格式简介"><a href="#pcm格式简介" class="headerlink" title="pcm格式简介"></a>pcm格式简介</h2><p>PCM(脉冲编码调制)就是把一个时间连续，取值连续的模拟信号变换成时间离散，取值离散的数字信号后在信道中传输。脉冲编码调制就是对模拟信号先抽样，再对样值幅度量化，编码的过程。也就是前边的说过的采样-量化过程，这个过程可以较好的存储原始的音频模拟信号，并真实还原。但是PCM并不是一种友好的存储格式，所以一些机构定制了一些准则来记录PCM信号，包括声道、采样率、位宽等信息，比较通用的就是windows平台下的wav格式和osx平台下的aiff格式，这两种都可以以一种友好可读的方式保存PCM信息。</p>
 <h2 id="wav格式简介"><a href="#wav格式简介" class="headerlink" title="wav格式简介"></a>wav格式简介</h2><p>以下内容来源百度：<br><code>WAV</code>为微软公司（Microsoft)开发的一种声音文件格式，它符合<code>RIFF(Resource Interchange File Format)</code>文件规范，用于保存Windows平台的音频信息资源，被Windows平台及其应用程序所广泛支持，该格式也支持MSADPCM，CCITT A LAW等多种压缩运算法，支持多种音频数字，取样频率和声道，标准格式化的WAV文件和CD格式一样，也是44.1K的取样频率，16位量化数字，因此在声音文件质量和CD相差无几！ WAV打开工具是WINDOWS的媒体播放器。<br>通常使用三个参数来表示声音，量化位数，取样频率和采样点振幅。量化位数分为8位，16位，24位三种，声道有单声道和立体声之分，单声道振幅数据为n<em>1矩阵点，立体声为n</em>2矩阵点，取样频率一般有11025Hz(11kHz) ，22050Hz(22kHz)和44100Hz(44kHz) 三种，不过尽管音质出色，但在压缩后的文件体积过大！相对其他音频格式而言是一个缺点，其文件大小的计算方式为：WAV格式文件所占容量（B) = （取样频率 X量化位数X 声道） X 时间 / 8 (字节= 8bit) 每一分钟WAV格式的音频文件的大小为10MB，其大小不随音量大小及清晰度的变化而变化。<br>WAV是最接近无损的音乐格式，所以文件大小相对也比较大。</p>
-<p>一张经典的wav格式图来简单讲解一下：<br><img src="http://img.rangaofie.cn/wav.png" alt="wav格式"></p>
+<p>一张经典的wav格式图来简单讲解一下：<br><img src="http://img.rangaofei.cn/wav.png" alt="wav格式"></p>
 <p>这张图表明了wav个基本结构和存储信息的格式：</p>
 <ol>
 <li>所有的字符采用big-endian存储，所有的数字采用little-endian存储。</li>
